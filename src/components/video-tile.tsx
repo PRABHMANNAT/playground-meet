@@ -31,6 +31,12 @@ export function VideoTile({
     >
       <div className="tile-avatar">
         <span>{initials(track.participant.name || 'Guest')}</span>
+        {!available && (
+          <div className="tile-identity">
+            <strong>{track.participant.name || 'Guest'}</strong>
+            <small>Camera off</small>
+          </div>
+        )}
       </div>
       {available && <VideoTrack trackRef={track} className={screen ? 'screen-video' : ''} />}
       <div className="tile-label">
@@ -71,6 +77,25 @@ export function VideoTile({
           <Maximize />
         </button>
       </div>
+    </div>
+  );
+}
+export function DemoTile({ name, tone }: { name: string; tone: number }) {
+  return (
+    <div className="tile demo-tile" data-tone={tone} aria-label={`${name}, demo participant`}>
+      <div className="tile-avatar">
+        <span>{initials(name)}</span>
+        <div className="tile-identity">
+          <strong>{name}</strong>
+          <small>Camera off</small>
+        </div>
+      </div>
+      <div className="tile-label">
+        <MicOff size={14} />
+        <span>{name}</span>
+        <b className="demo-label">Demo</b>
+      </div>
+      <span className="tile-demo-note">Sample participant</span>
     </div>
   );
 }

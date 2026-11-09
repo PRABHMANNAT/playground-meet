@@ -6,7 +6,7 @@ A browser-based meeting space for Playground: Next.js, TypeScript, Motion, Tailw
 
 ## Delivery status
 
-The implementation is pushed to [PRABHMANNAT/playground-meet](https://github.com/PRABHMANNAT/playground-meet) with 160 non-empty commits. Build, 30 unit tests, independent-user API scenarios and real LiveKit audio/video/screen transport tests pass; see [verification evidence](docs/VERIFICATION.md).
+The implementation is pushed to [PRABHMANNAT/playground-meet](https://github.com/PRABHMANNAT/playground-meet). The initial delivery contained 160 non-empty commits; later interface improvements are recorded in subsequent commits. Build, 30 unit tests, independent-user API scenarios and real LiveKit audio/video/screen transport tests pass; see [verification evidence](docs/VERIFICATION.md).
 
 **Public hosting is pending.** No production server or DNS access was available, and the connected hosting account denied access. `meet.tryplayground.net` has not been deployed. The included setup avoids paid APIs and does not purchase hosting.
 
@@ -23,6 +23,10 @@ npm run dev
 ```
 
 Open **http://localhost:3000** (use localhost, matching APP_URL). On Windows, use `Copy-Item .env.example .env.local` and the official Windows LiveKit executable. No database account is needed locally; PGlite persists data in `.data/meet`.
+
+Local development meetings include two clearly labeled **demo participants**, `prabh2` and `bhumi`, to preview the grid. They are visual samples, not connected users: they publish no media, do not enter server membership or participant counts, and cannot receive chat or notes. Hide them from **Tools → Hide demo participants**, or remove them individually in **People**. They are disabled in production builds and on non-localhost hosts.
+
+![Meeting interface with labeled demo participants](docs/assets/meeting-preview.jpg)
 
 ## What works
 

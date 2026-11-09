@@ -9,6 +9,7 @@ import {
   useLocalParticipant,
   useConnectionState,
   useRoomContext,
+  useParticipants,
 } from '@livekit/components-react';
 import { Track, VideoPresets, ConnectionState } from 'livekit-client';
 import {
@@ -33,6 +34,8 @@ import {
   LoaderCircle,
   Settings2,
   LayoutGrid,
+  ShieldCheck,
+  UserPlus,
 } from 'lucide-react';
 import { request, downloadSummary } from '@/lib/client';
 import { duration } from '@/lib/format';
@@ -40,7 +43,7 @@ import { useRoomState } from '@/hooks/use-room-state';
 import { useShortcuts } from '@/hooks/use-shortcuts';
 import { Brand } from './brand';
 import { useToast } from './providers';
-import { VideoTile } from './video-tile';
+import { VideoTile, DemoTile } from './video-tile';
 import { SidePanel } from './panels';
 import type { Panel } from './panels/types';
 import { Reactions, emojis } from './reactions';
@@ -148,7 +151,17 @@ function MeetingInterior({ id }: { id: string }) {
     [leaving, setLeaving] = useState(false),
     [settings, setSettings] = useState(false),
     [toolsOpen, setToolsOpen] = useState(false),
+    [demoNames, setDemoNames] = useState<string[]>([]),
+    [localPreview, setLocalPreview] = useState(false),
     [now, setNow] = useState(Date.now());
+  const participants = useParticipants();
+  useEffect(() => {
+    const enabled =
+      process.env.NODE_ENV === 'development' &&
+      ['localhost', '127.0.0.1'].includes(location.hostname);
+    setLocalPreview(enabled);
+    if (enabled) setDemoNames(['prabh2', 'bhumi']);
+  }, []);
   const local = useLocalParticipant(),
     connection = useConnectionState();
   const tracks = useTracks([
@@ -235,7 +248,8 @@ function MeetingInterior({ id }: { id: string }) {
           <h1>{data?.meeting.title || 'Meeting'}</h1>
           <span>
             <i className="pulse-dot" />
-            {connection} · {duration((now - (data?.meeting.created || now)) / 1000)}
+            {connection === ConnectionState.Connected ? 'Connected' : connection} ·{' '}
+            {duration((now - (data?.meeting.created || now)) / 1000)}
           </span>
         </div>
         <div className="room-header-right">
@@ -254,24 +268,10 @@ function MeetingInterior({ id }: { id: string }) {
           </button>
           <button
             className="icon-button"
-            aria-label="Download meeting summary"
-            onClick={() => downloadSummary(id).catch((e) => toast(e.message))}
-          >
-            <Download size={17} />
-          </button>
-          <button
-            className="icon-button"
             aria-label="Device settings"
             onClick={() => setSettings(true)}
           >
             <Settings2 size={17} />
-          </button>
-          <button
-            className="icon-button"
-            aria-label="Keyboard shortcuts"
-            onClick={() => setShortcuts(true)}
-          >
-            <Keyboard size={17} />
           </button>
         </div>
       </header>
@@ -290,13 +290,34 @@ function MeetingInterior({ id }: { id: string }) {
       <StartAudio label="Click to enable meeting audio" className="button primary" />
       <div className="room-body">
         <div className="call-area">
-          <div className="video-grid" data-count={tracks.length} data-many={tracks.length > 4}>
+          <div className="stage-heading">
+            <div>
+              <h2>In this meeting</h2>
+              <span>
+                {participants.length} connected
+                {demoNames.length > 0
+                  ? ` · ${demoNames.length} demo participant${demoNames.length === 1 ? '' : 's'}`
+                  : ''}
+              </span>
+            </div>
+            <span className="stage-privacy">
+              <ShieldCheck size={14} /> Invite only
+            </span>
+          </div>
+          <div
+            className="video-grid"
+            data-count={tracks.length + demoNames.length}
+            data-many={tracks.length + demoNames.length > 4}
+          >
             {tracks.map((t) => (
               <VideoTile
                 key={t.participant.identity + ':' + t.source}
                 track={t}
                 raised={data?.members.find((m) => m.id === t.participant.identity)?.hand || false}
               />
+            ))}
+            {demoNames.map((name, index) => (
+              <DemoTile key={name} name={name} tone={index + 1} />
             ))}
           </div>
           {data && <Reactions events={data.events} now={now} />}
@@ -309,6 +330,8 @@ function MeetingInterior({ id }: { id: string }) {
             data={data}
             host={host}
             send={send}
+            demoNames={demoNames}
+            onRemoveDemo={(name) => setDemoNames((names) => names.filter((n) => n !== name))}
           />
         )}
       </div>
@@ -395,7 +418,12 @@ function MeetingInterior({ id }: { id: string }) {
         <div className="toolbar-group">
           {controls.slice(0, 2).map(({ icon: Icon, p, label }) => (
             <div className={'toolbar-tool ' + (panel === p ? 'active' : '')} key={p}>
-              <button className="control" aria-label={`Open ${label}`} onClick={() => toggle(p)}>
+              <button
+                className="control"
+                aria-label={`Open ${label}`}
+                aria-pressed={panel === p}
+                onClick={() => toggle(p)}
+              >
                 <Icon />
               </button>
               <span>{label}</span>
@@ -434,6 +462,30 @@ function MeetingInterior({ id }: { id: string }) {
               <span>{label}</span>
             </button>
           ))}
+          <button
+            onClick={() => {
+              setToolsOpen(false);
+              setShortcuts(true);
+            }}
+          >
+            <Keyboard size={20} />
+            <span>Keyboard shortcuts</span>
+          </button>
+          <button onClick={() => downloadSummary(id).catch((e) => toast(e.message))}>
+            <Download size={20} />
+            <span>Download summary</span>
+          </button>
+          {localPreview && (
+            <button
+              onClick={() => {
+                setDemoNames(demoNames.length ? [] : ['prabh2', 'bhumi']);
+                setToolsOpen(false);
+              }}
+            >
+              <UserPlus size={20} />
+              <span>{demoNames.length ? 'Hide demo participants' : 'Show demo participants'}</span>
+            </button>
+          )}
         </div>
       </Dialog>
       <Dialog open={settings} onClose={() => setSettings(false)} title="Device settings">
