@@ -5,5 +5,5 @@ export type Meeting = { id:string; title:string; host:string; created:number; en
 export type Poll = { id:string; question:string; options:string[]; votes:Record<string,number>; closed:boolean };
 export type Stroke = { id:string; author:string; color:string; points:number[][] };
 export type SharedState = { notes:string; notesVersion:number; polls:Poll[]; strokes:Stroke[]; timer:{endsAt:number; duration:number}; review:{url:string; task:string} };
-export type Snapshot = { meeting:Meeting; members:Member[]; events:Event[]; me:Person; serverTime:number };
+export type Snapshot = { meeting:Meeting; members:Member[]; events:Event[]; me:Person; serverTime:number; clockOffset?:number };
 export const emptyState = ():SharedState => ({notes:'',notesVersion:0,polls:[],strokes:[],timer:{endsAt:0,duration:300},review:{url:'',task:''}});
