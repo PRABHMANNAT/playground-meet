@@ -3,6 +3,7 @@ const config: NextConfig = {
   output: 'standalone',
   serverExternalPackages: ['@electric-sql/pglite', 'pg'],
   poweredByHeader: false,
+  devIndicators: false,
   async headers() {
     return [
       {

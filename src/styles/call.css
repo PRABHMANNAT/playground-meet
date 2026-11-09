@@ -1,4 +1,176 @@
 /* Meeting-specific surfaces keep video prominent and controls easy to scan. */
+.avatar {
+  position: relative;
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
+  background: var(--avatar-bg);
+  color: var(--avatar-fg);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  box-shadow: inset 0 0 0 1px #00000005;
+}
+.avatar-status {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--surface);
+  border-radius: 50%;
+  background: #b0b7ad;
+}
+.avatar-status.online {
+  background: #718b66;
+}
+.meeting-shell .tile-avatar > .avatar {
+  width: clamp(72px, 8vw, 106px);
+  height: clamp(72px, 8vw, 106px);
+  border-radius: 35%;
+  background: var(--avatar-bg);
+  color: var(--avatar-fg);
+  font-size: 31px;
+  font-weight: 600;
+  box-shadow:
+    0 4px 14px #0000000c,
+    inset 0 0 0 1px #ffffff45;
+}
+.tile-state {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #f0ede2;
+  color: #3d4938;
+  border-radius: 6px;
+  padding: 5px 9px;
+  font-size: 10px;
+}
+.stage-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.gallery-button {
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface);
+  font-size: 11px;
+  color: var(--ink);
+}
+.meeting-shell .video-grid[data-layout='focus'] {
+  grid-template-columns: minmax(0, 2.2fr) minmax(180px, 1fr);
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: minmax(160px, 1fr);
+}
+.meeting-shell .video-grid[data-layout='focus'] > .tile {
+  grid-column: 2;
+}
+.meeting-shell .video-grid[data-layout='focus'] > .tile[data-focused='true'] {
+  grid-column: 1;
+  grid-row: 1 / 3;
+}
+.meeting-shell .tile-actions button:hover,
+.meeting-shell .tile-actions button[aria-pressed='true'] {
+  background: #ffffff25;
+}
+.meeting-shell .chat-message header {
+  align-items: center;
+  font-size: 12px;
+  justify-content: flex-start;
+}
+.meeting-shell .chat-message header .avatar {
+  width: 25px;
+  height: 25px;
+  font-size: 9px;
+  border-radius: 9px;
+}
+.meeting-shell .chat-message time {
+  margin-left: auto;
+  font-size: 10px;
+}
+.meeting-shell .chat-message p {
+  margin-left: 35px;
+  border-radius: 0 10px 10px 10px;
+}
+.meeting-shell .chat-form input {
+  border-radius: 9px;
+  min-height: 44px;
+}
+.meeting-shell .chat-form button {
+  width: 44px;
+  padding: 10px;
+  border-radius: 9px;
+}
+.meeting-tools button > svg {
+  background: var(--paper-2);
+  padding: 8px;
+  box-sizing: content-box;
+  border-radius: 10px;
+  stroke-width: 1.65;
+}
+.meeting-tools button > span {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.meeting-tools strong {
+  font-size: 13px;
+  font-weight: 650;
+}
+.meeting-tools small {
+  font-size: 11px;
+}
+.meeting-tools button {
+  transition:
+    background 150ms,
+    border-color 150ms;
+}
+.meeting-tools button:hover {
+  border-color: var(--muted);
+}
+.dialog:has(.meeting-tools) {
+  max-width: min(92vw, 620px);
+}
+.dialog .meeting-tools {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.dialog .meeting-tools button {
+  padding: 13px;
+  gap: 11px;
+  min-height: 76px;
+}
+.dialog .meeting-tools button > svg {
+  padding: 9px;
+}
+@media (max-width: 520px) {
+  .dialog .meeting-tools {
+    grid-template-columns: 1fr;
+  }
+  .dialog .meeting-tools button {
+    min-height: 64px;
+  }
+}
+.meeting-shell .control:focus-visible,
+.meeting-shell .tile-actions button:focus-visible {
+  outline: 2px solid #8b9e80;
+  outline-offset: 3px;
+}
+.meeting-shell .control:active {
+  transform: scale(0.96);
+}
 .meeting-shell {
   --paper: #f7f8f6;
   --paper-2: #eef0ec;
@@ -150,7 +322,7 @@
   gap: 18px;
   padding-bottom: 16px;
 }
-.meeting-shell .tile-avatar > span {
+.meeting-shell .tile-avatar > span:not(.avatar) {
   width: clamp(64px, 7vw, 94px);
   height: clamp(64px, 7vw, 94px);
   background: #d4ded1;
@@ -159,11 +331,11 @@
   font-weight: 500;
   letter-spacing: -1px;
 }
-.meeting-shell .tile[data-tone='1'] .tile-avatar > span {
+.meeting-shell .tile[data-tone='1'] .tile-avatar > span:not(.avatar) {
   background: #d7dde7;
   color: #414d60;
 }
-.meeting-shell .tile[data-tone='2'] .tile-avatar > span {
+.meeting-shell .tile[data-tone='2'] .tile-avatar > span:not(.avatar) {
   background: #e6d9cb;
   color: #645241;
 }
@@ -581,5 +753,45 @@
   }
   .meeting-shell .control {
     width: 40px;
+  }
+}
+@media (min-width: 721px) {
+  .meeting-shell .video-grid[data-layout='focus'] {
+    grid-template-columns: minmax(0, 2.2fr) minmax(180px, 1fr);
+  }
+  .meeting-shell .video-grid[data-layout='focus'] > .tile {
+    grid-column: 2;
+  }
+  .meeting-shell .video-grid[data-layout='focus'] > .tile:last-child {
+    grid-column: 2;
+  }
+  .meeting-shell .video-grid[data-layout='focus'] > .tile[data-focused='true'] {
+    grid-column: 1;
+    grid-row: 1 / 3;
+  }
+  .meeting-shell .video-grid[data-layout='focus'] > .tile:not([data-focused='true']) .avatar-large {
+    width: 72px;
+    height: 72px;
+    font-size: 24px;
+  }
+}
+@media (max-width: 720px) {
+  .meeting-shell .video-grid[data-layout='focus'] {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    grid-auto-rows: minmax(210px, 1fr);
+  }
+  .meeting-shell .video-grid[data-layout='focus'] > .tile,
+  .meeting-shell .video-grid[data-layout='focus'] > .tile[data-focused='true'] {
+    grid-column: auto;
+    grid-row: auto;
+  }
+  .meeting-shell .tile-avatar > .avatar {
+    width: 72px;
+    height: 72px;
+    font-size: 25px;
+  }
+  .stage-actions .stage-privacy {
+    display: none;
   }
 }

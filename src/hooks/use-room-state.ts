@@ -7,18 +7,22 @@ export function useRoomState(id: string) {
   const [data, setData] = useState<Snapshot | null>(null),
     [error, setError] = useState('');
   const alive = useRef(true),
-    etag = useRef('');
+    etag = useRef(''),
+    requestVersion = useRef(0);
   const refresh = useCallback(async () => {
+    const version = ++requestVersion.current;
     try {
       const response = await fetch(`/api/meetings/${id}/state`, {
         headers: etag.current ? { 'If-None-Match': etag.current } : {},
         cache: 'no-store',
       });
+      if (!alive.current || version !== requestVersion.current) return;
       if (response.status === 304) {
         if (alive.current) setError('');
         return;
       }
       const next = await response.json();
+      if (!alive.current || version !== requestVersion.current) return;
       if (!response.ok) throw new Error(next.error || 'Connection unavailable');
       etag.current = response.headers.get('etag') || '';
       if (alive.current) {
@@ -26,19 +30,25 @@ export function useRoomState(id: string) {
         setError('');
       }
     } catch (e) {
-      if (alive.current) setError((e as Error).message);
+      if (alive.current && version === requestVersion.current) setError((e as Error).message);
     }
   }, [id]);
   useEffect(() => {
     alive.current = true;
+    etag.current = '';
+    setData(null);
+    setError('');
+    let cancelled = false;
     let timeout: ReturnType<typeof setTimeout>;
     const poll = async () => {
       await refresh();
-      if (alive.current) timeout = setTimeout(poll, document.hidden ? 5000 : 1200);
+      if (!cancelled) timeout = setTimeout(poll, document.hidden ? 5000 : 1200);
     };
     void poll();
     return () => {
       alive.current = false;
+      cancelled = true;
+      requestVersion.current++;
       clearTimeout(timeout);
     };
   }, [refresh]);

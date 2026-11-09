@@ -33,6 +33,23 @@ async function main() {
   await act(guest, { type: 'notes', text: 'Merged notes', version: 1 });
   assert.equal((await host.call(path + '/state')).meeting.state.notes, 'Merged notes');
   console.log('PASS notes conflict detection and persistence');
+  const simultaneous = await Promise.all(
+    [host, guest].map((client, index) =>
+      fetch(base + path + '/actions', {
+        method: 'POST',
+        headers: { Origin: base, Cookie: client.cookie, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'notes', text: `Concurrent editor ${index}`, version: 2 }),
+      }),
+    ),
+  );
+  assert.deepEqual(simultaneous.map((r) => r.status).sort(), [200, 409]);
+  const winningEditor = simultaneous.findIndex((r) => r.status === 200);
+  assert.equal(
+    (await host.call(path + '/state')).meeting.state.notes,
+    `Concurrent editor ${winningEditor}`,
+  );
+  await act(host, { type: 'notes', text: 'Merged notes', version: 3 });
+  console.log('PASS simultaneous edits cannot silently overwrite each other');
   await act(guest, { type: 'poll', question: 'Unauthorized?', options: ['A', 'B'] }, 403);
   await act(host, { type: 'poll', question: 'Ship?', options: ['Yes', 'No'] });
   snapshot = await guest.call(path + '/state');
@@ -92,6 +109,14 @@ async function main() {
   await act(host, { type: 'rating', rating: 5, text: 'All done' });
   assert.ok((await host.call(path + '/summary')).markdown);
   console.log('PASS end-for-all and authorized post-call recap');
+  const openRoom = (
+    await host.call('/api/meetings', { title: 'Open admission check', lobby: false })
+  ).id;
+  assert.equal((await guest.call(`/api/meetings/${openRoom}/join`, {})).status, 'admitted');
+  await host.call(`/api/meetings/${openRoom}/actions`, { type: 'lobby', enabled: true });
+  assert.equal((await outsider.call(`/api/meetings/${openRoom}/join`, {})).status, 'waiting');
+  await host.call(`/api/meetings/${openRoom}/actions`, { type: 'end' });
+  console.log('PASS waiting room setting controls admission of new guests');
   const csrf = await fetch(base + '/api/meetings', {
     method: 'POST',
     headers: {

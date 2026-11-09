@@ -30,7 +30,7 @@ Local development meetings include two clearly labeled **demo participants**, `p
 
 ## What works
 
-- HD adaptive video/audio, camera/microphone preview, device selection, screen sharing, speaker highlighting, picture-in-picture, fullscreen and keyboard shortcuts.
+- HD adaptive video/audio, camera/microphone preview, device selection, screen sharing, speaker highlighting, participant pinning, picture-in-picture, fullscreen and keyboard shortcuts.
 - Instant invitation links, persistent guest sessions, optional password accounts, waiting rooms, host admission/removal/muting, room locking and end-for-all.
 - Persistent chat, raised hands, reactions, collaborative drawing, conflict-aware shared notes, polls, focus timers and shared product-review briefs.
 - Timestamped bug/idea/moment reports, ratings, meeting history and Markdown summaries assembled without AI.

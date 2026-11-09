@@ -153,6 +153,7 @@ function MeetingInterior({ id }: { id: string }) {
     [toolsOpen, setToolsOpen] = useState(false),
     [demoNames, setDemoNames] = useState<string[]>([]),
     [localPreview, setLocalPreview] = useState(false),
+    [pinnedTrack, setPinnedTrack] = useState<string | null>(null),
     [now, setNow] = useState(Date.now());
   const participants = useParticipants();
   useEffect(() => {
@@ -168,6 +169,14 @@ function MeetingInterior({ id }: { id: string }) {
     { source: Track.Source.Camera, withPlaceholder: true },
     { source: Track.Source.ScreenShare, withPlaceholder: false },
   ]);
+  const trackKey = (t: (typeof tracks)[number]) => t.participant.identity + ':' + t.source;
+  const focused =
+    tracks.length + demoNames.length > 1 && tracks.some((t) => trackKey(t) === pinnedTrack)
+      ? pinnedTrack
+      : null;
+  const visibleTracks = focused
+    ? [...tracks].sort((a, b) => Number(trackKey(b) === focused) - Number(trackKey(a) === focused))
+    : tracks;
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
@@ -232,13 +241,18 @@ function MeetingInterior({ id }: { id: string }) {
   }, [error, room]);
   const waiting = data?.members.filter((m) => m.status === 'waiting').length || 0;
   const controls = [
-    { icon: MessageSquare, p: 'chat', label: 'Chat' },
-    { icon: Users, p: 'people', label: 'People' },
-    { icon: PenTool, p: 'board', label: 'Whiteboard' },
-    { icon: StickyNote, p: 'notes', label: 'Shared notes' },
-    { icon: BarChart3, p: 'polls', label: 'Polls' },
-    { icon: Timer, p: 'timer', label: 'Focus timer' },
-    { icon: Layers, p: 'review', label: 'Product review' },
+    { icon: MessageSquare, p: 'chat', label: 'Chat', description: 'Message the room' },
+    { icon: Users, p: 'people', label: 'People', description: 'Participants and host controls' },
+    { icon: PenTool, p: 'board', label: 'Whiteboard', description: 'Sketch ideas together' },
+    {
+      icon: StickyNote,
+      p: 'notes',
+      label: 'Shared notes',
+      description: 'Keep decisions in one place',
+    },
+    { icon: BarChart3, p: 'polls', label: 'Polls', description: 'Ask a question and vote' },
+    { icon: Timer, p: 'timer', label: 'Focus timer', description: 'Set time for a discussion' },
+    { icon: Layers, p: 'review', label: 'Product review', description: 'Collect bugs and ideas' },
   ] as const;
   return (
     <main className="meeting-shell" id="main">
@@ -300,19 +314,33 @@ function MeetingInterior({ id }: { id: string }) {
                   : ''}
               </span>
             </div>
-            <span className="stage-privacy">
-              <ShieldCheck size={14} /> Invite only
-            </span>
+            <div className="stage-actions">
+              {focused && (
+                <button className="gallery-button" onClick={() => setPinnedTrack(null)}>
+                  <LayoutGrid size={14} /> Back to gallery
+                </button>
+              )}
+              <span className="stage-privacy">
+                <ShieldCheck size={14} /> Invite only
+              </span>
+            </div>
           </div>
           <div
             className="video-grid"
             data-count={tracks.length + demoNames.length}
             data-many={tracks.length + demoNames.length > 4}
+            data-layout={focused ? 'focus' : 'gallery'}
           >
-            {tracks.map((t) => (
+            {visibleTracks.map((t) => (
               <VideoTile
                 key={t.participant.identity + ':' + t.source}
                 track={t}
+                pinned={focused === trackKey(t)}
+                onPin={
+                  tracks.length + demoNames.length > 1
+                    ? () => setPinnedTrack(focused === trackKey(t) ? null : trackKey(t))
+                    : undefined
+                }
                 raised={data?.members.find((m) => m.id === t.participant.identity)?.hand || false}
               />
             ))}
@@ -357,6 +385,7 @@ function MeetingInterior({ id }: { id: string }) {
             <button
               className={'control ' + (!local.isMicrophoneEnabled ? 'off' : '')}
               aria-label={local.isMicrophoneEnabled ? 'Mute microphone' : 'Unmute microphone'}
+              title="Microphone · M"
               onClick={mic}
             >
               {local.isMicrophoneEnabled ? <Mic /> : <MicOff />}
@@ -367,6 +396,7 @@ function MeetingInterior({ id }: { id: string }) {
             <button
               className={'control ' + (!local.isCameraEnabled ? 'off' : '')}
               aria-label={local.isCameraEnabled ? 'Turn camera off' : 'Turn camera on'}
+              title="Camera · V"
               onClick={camera}
             >
               {local.isCameraEnabled ? <Video /> : <VideoOff />}
@@ -377,6 +407,7 @@ function MeetingInterior({ id }: { id: string }) {
             <button
               className="control"
               aria-label={local.isScreenShareEnabled ? 'Stop sharing screen' : 'Share screen'}
+              title="Share screen · S"
               onClick={screen}
             >
               <ScreenShare />
@@ -387,6 +418,8 @@ function MeetingInterior({ id }: { id: string }) {
             <button
               className="control"
               aria-label={raised ? 'Lower hand' : 'Raise hand'}
+              title="Raise hand · H"
+              aria-pressed={raised}
               onClick={hand}
             >
               <Hand />
@@ -397,6 +430,8 @@ function MeetingInterior({ id }: { id: string }) {
             <button
               className="control"
               aria-label="Send a reaction"
+              title="Send a reaction"
+              aria-expanded={reactions}
               onClick={() => setReactions((v) => !v)}
             >
               <Smile />
@@ -450,7 +485,7 @@ function MeetingInterior({ id }: { id: string }) {
       <Shortcuts open={shortcuts} onClose={() => setShortcuts(false)} />
       <Dialog open={toolsOpen} onClose={() => setToolsOpen(false)} title="Meeting tools">
         <div className="meeting-tools">
-          {controls.slice(2).map(({ icon: Icon, p, label }) => (
+          {controls.slice(2).map(({ icon: Icon, p, label, description }) => (
             <button
               key={p}
               onClick={() => {
@@ -459,7 +494,10 @@ function MeetingInterior({ id }: { id: string }) {
               }}
             >
               <Icon size={20} />
-              <span>{label}</span>
+              <span>
+                <strong>{label}</strong>
+                <small>{description}</small>
+              </span>
             </button>
           ))}
           <button

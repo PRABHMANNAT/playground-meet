@@ -22,4 +22,6 @@ The meeting room uses warm white chrome around charcoal video tiles, with muted 
 
 Local development includes the user-requested `prabh2` and `bhumi` sample tiles. They are labeled Demo, separated from real membership and never included in the connected count. They can be hidden or individually removed. Production builds never show these samples.
 
+Avatars use stable name-derived monograms and seven muted palettes, consistently across tiles, People and chat. Pinning changes only the current viewer's layout; it does not alter another participant's meeting. Speaking and raised-hand badges expose real call state. Tool dialogs are centered and use a two-column icon grid on desktop, with descriptions and a single column on phones. Call controls include keyboard hints and visible pressed states.
+
 Dark theme uses paper #111918, surface #17221F, warm text #F5F1E4 and muted green-gray. Motion is limited to feedback such as toasts, reactions and brief hover transitions, with reduced-motion support. Interactive calls never use fabricated participant counts, fake meeting activity or stock portraits as if they were live.

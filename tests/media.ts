@@ -36,6 +36,20 @@ async function main() {
     receiver = new Room();
   const sources: VideoSource[] = [];
   let audio: AudioSource | undefined;
+  let guestAudio: AudioSource | undefined;
+  let guestWasMuted = false;
+  let guestDisconnected = false;
+  let hostDisconnected = false;
+  let ended = false;
+  receiver.on(RoomEvent.TrackMuted, (_track, participant) => {
+    if (participant.identity === person.id) guestWasMuted = true;
+  });
+  receiver.on(RoomEvent.Disconnected, () => {
+    guestDisconnected = true;
+  });
+  sender.on(RoomEvent.Disconnected, () => {
+    hostDisconnected = true;
+  });
   const frames = { camera: 0, screen: 0, audio: 0 };
   receiver.on(RoomEvent.TrackSubscribed, (track, pub) => {
     if (track.kind === TrackKind.KIND_AUDIO) {
@@ -110,15 +124,36 @@ async function main() {
     assert.ok(frames.screen > 0, 'Remote screen frames must arrive');
     assert.ok(frames.audio > 0, 'Remote non-silent audio frames must arrive');
     console.log('PASS decoded camera, screen share and non-silent audio:', frames);
+    guestAudio = new AudioSource(48000, 1);
+    const guestOptions = new TrackPublishOptions();
+    guestOptions.source = TrackSource.SOURCE_MICROPHONE;
+    await receiver.localParticipant!.publishTrack(
+      LocalAudioTrack.createAudioTrack('guest-microphone', guestAudio),
+      guestOptions,
+    );
+    await guest.call(root + '/actions', { type: 'mute', memberId: person.id }, 403);
+    const muteResult = await host.call(root + '/actions', { type: 'mute', memberId: person.id });
+    assert.equal(muteResult.warning, undefined, 'The media server must confirm the mute');
+    for (let i = 0; i < 50 && !guestWasMuted; i++) await sleep(100);
+    assert.ok(guestWasMuted, 'The guest must receive the server mute event');
+    console.log('PASS host microphone mute enforced by the media server');
     await host.call(root + '/actions', { type: 'remove', memberId: person.id });
+    for (let i = 0; i < 50 && !guestDisconnected; i++) await sleep(100);
+    assert.ok(guestDisconnected, 'Removed guest must actually disconnect');
     await guest.call(root + '/token', {}, 403);
     console.log('PASS media participant removal and token revocation');
+    await host.call(root + '/actions', { type: 'end' });
+    ended = true;
+    for (let i = 0; i < 50 && !hostDisconnected; i++) await sleep(100);
+    assert.ok(hostDisconnected, 'Ending a room must disconnect the host');
+    console.log('PASS end-for-all disconnects the live room');
   } finally {
     await sender.disconnect();
     await receiver.disconnect();
     for (const source of sources) await source.close();
     await audio?.close();
-    await host.call(root + '/actions', { type: 'end' });
+    await guestAudio?.close();
+    if (!ended) await host.call(root + '/actions', { type: 'end' });
     await dispose();
   }
 }

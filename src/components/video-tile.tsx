@@ -7,15 +7,19 @@ import {
   type TrackReferenceOrPlaceholder,
 } from '@livekit/components-react';
 import { Track } from 'livekit-client';
-import { MicOff, Hand, PictureInPicture2, Maximize } from 'lucide-react';
-import { initials } from '@/lib/format';
+import { MicOff, Hand, PictureInPicture2, Maximize, Pin, PinOff, AudioLines } from 'lucide-react';
+import { Avatar } from './avatar';
 import { useToast } from './providers';
 export function VideoTile({
   track,
   raised,
+  pinned = false,
+  onPin,
 }: {
   track: TrackReferenceOrPlaceholder;
   raised: boolean;
+  pinned?: boolean;
+  onPin?: () => void;
 }) {
   const speaking = useIsSpeaking(track.participant),
     ref = useRef<HTMLDivElement>(null),
@@ -28,13 +32,14 @@ export function VideoTile({
       ref={ref}
       className={`tile ${speaking ? 'speaking' : ''} ${screen ? 'screen' : ''} ${track.participant.isLocal && !screen ? 'local' : ''}`}
       data-testid="participant-tile"
+      data-focused={pinned}
     >
       <div className="tile-avatar">
-        <span>{initials(track.participant.name || 'Guest')}</span>
+        <Avatar name={track.participant.name || 'Guest'} size="large" />
         {!available && (
           <div className="tile-identity">
             <strong>{track.participant.name || 'Guest'}</strong>
-            <small>Camera off</small>
+            <small>{screen ? 'Screen share paused' : 'Camera off'}</small>
           </div>
         )}
       </div>
@@ -46,9 +51,31 @@ export function VideoTile({
           {track.participant.isLocal ? ' (you)' : ''}
           {screen ? ' · screen' : ''}
         </span>
-        {raised && <Hand size={13} color="#ffbf71" />}
       </div>
+      {(raised || speaking) && (
+        <div className="tile-state" role="status">
+          {raised ? (
+            <>
+              <Hand size={13} /> Hand raised
+            </>
+          ) : (
+            <>
+              <AudioLines size={14} /> Speaking
+            </>
+          )}
+        </div>
+      )}
       <div className="tile-actions">
+        {onPin && (
+          <button
+            aria-label={`${pinned ? 'Unpin' : 'Pin'} ${track.participant.name || 'Guest'}`}
+            aria-pressed={pinned}
+            title={pinned ? 'Return to gallery' : 'Pin on your screen'}
+            onClick={onPin}
+          >
+            {pinned ? <PinOff /> : <Pin />}
+          </button>
+        )}
         {available && (
           <button
             aria-label={`Picture in picture for ${track.participant.name}`}
@@ -67,7 +94,8 @@ export function VideoTile({
           </button>
         )}
         <button
-          aria-label={`Expand ${track.participant.name}`}
+          aria-label={`Expand ${track.participant.name || 'Guest'}`}
+          title="Full screen"
           onClick={() =>
             ref.current
               ?.requestFullscreen()
@@ -84,7 +112,7 @@ export function DemoTile({ name, tone }: { name: string; tone: number }) {
   return (
     <div className="tile demo-tile" data-tone={tone} aria-label={`${name}, demo participant`}>
       <div className="tile-avatar">
-        <span>{initials(name)}</span>
+        <Avatar name={name} size="large" />
         <div className="tile-identity">
           <strong>{name}</strong>
           <small>Camera off</small>

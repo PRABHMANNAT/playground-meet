@@ -41,6 +41,7 @@ export function NotesPanel({ data, send }: PanelProps) {
         placeholder="Add meeting notes…"
         value={text}
         maxLength={20000}
+        disabled={busy}
         onChange={(e) => {
           setText(e.target.value);
           setDirty(true);
@@ -66,6 +67,7 @@ export function NotesPanel({ data, send }: PanelProps) {
         </button>
         <button
           className="button secondary"
+          disabled={busy}
           onClick={() => {
             setText(state.notes);
             setVersion(state.notesVersion);

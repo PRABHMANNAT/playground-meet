@@ -241,6 +241,7 @@ svg {
   gap: 16px;
 }
 .dialog {
+  margin: auto;
   padding: 0;
   max-width: min(92vw, 480px);
   width: 100%;
@@ -252,8 +253,8 @@ svg {
   box-shadow: 0 30px 120px #0004;
 }
 .dialog::backdrop {
-  background: #071d2580;
-  backdrop-filter: blur(6px);
+  background: #17201b66;
+  backdrop-filter: blur(3px);
 }
 .dialog-card {
   padding: 28px;
