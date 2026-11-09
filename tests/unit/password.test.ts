@@ -1,0 +1,3 @@
+import {test,expect} from 'vitest';import {hashPassword,verifyPassword} from '../../src/lib/password';
+test('equal passwords produce different salted hashes and still verify',async()=>{const a=await hashPassword('a strong test password'),b=await hashPassword('a strong test password');expect(a).not.toBe(b);expect(await verifyPassword('a strong test password',a)).toBe(true);expect(await verifyPassword('a wrong test password',a)).toBe(false);});
+test('malformed stored hashes fail closed',async()=>{expect(await verifyPassword('password','')).toBe(false);expect(await verifyPassword('password','salt:bad')).toBe(false);});
