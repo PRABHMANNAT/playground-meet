@@ -239,6 +239,7 @@ function MeetingInterior({ id }: { id: string }) {
         <div className="room-header-right">
           <button
             className="button secondary"
+            aria-label="Invite people"
             onClick={() =>
               navigator.clipboard
                 .writeText(location.href)
