@@ -2,6 +2,14 @@
 
 A browser-based meeting space for Playground: Next.js, TypeScript, Motion, Tailwind, LiveKit and PostgreSQL. No paid APIs, AI service or Browserbase integration.
 
+![Playground Meet desktop interface](docs/assets/playground-meet.jpg)
+
+## Delivery status
+
+The implementation is pushed to [PRABHMANNAT/playground-meet](https://github.com/PRABHMANNAT/playground-meet) with 160 non-empty commits. Build, 30 unit tests, independent-user API scenarios and real LiveKit audio/video/screen transport tests pass; see [verification evidence](docs/VERIFICATION.md).
+
+**Public hosting is pending.** No production server or DNS access was available, and the connected hosting account denied access. `meet.tryplayground.net` has not been deployed. The included setup avoids paid APIs and does not purchase hosting.
+
 ## Run locally
 
 Requires Node 22+ and a [LiveKit server](https://docs.livekit.io/transport/self-hosting/local/).
