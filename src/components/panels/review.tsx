@@ -55,7 +55,7 @@ export function ReviewPanel({ data, send, host }: PanelProps) {
         </a>
       )}
       <hr style={{ border: 0, borderTop: '1px solid var(--line)' }} />
-      <h3>Catch the moment.</h3>
+      <h3>Add feedback</h3>
       <div className="field-row">
         {[
           { id: 'bug', icon: Bug, label: 'Bug' },

@@ -94,12 +94,12 @@ export function DevicePreview({ onChange }: { onChange: (value: Devices) => void
             <div className="preview-orbit">
               <Camera size={34} />
             </div>
-            <h3>Your space, your pace.</h3>
-            <p>Check your camera before you step in.</p>
+            <h3>Camera is off</h3>
+            <p>Turn on your camera to see a preview.</p>
           </div>
         )}
         <div className="preview-label">
-          <span className="pulse-dot" /> ONLY YOU CAN SEE THIS
+          <span className="pulse-dot" /> YOUR PREVIEW
         </div>
         <div className="preview-controls">
           <button

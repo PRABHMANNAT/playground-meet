@@ -10,7 +10,7 @@ export function PollsPanel({ data, send, host }: PanelProps) {
       {data.meeting.state.polls.length === 0 && !creating && (
         <div className="empty-state">
           <BarChart3 size={30} />
-          Let’s find out what everyone thinks.
+          No polls yet. The host can create one.
         </div>
       )}
       {data.meeting.state.polls.map((p) => {

@@ -23,9 +23,7 @@ export function Account({
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
-        title={
-          person?.account ? 'Your account' : register ? 'Make yourself at home' : 'Welcome back'
-        }
+        title={person?.account ? 'Your account' : register ? 'Create an account' : 'Sign in'}
       >
         {person?.account ? (
           <>

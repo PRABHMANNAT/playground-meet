@@ -18,13 +18,13 @@ const panels = {
   review: ReviewPanel,
 };
 const titles = {
-  chat: 'The conversation',
-  people: 'Your people',
+  chat: 'Chat',
+  people: 'People',
   notes: 'Shared notes',
-  polls: 'A show of hands',
-  board: 'Room to think',
-  timer: 'A little focus',
-  review: 'Build something better',
+  polls: 'Polls',
+  board: 'Whiteboard',
+  timer: 'Focus timer',
+  review: 'Product review',
 };
 export function SidePanel({
   panel,

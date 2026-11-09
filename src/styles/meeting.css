@@ -12,7 +12,7 @@
   font-size: 9px;
 }
 .prejoin-heading h1 {
-  font-size: 43px;
+  font-size: 34px;
   margin: 12px 0;
   line-height: 1.2;
   overflow-wrap: anywhere;
@@ -32,7 +32,7 @@
   aspect-ratio: 4/3;
   overflow: hidden;
   border-radius: 16px;
-  background: radial-gradient(ellipse at 30% 20%, #2a5550, #0b262a 80%);
+  background: #1d302e;
   border: 1px solid #ffffff20;
   color: #f8f4e9;
 }
@@ -49,8 +49,6 @@
   align-items: center;
   justify-content: center;
   padding-bottom: 35px;
-  background-image: radial-gradient(#ffffff18 0.6px, transparent 0.6px);
-  background-size: 20px 20px;
 }
 .preview-orbit {
   width: 92px;
@@ -60,8 +58,6 @@
   display: grid;
   place-items: center;
   margin-bottom: 20px;
-  outline: 1px dashed #ffffff10;
-  outline-offset: 15px;
 }
 .preview-placeholder h3 {
   font-size: 20px;
@@ -110,7 +106,6 @@
 }
 .control:hover {
   background: #ffffff25;
-  transform: translateY(-2px);
 }
 .control.off {
   background: #fbf7eb;
@@ -305,7 +300,7 @@
   position: relative;
   border-radius: 14px;
   overflow: hidden;
-  background: linear-gradient(145deg, #1c4143, #142f32);
+  background: #20312f;
   border: 1px solid #ffffff14;
   min-height: 160px;
 }
@@ -333,8 +328,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: radial-gradient(#ffffff10 0.6px, transparent 0.6px);
-  background-size: 22px 22px;
 }
 .tile-avatar > span {
   display: grid;
@@ -342,12 +335,10 @@
   width: 88px;
   height: 88px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #b6d7c4, #719a89);
+  background: #b6d7c4;
   color: #123b3f;
   font-size: 28px;
   font-weight: 600;
-  border: 5px solid #ffffff10;
-  box-shadow: 0 0 0 18px #ffffff03;
 }
 .tile-label {
   position: absolute;
@@ -436,7 +427,7 @@
   position: relative;
 }
 .toolbar-tool > span {
-  font-size: 8px;
+  font-size: 10px;
   color: #9db5af;
 }
 .toolbar-tool.active .control {
@@ -470,6 +461,25 @@
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--line);
+}
+.meeting-tools {
+  display: grid;
+  gap: 8px;
+}
+.meeting-tools button {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 14px;
+}
+.meeting-tools button:hover {
+  background: var(--paper-2);
 }
 .panel-heading h2 {
   font-size: 21px;
@@ -851,9 +861,6 @@
   .room-toolbar {
     padding: 12px;
   }
-  .toolbar-tool > span {
-    display: none;
-  }
   .control {
     width: 42px;
     height: 42px;
@@ -973,7 +980,7 @@
     gap: 6px;
   }
   .toolbar-divider {
-    margin: 0 1px;
+    display: none;
   }
   .control {
     width: 44px;
@@ -989,7 +996,7 @@
     justify-content: center;
   }
   .reactions-menu {
-    bottom: 124px;
+    bottom: 152px;
   }
   .recap {
     margin-top: 35px;

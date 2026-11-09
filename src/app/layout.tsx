@@ -2,13 +2,13 @@ import type { Metadata, Viewport } from 'next';
 import { Providers } from '@/components/providers';
 import './globals.css';
 export const metadata: Metadata = {
-  title: { default: 'Playground Meet — Room for possibility', template: '%s · Playground Meet' },
+  title: { default: 'Playground Meet', template: '%s · Playground Meet' },
   description:
-    'A beautiful space to meet, test products, and build together. HD video, shared whiteboards, polls and feedback.',
+    'Video meetings for your team, with chat, shared notes, whiteboards, polls and product feedback.',
   icons: { icon: '/brand/icon.png' },
   metadataBase: new URL(process.env.APP_URL || 'https://meet.tryplayground.net'),
 };
-export const viewport: Viewport = { width: 'device-width', initialScale: 1, themeColor: '#FBF7EB' };
+export const viewport: Viewport = { width: 'device-width', initialScale: 1, themeColor: '#F8F9F7' };
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>

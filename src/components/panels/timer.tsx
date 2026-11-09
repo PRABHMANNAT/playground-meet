@@ -20,9 +20,9 @@ export function TimerPanel({ data, send, host }: PanelProps) {
         <p>
           {t.endsAt
             ? remaining > 0
-              ? 'A little focus goes a long way.'
-              : 'Time’s up. Take a breath.'
-            : 'Make room for focused thinking.'}
+              ? 'Focus timer is running.'
+              : 'Timer finished.'
+            : 'Choose a duration to start.'}
         </p>
       </div>
       {host ? (

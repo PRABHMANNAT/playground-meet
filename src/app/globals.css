@@ -8,23 +8,23 @@
   font-display: swap;
 }
 :root {
-  --paper: #fbf7eb;
-  --paper-2: #f1eee3;
-  --surface: #fffdf7;
+  --paper: #f8f9f7;
+  --paper-2: #f0f2ef;
+  --surface: #ffffff;
   --ink: #123b3f;
   --muted: #657775;
   --line: #123b3f22;
   --coral: #ff7548;
   --mint: #d7e7d4;
   --blue: #0864b6;
-  --shadow: 0 20px 70px #123b3f0c;
-  --dark: #0d282c;
+  --shadow: 0 2px 8px #123b3f08;
+  --dark: #101918;
   color-scheme: light;
 }
 :root[data-theme='dark'] {
-  --paper: #0c2023;
-  --paper-2: #102b2e;
-  --surface: #143337;
+  --paper: #111918;
+  --paper-2: #1e2926;
+  --surface: #17221f;
   --ink: #f5f1e4;
   --muted: #a1b5b1;
   --line: #beded324;
@@ -181,14 +181,14 @@ svg {
     background 0.2s;
 }
 .button:hover {
-  transform: translateY(-2px);
+  transform: none;
 }
 .primary {
   background: var(--ink);
   color: var(--paper);
 }
 .primary:hover {
-  box-shadow: 0 5px 0 var(--coral);
+  filter: brightness(1.15);
 }
 .secondary {
   background: transparent;

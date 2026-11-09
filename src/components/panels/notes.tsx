@@ -33,12 +33,12 @@ export function NotesPanel({ data, send }: PanelProps) {
   return (
     <div className="stack">
       <p className="panel-helper">
-        A shared place for decisions, takeaways, and the next big idea. Save to share your changes.
+        Notes are shared with everyone in the meeting. Save your changes when ready.
       </p>
       <textarea
         className="notes-editor"
         aria-label="Shared meeting notes"
-        placeholder="What are we figuring out today?"
+        placeholder="Add meeting notes…"
         value={text}
         maxLength={20000}
         onChange={(e) => {

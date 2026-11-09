@@ -15,7 +15,8 @@ export function ChatPanel({ data, send }: PanelProps) {
       <div className="chat-messages" ref={ref} role="log" aria-label="Meeting chat">
         {!messages.length && (
           <div className="empty-state">
-            <MessageSquare size={28} />A hello is a pretty good place to start.
+            <MessageSquare size={28} />
+            No messages yet.
           </div>
         )}
         {messages.map((e) => (
@@ -44,7 +45,7 @@ export function ChatPanel({ data, send }: PanelProps) {
           aria-label="Message everyone"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Say something…"
+          placeholder="Message everyone"
           maxLength={2000}
           required
         />

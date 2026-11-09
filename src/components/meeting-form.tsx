@@ -19,12 +19,12 @@ export function MeetingForm({
     toast = useToast();
   return (
     <section className="launch-card" id="start">
-      <div className="launch-tabs" role="tablist" aria-label="Meeting action">
-        <button role="tab" aria-selected={mode === 'start'} onClick={() => setMode('start')}>
+      <div className="launch-tabs" role="group" aria-label="Meeting action">
+        <button type="button" aria-pressed={mode === 'start'} onClick={() => setMode('start')}>
           <Plus size={16} /> New meeting
         </button>
-        <button role="tab" aria-selected={mode === 'join'} onClick={() => setMode('join')}>
-          <LinkIcon size={16} /> Join a meeting
+        <button type="button" aria-pressed={mode === 'join'} onClick={() => setMode('join')}>
+          <LinkIcon size={16} /> Join with link
         </button>
       </div>
       <form
@@ -61,7 +61,7 @@ export function MeetingForm({
           Your name
           <input
             name="name"
-            placeholder="What should we call you?"
+            placeholder="Enter your name"
             defaultValue={person?.name}
             key={person?.id}
             required
@@ -74,8 +74,8 @@ export function MeetingForm({
             Meeting name
             <input
               name="title"
-              placeholder="A space for your next big idea"
-              defaultValue="Let's build something"
+              placeholder="e.g. Design review"
+              defaultValue="Team meeting"
               required
               maxLength={100}
             />
@@ -87,19 +87,15 @@ export function MeetingForm({
           </label>
         )}
         <button className="button primary full" disabled={busy}>
-          {busy
-            ? 'Getting your space ready…'
-            : mode === 'start'
-              ? 'Start a conversation'
-              : 'Join the conversation'}
+          {busy ? 'Please wait…' : mode === 'start' ? 'Start meeting' : 'Join meeting'}
           <ArrowRight size={18} />
         </button>
         <div className="form-footnote">
           <ShieldCheck size={14} />
           <span>
             {mode === 'start'
-              ? 'Your room. Your guest list. Waiting room on.'
-              : 'You’ll preview your camera before joining.'}
+              ? 'Waiting room is on by default.'
+              : 'Check your camera on the next screen.'}
           </span>
         </div>
       </form>

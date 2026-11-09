@@ -32,6 +32,7 @@ import {
   Download,
   LoaderCircle,
   Settings2,
+  LayoutGrid,
 } from 'lucide-react';
 import { request, downloadSummary } from '@/lib/client';
 import { duration } from '@/lib/format';
@@ -82,7 +83,7 @@ export default function Meeting({
   if (error)
     return (
       <div className="room-connect">
-        <h1>Let’s get you connected.</h1>
+        <h1>Unable to connect</h1>
         <p role="alert">{error}</p>
         <button className="button" onClick={retry}>
           Try again
@@ -96,7 +97,7 @@ export default function Meeting({
     return (
       <div className="room-connect">
         <LoaderCircle className="spin" />
-        <h2>Making room for you…</h2>
+        <h2>Connecting…</h2>
         <p>Connecting securely to your meeting.</p>
         <button className="text-button" onClick={onBack}>
           Back to preview
@@ -146,6 +147,7 @@ function MeetingInterior({ id }: { id: string }) {
     [shortcuts, setShortcuts] = useState(false),
     [leaving, setLeaving] = useState(false),
     [settings, setSettings] = useState(false),
+    [toolsOpen, setToolsOpen] = useState(false),
     [now, setNow] = useState(Date.now());
   const local = useLocalParticipant(),
     connection = useConnectionState();
@@ -219,18 +221,18 @@ function MeetingInterior({ id }: { id: string }) {
   const controls = [
     { icon: MessageSquare, p: 'chat', label: 'Chat' },
     { icon: Users, p: 'people', label: 'People' },
-    { icon: PenTool, p: 'board', label: 'Board' },
-    { icon: StickyNote, p: 'notes', label: 'Notes' },
+    { icon: PenTool, p: 'board', label: 'Whiteboard' },
+    { icon: StickyNote, p: 'notes', label: 'Shared notes' },
     { icon: BarChart3, p: 'polls', label: 'Polls' },
-    { icon: Timer, p: 'timer', label: 'Focus' },
-    { icon: Layers, p: 'review', label: 'Review' },
+    { icon: Timer, p: 'timer', label: 'Focus timer' },
+    { icon: Layers, p: 'review', label: 'Product review' },
   ] as const;
   return (
     <main className="meeting-shell" id="main">
       <header className="room-header">
         <Brand />
         <div className="room-title">
-          <h1>{data?.meeting.title || 'Your conversation'}</h1>
+          <h1>{data?.meeting.title || 'Meeting'}</h1>
           <span>
             <i className="pulse-dot" />
             {connection} · {duration((now - (data?.meeting.created || now)) / 1000)}
@@ -356,7 +358,7 @@ function MeetingInterior({ id }: { id: string }) {
             >
               <ScreenShare />
             </button>
-            <span>Present</span>
+            <span>Share screen</span>
           </div>
           <div className={'toolbar-tool ' + (raised ? 'active' : '')}>
             <button
@@ -391,7 +393,7 @@ function MeetingInterior({ id }: { id: string }) {
         </div>
         <span className="toolbar-divider" />
         <div className="toolbar-group">
-          {controls.map(({ icon: Icon, p, label }) => (
+          {controls.slice(0, 2).map(({ icon: Icon, p, label }) => (
             <div className={'toolbar-tool ' + (panel === p ? 'active' : '')} key={p}>
               <button className="control" aria-label={`Open ${label}`} onClick={() => toggle(p)}>
                 <Icon />
@@ -400,10 +402,41 @@ function MeetingInterior({ id }: { id: string }) {
               {p === 'people' && host && waiting > 0 && <b className="toolbar-count">{waiting}</b>}
             </div>
           ))}
+          <div
+            className={
+              'toolbar-tool ' + (panel && !['chat', 'people'].includes(panel) ? 'active' : '')
+            }
+          >
+            <button
+              className="control"
+              aria-label="Open meeting tools"
+              aria-haspopup="dialog"
+              onClick={() => setToolsOpen(true)}
+            >
+              <LayoutGrid />
+            </button>
+            <span>Tools</span>
+          </div>
         </div>
       </footer>
       <Shortcuts open={shortcuts} onClose={() => setShortcuts(false)} />
-      <Dialog open={settings} onClose={() => setSettings(false)} title="Find your best setup">
+      <Dialog open={toolsOpen} onClose={() => setToolsOpen(false)} title="Meeting tools">
+        <div className="meeting-tools">
+          {controls.slice(2).map(({ icon: Icon, p, label }) => (
+            <button
+              key={p}
+              onClick={() => {
+                setPanel(p);
+                setToolsOpen(false);
+              }}
+            >
+              <Icon size={20} />
+              <span>{label}</span>
+            </button>
+          ))}
+        </div>
+      </Dialog>
+      <Dialog open={settings} onClose={() => setSettings(false)} title="Device settings">
         <label>
           Microphone
           <MediaDeviceSelect kind="audioinput" />
@@ -416,7 +449,7 @@ function MeetingInterior({ id }: { id: string }) {
           Headphones help prevent echo. Your browser controls permission to access these devices.
         </p>
       </Dialog>
-      <Dialog open={leaving} onClose={() => setLeaving(false)} title="Good things to take away.">
+      <Dialog open={leaving} onClose={() => setLeaving(false)} title="Leave meeting?">
         <p className="muted">Your notes and feedback will be waiting in the meeting recap.</p>
         <button
           className="button primary"

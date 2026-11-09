@@ -22,8 +22,8 @@ export function Recap({ id }: { id: string }) {
       <Header />
       <main className="recap" id="main">
         <div className="recap-hero">
-          <span className="eyebrow">THAT WAS TIME WELL SPENT.</span>
-          <h1>Keep the good stuff.</h1>
+          <span className="eyebrow">MEETING ENDED</span>
+          <h1>Meeting recap</h1>
           <p>{data?.meeting.title || 'Your meeting recap'}</p>
         </div>
         {error ? (
@@ -31,7 +31,7 @@ export function Recap({ id }: { id: string }) {
             {error}
           </p>
         ) : !data ? (
-          <p className="empty-state">Gathering your meeting notes…</p>
+          <p className="empty-state">Loading meeting notes…</p>
         ) : (
           <>
             <div className="field-row">
@@ -42,11 +42,11 @@ export function Recap({ id }: { id: string }) {
                 <Download size={16} /> Download summary
               </button>
               <a className="button secondary" href="/">
-                Back to your space <ArrowRight size={16} />
+                Back to meetings <ArrowRight size={16} />
               </a>
             </div>
             <section className="recap-card">
-              <h2>How did that feel?</h2>
+              <h2>Rate this meeting</h2>
               <form
                 className="stack"
                 onSubmit={async (e) => {
@@ -104,13 +104,13 @@ export function Recap({ id }: { id: string }) {
               </form>
             </section>
             <section className="recap-card">
-              <h2>Notes worth keeping.</h2>
+              <h2>Shared notes</h2>
               <p className="recap-notes">
-                {data.meeting.state.notes || 'No shared notes were saved during this conversation.'}
+                {data.meeting.state.notes || 'No notes were saved in this meeting.'}
               </p>
             </section>
             <section className="recap-card">
-              <h2>The moments that mattered.</h2>
+              <h2>Feedback markers</h2>
               {data.events
                 .filter((e) => e.kind === 'marker')
                 .map((e) => (
