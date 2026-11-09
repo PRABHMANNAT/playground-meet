@@ -1,7 +1,46 @@
 {
-  "name": "playground-meet", "version": "1.0.0", "private": true,
-  "scripts": {"dev":"next dev --hostname 127.0.0.1", "build":"next build", "start":"next start", "typecheck":"tsc --noEmit", "test":"vitest run", "test:integration":"tsx tests/integration.ts", "test:media":"tsx tests/media.ts", "db:cleanup":"tsx scripts/cleanup.ts"},
-  "dependencies": {"next":"16.4.5","react":"^19.2.0","react-dom":"^19.2.0","motion":"^12.0.0","lucide-react":"^0.577.0","livekit-client":"2.23.0","livekit-server-sdk":"^2.15.0","@livekit/components-react":"2.9.25","@livekit/components-styles":"^1.2.0","@electric-sql/pglite":"^0.3.14","pg":"^8.16.3","zod":"^4.1.0","jose":"^6.1.0","server-only":"^0.0.1"},
-  "devDependencies": {"typescript":"^5.9.0","@types/node":"^24.0.0","@types/react":"^19.2.0","@types/react-dom":"^19.2.0","@types/pg":"^8.15.0","tailwindcss":"^4.1.0","@tailwindcss/postcss":"^4.1.0","vitest":"^4.0.0","tsx":"^4.20.0"},
-  "engines":{"node":">=22.0.0"}
+  "name": "playground-meet",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --hostname 127.0.0.1",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:integration": "tsx tests/integration.ts",
+    "test:media": "tsx tests/media.ts",
+    "db:cleanup": "tsx scripts/cleanup.ts"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.3.14",
+    "@livekit/components-react": "2.9.25",
+    "@livekit/components-styles": "^1.2.0",
+    "jose": "^6.1.0",
+    "livekit-client": "2.23.0",
+    "livekit-server-sdk": "^2.15.0",
+    "lucide-react": "^0.577.0",
+    "motion": "^12.0.0",
+    "next": "16.4.5",
+    "pg": "^8.16.3",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "server-only": "^0.0.1",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@livekit/rtc-node": "^1.2.1",
+    "@tailwindcss/postcss": "^4.1.0",
+    "@types/node": "^24.0.0",
+    "@types/pg": "^8.15.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "tailwindcss": "^4.1.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0",
+    "vitest": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
 }
