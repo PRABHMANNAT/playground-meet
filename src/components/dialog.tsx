@@ -1,3 +1,41 @@
 'use client';
-import {useEffect,useRef} from 'react';import {X} from 'lucide-react';
-export function Dialog({open,onClose,title,children}:{open:boolean;onClose:()=>void;title:string;children:React.ReactNode}){const ref=useRef<HTMLDialogElement>(null);useEffect(()=>{if(open)ref.current?.showModal();else ref.current?.close();},[open]);return <dialog ref={ref} className="dialog" onCancel={onClose} onClick={e=>{if(e.target===ref.current)onClose();}} aria-label={title}><div className="dialog-card"><div className="section-heading"><h2>{title}</h2><button className="icon-button" onClick={onClose} aria-label="Close dialog"><X size={20}/></button></div>{children}</div></dialog>;}
+import { useEffect, useRef } from 'react';
+import { X } from 'lucide-react';
+export function Dialog({
+  open,
+  onClose,
+  title,
+  children,
+}: {
+  open: boolean;
+  onClose: () => void;
+  title: string;
+  children: React.ReactNode;
+}) {
+  const ref = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    if (open) ref.current?.showModal();
+    else ref.current?.close();
+  }, [open]);
+  return (
+    <dialog
+      ref={ref}
+      className="dialog"
+      onCancel={onClose}
+      onClick={(e) => {
+        if (e.target === ref.current) onClose();
+      }}
+      aria-label={title}
+    >
+      <div className="dialog-card">
+        <div className="section-heading">
+          <h2>{title}</h2>
+          <button className="icon-button" onClick={onClose} aria-label="Close dialog">
+            <X size={20} />
+          </button>
+        </div>
+        {children}
+      </div>
+    </dialog>
+  );
+}

@@ -1,10 +1,30 @@
-import {api,body,sameOrigin} from '@/lib/http';
-import {currentPerson,createSession,revokeSession} from '@/lib/session';
-import {displayName} from '@/lib/schemas';
-import {opaqueId} from '@/lib/ids';
-import {query} from '@/lib/db';
-import {limit} from '@/lib/rate-limit';
-export const runtime='nodejs';
-export const GET=()=>api(async()=>({person:await currentPerson()}));
-export const POST=(req:Request)=>api(async()=>{sameOrigin(req);await limit('guest-global',1000);const name=displayName.parse((await body(req)).name);let person=await currentPerson();if(person){await query('UPDATE people SET name=$1 WHERE id=$2',[name,person.id]);person={...person,name};}else{person={id:opaqueId(),name,account:false};await query('INSERT INTO people(id,name) VALUES($1,$2)',[person.id,name]);await createSession(person.id);}return {person};});
-export const DELETE=(req:Request)=>api(async()=>{sameOrigin(req);await revokeSession();return {ok:true};});
+import { api, body, sameOrigin } from '@/lib/http';
+import { currentPerson, createSession, revokeSession } from '@/lib/session';
+import { displayName } from '@/lib/schemas';
+import { opaqueId } from '@/lib/ids';
+import { query } from '@/lib/db';
+import { limit } from '@/lib/rate-limit';
+export const runtime = 'nodejs';
+export const GET = () => api(async () => ({ person: await currentPerson() }));
+export const POST = (req: Request) =>
+  api(async () => {
+    sameOrigin(req);
+    await limit('guest-global', 1000);
+    const name = displayName.parse((await body(req)).name);
+    let person = await currentPerson();
+    if (person) {
+      await query('UPDATE people SET name=$1 WHERE id=$2', [name, person.id]);
+      person = { ...person, name };
+    } else {
+      person = { id: opaqueId(), name, account: false };
+      await query('INSERT INTO people(id,name) VALUES($1,$2)', [person.id, name]);
+      await createSession(person.id);
+    }
+    return { person };
+  });
+export const DELETE = (req: Request) =>
+  api(async () => {
+    sameOrigin(req);
+    await revokeSession();
+    return { ok: true };
+  });

@@ -7,7 +7,15 @@ The existing Playground application is not in this repository, so its sign-in sy
 Configure the same random (at least 32-character) PLAYGROUND_SSO_SECRET on the trusted Playground server and Meet server. Never put it in frontend code. Playground authenticates its own user, then signs an HS256 JWT with:
 
 ```json
-{"iss":"https://tryplayground.net","aud":"playground-meet","sub":"stable-user-id","name":"Display name","jti":"new-random-UUID","iat":1700000000,"exp":1700000060}
+{
+  "iss": "https://tryplayground.net",
+  "aud": "playground-meet",
+  "sub": "stable-user-id",
+  "name": "Display name",
+  "jti": "new-random-UUID",
+  "iat": 1700000000,
+  "exp": 1700000060
+}
 ```
 
 Use current timestamps, a lifetime of at most 60 seconds and a fresh jti for each assertion. Redirect to `https://meet.tryplayground.net/auth/playground#token=JWT`. The fragment is removed immediately and exchanged through a same-origin POST. Fragment tokens are not sent in HTTP referrer/request URL logs. Do not put the token in a query parameter.

@@ -1,3 +1,14 @@
-import {test,expect} from 'vitest';import {duration,initials,parseMeetingLink} from '../../src/lib/format';
-test('invitation parsing accepts clean codes and shared URLs with query parameters',()=>{expect(parseMeetingLink('https://meet.tryplayground.net/room/abcdef-abcdef-abcdef?from=invite')).toBe('abcdef-abcdef-abcdef');expect(parseMeetingLink(' abcdef-abcdef-abcdef ')).toBe('abcdef-abcdef-abcdef');});
-test('timer and avatar rendering handle boundary values',()=>{expect(duration(-5)).toBe('00:00');expect(duration(3601)).toBe('60:01');expect(initials('  ')).toBe('?');expect(initials('Ada Lovelace')).toBe('AL');});
+import { test, expect } from 'vitest';
+import { duration, initials, parseMeetingLink } from '../../src/lib/format';
+test('invitation parsing accepts clean codes and shared URLs with query parameters', () => {
+  expect(
+    parseMeetingLink('https://meet.tryplayground.net/room/abcdef-abcdef-abcdef?from=invite'),
+  ).toBe('abcdef-abcdef-abcdef');
+  expect(parseMeetingLink(' abcdef-abcdef-abcdef ')).toBe('abcdef-abcdef-abcdef');
+});
+test('timer and avatar rendering handle boundary values', () => {
+  expect(duration(-5)).toBe('00:00');
+  expect(duration(3601)).toBe('60:01');
+  expect(initials('  ')).toBe('?');
+  expect(initials('Ada Lovelace')).toBe('AL');
+});

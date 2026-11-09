@@ -1,3 +1,20 @@
-import {test,expect} from 'vitest';import {jwtVerify} from 'jose';import {mediaToken,mediaConfig} from '../../src/lib/livekit';
-test('media tokens cannot administer rooms or impersonate other members',async()=>{process.env.LIVEKIT_URL='ws://localhost:7880';process.env.LIVEKIT_API_KEY='testkey';process.env.LIVEKIT_API_SECRET='testsecret';const {token}=await mediaToken('room-one','guest-one','Guest');const {payload}=await jwtVerify(token,new TextEncoder().encode('testsecret'));expect(payload.sub).toBe('guest-one');const grant=payload.video as Record<string,unknown>;expect(grant.room).toBe('room-one');expect(grant.roomAdmin).not.toBe(true);expect(grant.canPublishData).toBe(false);expect(Number(payload.exp)-Number(payload.nbf)).toBeLessThanOrEqual(121);});
-test('calling fails clearly when configuration is missing',()=>{delete process.env.LIVEKIT_URL;expect(()=>mediaConfig()).toThrow('not configured');});
+import { test, expect } from 'vitest';
+import { jwtVerify } from 'jose';
+import { mediaToken, mediaConfig } from '../../src/lib/livekit';
+test('media tokens cannot administer rooms or impersonate other members', async () => {
+  process.env.LIVEKIT_URL = 'ws://localhost:7880';
+  process.env.LIVEKIT_API_KEY = 'testkey';
+  process.env.LIVEKIT_API_SECRET = 'testsecret';
+  const { token } = await mediaToken('room-one', 'guest-one', 'Guest');
+  const { payload } = await jwtVerify(token, new TextEncoder().encode('testsecret'));
+  expect(payload.sub).toBe('guest-one');
+  const grant = payload.video as Record<string, unknown>;
+  expect(grant.room).toBe('room-one');
+  expect(grant.roomAdmin).not.toBe(true);
+  expect(grant.canPublishData).toBe(false);
+  expect(Number(payload.exp) - Number(payload.nbf)).toBeLessThanOrEqual(121);
+});
+test('calling fails clearly when configuration is missing', () => {
+  delete process.env.LIVEKIT_URL;
+  expect(() => mediaConfig()).toThrow('not configured');
+});

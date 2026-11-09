@@ -4,7 +4,7 @@ services:
     restart: unless-stopped
     init: true
     env_file: .env.production
-    ports: ["127.0.0.1:3000:3000"]
+    ports: ['127.0.0.1:3000:3000']
     depends_on:
       db:
         condition: service_healthy
@@ -15,20 +15,20 @@ services:
       POSTGRES_USER: meet
       POSTGRES_DB: meet
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run node scripts/setup-production.mjs}
-    volumes: ["postgres:/var/lib/postgresql/data"]
+    volumes: ['postgres:/var/lib/postgresql/data']
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U meet"]
+      test: ['CMD-SHELL', 'pg_isready -U meet']
       interval: 5s
       timeout: 3s
       retries: 15
   livekit:
     image: livekit/livekit-server:v1.13.11
-    command: ["--config", "/etc/livekit.yaml"]
+    command: ['--config', '/etc/livekit.yaml']
     restart: unless-stopped
     network_mode: host
     environment:
-      LIVEKIT_KEYS: "${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}"
-    volumes: ["./deploy/livekit.generated.yaml:/etc/livekit.yaml:ro"]
+      LIVEKIT_KEYS: '${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}'
+    volumes: ['./deploy/livekit.generated.yaml:/etc/livekit.yaml:ro']
   caddy:
     image: caddy:2-alpine
     restart: unless-stopped

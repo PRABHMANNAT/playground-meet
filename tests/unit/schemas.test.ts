@@ -1,4 +1,23 @@
-import {test,expect} from 'vitest';import {actionInput,credentials,roomInput,safeUrl} from '../../src/lib/schemas';
-test('invalid review protocols never become clickable product links',()=>{for(const url of ['javascript:alert(1)','data:text/html,evil','http://example.com'])expect(safeUrl.safeParse(url).success).toBe(false);expect(safeUrl.safeParse('https://example.com').success).toBe(true);});
-test('unbounded or unknown commands cannot enter room state',()=>{for(const command of [{type:'admin'},{type:'chat',text:'x'.repeat(2001)},{type:'reaction',emoji:'💣'},{type:'rating',rating:6,text:''},{type:'timer',seconds:-1},{type:'timer',seconds:3601}])expect(actionInput.safeParse(command).success).toBe(false);});
-test('account and room creation enforce usable limits',()=>{expect(credentials.safeParse({email:'bad',password:'short'}).success).toBe(false);expect(roomInput.safeParse({title:'   '}).success).toBe(false);expect(roomInput.parse({title:'  Test  '}).title).toBe('Test');});
+import { test, expect } from 'vitest';
+import { actionInput, credentials, roomInput, safeUrl } from '../../src/lib/schemas';
+test('invalid review protocols never become clickable product links', () => {
+  for (const url of ['javascript:alert(1)', 'data:text/html,evil', 'http://example.com'])
+    expect(safeUrl.safeParse(url).success).toBe(false);
+  expect(safeUrl.safeParse('https://example.com').success).toBe(true);
+});
+test('unbounded or unknown commands cannot enter room state', () => {
+  for (const command of [
+    { type: 'admin' },
+    { type: 'chat', text: 'x'.repeat(2001) },
+    { type: 'reaction', emoji: '💣' },
+    { type: 'rating', rating: 6, text: '' },
+    { type: 'timer', seconds: -1 },
+    { type: 'timer', seconds: 3601 },
+  ])
+    expect(actionInput.safeParse(command).success).toBe(false);
+});
+test('account and room creation enforce usable limits', () => {
+  expect(credentials.safeParse({ email: 'bad', password: 'short' }).success).toBe(false);
+  expect(roomInput.safeParse({ title: '   ' }).success).toBe(false);
+  expect(roomInput.parse({ title: '  Test  ' }).title).toBe('Test');
+});

@@ -1,3 +1,125 @@
 'use client';
-import {useState} from 'react';import {ExternalLink,Bug,Lightbulb,Bookmark} from 'lucide-react';import type {PanelProps} from './types';import {duration} from '@/lib/format';
-export function ReviewPanel({data,send,host}:PanelProps){const [kind,setKind]=useState<'bug'|'idea'|'moment'>('bug'),[text,setText]=useState(''),[busy,setBusy]=useState(false);const review=data.meeting.state.review;return <div className="stack">{host?<form className="stack" onSubmit={async e=>{e.preventDefault();const f=new FormData(e.currentTarget);await send({type:'review',url:String(f.get('url')),task:String(f.get('task'))});}}><label>Product URL<input name="url" type="url" placeholder="https://your-next-big-thing.com" defaultValue={review.url} maxLength={2000}/></label><label>What are we testing?<textarea name="task" rows={3} defaultValue={review.task} placeholder="Try signing up and creating your first project." maxLength={2000}/></label><button className="button secondary">Share review brief</button></form>:<><h3>Today’s product review</h3><p className="panel-helper">{review.task||'The host hasn’t shared a review brief yet.'}</p></>}{review.url&&<a className="button primary" href={review.url} target="_blank" rel="noopener noreferrer">Open product <ExternalLink size={15}/></a>}<hr style={{border:0,borderTop:'1px solid var(--line)'}}/><h3>Catch the moment.</h3><div className="field-row">{[{id:'bug',icon:Bug,label:'Bug'},{id:'idea',icon:Lightbulb,label:'Idea'},{id:'moment',icon:Bookmark,label:'Moment'}].map(({id,icon:Icon,label})=><button className={'button small '+(kind===id?'primary':'secondary')} key={id} onClick={()=>setKind(id as typeof kind)}><Icon size={14}/>{label}</button>)}</div><form className="stack" onSubmit={async e=>{e.preventDefault();setBusy(true);if(await send({type:'marker',kind,text}))setText('');setBusy(false);}}><textarea aria-label="Feedback details" value={text} onChange={e=>setText(e.target.value)} maxLength={2000} required rows={3} placeholder={kind==='bug'?'What happened? What did you expect?':kind==='idea'?'What if we tried…':'What should we remember?'}/><button className="button primary" disabled={busy}>Save {kind} with timestamp</button></form><p className="panel-helper">Saved to this meeting and its downloadable summary. No external tracker or AI processing.</p><div>{data.events.filter(e=>e.kind==='marker').slice().reverse().map(e=><article className="marker" key={e.id}><header><span>{String(e.payload.kind).toUpperCase()} · {e.name}</span><time>{duration((e.created-data.meeting.created)/1000)}</time></header><p>{String(e.payload.text)}</p></article>)}</div></div>;}
+import { useState } from 'react';
+import { ExternalLink, Bug, Lightbulb, Bookmark } from 'lucide-react';
+import type { PanelProps } from './types';
+import { duration } from '@/lib/format';
+export function ReviewPanel({ data, send, host }: PanelProps) {
+  const [kind, setKind] = useState<'bug' | 'idea' | 'moment'>('bug'),
+    [text, setText] = useState(''),
+    [busy, setBusy] = useState(false);
+  const review = data.meeting.state.review;
+  return (
+    <div className="stack">
+      {host ? (
+        <form
+          className="stack"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            const f = new FormData(e.currentTarget);
+            await send({ type: 'review', url: String(f.get('url')), task: String(f.get('task')) });
+          }}
+        >
+          <label>
+            Product URL
+            <input
+              name="url"
+              type="url"
+              placeholder="https://your-next-big-thing.com"
+              defaultValue={review.url}
+              maxLength={2000}
+            />
+          </label>
+          <label>
+            What are we testing?
+            <textarea
+              name="task"
+              rows={3}
+              defaultValue={review.task}
+              placeholder="Try signing up and creating your first project."
+              maxLength={2000}
+            />
+          </label>
+          <button className="button secondary">Share review brief</button>
+        </form>
+      ) : (
+        <>
+          <h3>Today’s product review</h3>
+          <p className="panel-helper">
+            {review.task || 'The host hasn’t shared a review brief yet.'}
+          </p>
+        </>
+      )}
+      {review.url && (
+        <a className="button primary" href={review.url} target="_blank" rel="noopener noreferrer">
+          Open product <ExternalLink size={15} />
+        </a>
+      )}
+      <hr style={{ border: 0, borderTop: '1px solid var(--line)' }} />
+      <h3>Catch the moment.</h3>
+      <div className="field-row">
+        {[
+          { id: 'bug', icon: Bug, label: 'Bug' },
+          { id: 'idea', icon: Lightbulb, label: 'Idea' },
+          { id: 'moment', icon: Bookmark, label: 'Moment' },
+        ].map(({ id, icon: Icon, label }) => (
+          <button
+            className={'button small ' + (kind === id ? 'primary' : 'secondary')}
+            key={id}
+            onClick={() => setKind(id as typeof kind)}
+          >
+            <Icon size={14} />
+            {label}
+          </button>
+        ))}
+      </div>
+      <form
+        className="stack"
+        onSubmit={async (e) => {
+          e.preventDefault();
+          setBusy(true);
+          if (await send({ type: 'marker', kind, text })) setText('');
+          setBusy(false);
+        }}
+      >
+        <textarea
+          aria-label="Feedback details"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          maxLength={2000}
+          required
+          rows={3}
+          placeholder={
+            kind === 'bug'
+              ? 'What happened? What did you expect?'
+              : kind === 'idea'
+                ? 'What if we tried…'
+                : 'What should we remember?'
+          }
+        />
+        <button className="button primary" disabled={busy}>
+          Save {kind} with timestamp
+        </button>
+      </form>
+      <p className="panel-helper">
+        Saved to this meeting and its downloadable summary. No external tracker or AI processing.
+      </p>
+      <div>
+        {data.events
+          .filter((e) => e.kind === 'marker')
+          .slice()
+          .reverse()
+          .map((e) => (
+            <article className="marker" key={e.id}>
+              <header>
+                <span>
+                  {String(e.payload.kind).toUpperCase()} · {e.name}
+                </span>
+                <time>{duration((e.created - data.meeting.created) / 1000)}</time>
+              </header>
+              <p>{String(e.payload.text)}</p>
+            </article>
+          ))}
+      </div>
+    </div>
+  );
+}

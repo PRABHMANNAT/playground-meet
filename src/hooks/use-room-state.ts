@@ -1,4 +1,57 @@
 'use client';
-import {useCallback,useEffect,useRef,useState} from 'react';
-import {request} from '@/lib/client';import type {Snapshot} from '@/lib/types';import type {Action} from '@/lib/schemas';
-export function useRoomState(id:string){const [data,setData]=useState<Snapshot|null>(null),[error,setError]=useState('');const alive=useRef(true),etag=useRef('');const refresh=useCallback(async()=>{try{const response=await fetch(`/api/meetings/${id}/state`,{headers:etag.current?{'If-None-Match':etag.current}:{},cache:'no-store'});if(response.status===304){if(alive.current)setError('');return;}const next=await response.json();if(!response.ok)throw new Error(next.error||'Connection unavailable');etag.current=response.headers.get('etag')||'';if(alive.current){setData({...next,clockOffset:next.serverTime-Date.now()});setError('');}}catch(e){if(alive.current)setError((e as Error).message);}},[id]);useEffect(()=>{alive.current=true;let timeout:ReturnType<typeof setTimeout>;const poll=async()=>{await refresh();if(alive.current)timeout=setTimeout(poll,document.hidden?5000:1200);};void poll();return()=>{alive.current=false;clearTimeout(timeout);};},[refresh]);const act=useCallback(async(action:Action)=>{const result=await request<{ok:boolean;warning?:string}>(`/api/meetings/${id}/actions`,action);await refresh();return result;},[id,refresh]);return {data,error,act,refresh};}
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { request } from '@/lib/client';
+import type { Snapshot } from '@/lib/types';
+import type { Action } from '@/lib/schemas';
+export function useRoomState(id: string) {
+  const [data, setData] = useState<Snapshot | null>(null),
+    [error, setError] = useState('');
+  const alive = useRef(true),
+    etag = useRef('');
+  const refresh = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/meetings/${id}/state`, {
+        headers: etag.current ? { 'If-None-Match': etag.current } : {},
+        cache: 'no-store',
+      });
+      if (response.status === 304) {
+        if (alive.current) setError('');
+        return;
+      }
+      const next = await response.json();
+      if (!response.ok) throw new Error(next.error || 'Connection unavailable');
+      etag.current = response.headers.get('etag') || '';
+      if (alive.current) {
+        setData({ ...next, clockOffset: next.serverTime - Date.now() });
+        setError('');
+      }
+    } catch (e) {
+      if (alive.current) setError((e as Error).message);
+    }
+  }, [id]);
+  useEffect(() => {
+    alive.current = true;
+    let timeout: ReturnType<typeof setTimeout>;
+    const poll = async () => {
+      await refresh();
+      if (alive.current) timeout = setTimeout(poll, document.hidden ? 5000 : 1200);
+    };
+    void poll();
+    return () => {
+      alive.current = false;
+      clearTimeout(timeout);
+    };
+  }, [refresh]);
+  const act = useCallback(
+    async (action: Action) => {
+      const result = await request<{ ok: boolean; warning?: string }>(
+        `/api/meetings/${id}/actions`,
+        action,
+      );
+      await refresh();
+      return result;
+    },
+    [id, refresh],
+  );
+  return { data, error, act, refresh };
+}

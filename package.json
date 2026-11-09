@@ -10,7 +10,10 @@
     "test": "vitest run",
     "test:integration": "tsx tests/integration.ts",
     "test:media": "tsx tests/media.ts",
-    "db:cleanup": "tsx scripts/cleanup.ts"
+    "db:cleanup": "tsx scripts/cleanup.ts",
+    "test:edges": "tsx tests/edge-cases.ts",
+    "format": "prettier --write src tests scripts docs README.md DESIGN.md *.json *.ts *.mjs *.yaml .github/workflows/*.yml",
+    "format:check": "prettier --check src tests scripts docs README.md DESIGN.md *.json *.ts *.mjs *.yaml .github/workflows/*.yml"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.3.14",
@@ -35,6 +38,7 @@
     "@types/pg": "^8.15.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "prettier": "3.9.10",
     "tailwindcss": "^4.1.0",
     "tsx": "^4.20.0",
     "typescript": "^5.9.0",

@@ -1,5 +1,48 @@
 'use client';
-import {X} from 'lucide-react';import {ChatPanel} from './chat';import {PeoplePanel} from './people';import {NotesPanel} from './notes';import {PollsPanel} from './polls';import {BoardPanel} from './board';import {TimerPanel} from './timer';import {ReviewPanel} from './review';import type {Panel,PanelProps} from './types';
-const panels={chat:ChatPanel,people:PeoplePanel,notes:NotesPanel,polls:PollsPanel,board:BoardPanel,timer:TimerPanel,review:ReviewPanel};
-const titles={chat:'The conversation',people:'Your people',notes:'Shared notes',polls:'A show of hands',board:'Room to think',timer:'A little focus',review:'Build something better'};
-export function SidePanel({panel,onClose,...props}:PanelProps&{panel:Panel;onClose:()=>void}){const Content=panels[panel];return <aside className="room-panel" aria-label={titles[panel]}><div className="panel-heading"><h2>{titles[panel]}</h2><button className="icon-button" onClick={onClose} aria-label="Close panel"><X size={18}/></button></div><div className="panel-content"><Content {...props}/></div></aside>;}
+import { X } from 'lucide-react';
+import { ChatPanel } from './chat';
+import { PeoplePanel } from './people';
+import { NotesPanel } from './notes';
+import { PollsPanel } from './polls';
+import { BoardPanel } from './board';
+import { TimerPanel } from './timer';
+import { ReviewPanel } from './review';
+import type { Panel, PanelProps } from './types';
+const panels = {
+  chat: ChatPanel,
+  people: PeoplePanel,
+  notes: NotesPanel,
+  polls: PollsPanel,
+  board: BoardPanel,
+  timer: TimerPanel,
+  review: ReviewPanel,
+};
+const titles = {
+  chat: 'The conversation',
+  people: 'Your people',
+  notes: 'Shared notes',
+  polls: 'A show of hands',
+  board: 'Room to think',
+  timer: 'A little focus',
+  review: 'Build something better',
+};
+export function SidePanel({
+  panel,
+  onClose,
+  ...props
+}: PanelProps & { panel: Panel; onClose: () => void }) {
+  const Content = panels[panel];
+  return (
+    <aside className="room-panel" aria-label={titles[panel]}>
+      <div className="panel-heading">
+        <h2>{titles[panel]}</h2>
+        <button className="icon-button" onClick={onClose} aria-label="Close panel">
+          <X size={18} />
+        </button>
+      </div>
+      <div className="panel-content">
+        <Content {...props} />
+      </div>
+    </aside>
+  );
+}

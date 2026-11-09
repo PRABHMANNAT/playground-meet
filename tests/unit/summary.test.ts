@@ -1,2 +1,28 @@
-import {test,expect} from 'vitest';import {summary} from '../../src/lib/summary';import {context} from './fixtures';
-test('summary preserves authored evidence without fabricating AI conclusions',()=>{const c=context();c.room.created=1000;c.room.state.notes='Decision: simplify onboarding';const output=summary({meeting:c.room,members:[],me:c.person,serverTime:10000,events:[{id:1,kind:'marker',actor:'guest',name:'Guest',payload:{kind:'bug',text:'Button did not respond'},created:62000}]});expect(output).toContain('Decision: simplify onboarding');expect(output).toContain('[01:01]');expect(output).toContain('Button did not respond');expect(output).toContain('No AI processing');});
+import { test, expect } from 'vitest';
+import { summary } from '../../src/lib/summary';
+import { context } from './fixtures';
+test('summary preserves authored evidence without fabricating AI conclusions', () => {
+  const c = context();
+  c.room.created = 1000;
+  c.room.state.notes = 'Decision: simplify onboarding';
+  const output = summary({
+    meeting: c.room,
+    members: [],
+    me: c.person,
+    serverTime: 10000,
+    events: [
+      {
+        id: 1,
+        kind: 'marker',
+        actor: 'guest',
+        name: 'Guest',
+        payload: { kind: 'bug', text: 'Button did not respond' },
+        created: 62000,
+      },
+    ],
+  });
+  expect(output).toContain('Decision: simplify onboarding');
+  expect(output).toContain('[01:01]');
+  expect(output).toContain('Button did not respond');
+  expect(output).toContain('No AI processing');
+});

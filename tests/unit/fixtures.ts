@@ -1,2 +1,19 @@
-import {vi} from 'vitest';import type {DB} from '../../src/lib/db';import {emptyState} from '../../src/lib/types';import type {Context} from '../../src/lib/actions/context';
-export const context=():Context=>({db:{query:vi.fn(async()=>({rows:[{person:'guest'}]})) as DB['query']},person:{id:'guest',name:'Guest',account:false},room:{id:'abcdef-abcdef-abcdef',title:'Test',host:'host',created:1,ended:false,locked:false,lobby:true,revision:0,state:emptyState()}});
+import { vi } from 'vitest';
+import type { DB } from '../../src/lib/db';
+import { emptyState } from '../../src/lib/types';
+import type { Context } from '../../src/lib/actions/context';
+export const context = (): Context => ({
+  db: { query: vi.fn(async () => ({ rows: [{ person: 'guest' }] })) as DB['query'] },
+  person: { id: 'guest', name: 'Guest', account: false },
+  room: {
+    id: 'abcdef-abcdef-abcdef',
+    title: 'Test',
+    host: 'host',
+    created: 1,
+    ended: false,
+    locked: false,
+    lobby: true,
+    revision: 0,
+    state: emptyState(),
+  },
+});
