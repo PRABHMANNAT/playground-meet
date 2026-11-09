@@ -1,4 +1,5 @@
 import {NextResponse} from 'next/server';
+import {readBody} from './read-body';
 import {ZodError} from 'zod';
 import {HttpError} from './errors';
 export function sameOrigin(req:Request){const expected=new URL(process.env.APP_URL||'http://localhost:3000').origin;const origin=req.headers.get('origin');if(origin!==expected)throw new HttpError(403,'Request origin is not allowed.');}
