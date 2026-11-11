@@ -10,8 +10,8 @@
   font-display: swap;
 }
 :root {
-  --paper: #f8f9f7;
-  --paper-2: #f0f2ef;
+  --paper: #ffffff;
+  --paper-2: #f5f7f6;
   --surface: #ffffff;
   --ink: #123b3f;
   --muted: #657775;

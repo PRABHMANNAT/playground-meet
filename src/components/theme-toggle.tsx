@@ -5,8 +5,7 @@ export function ThemeToggle() {
   const [dark, setDark] = useState(false);
   useEffect(() => {
     const saved = localStorage.getItem('meet-theme');
-    const enabled =
-      saved === 'dark' || (!saved && matchMedia('(prefers-color-scheme: dark)').matches);
+    const enabled = saved === 'dark';
     setDark(enabled);
     document.documentElement.dataset.theme = enabled ? 'dark' : 'light';
   }, []);

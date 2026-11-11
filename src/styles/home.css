@@ -49,57 +49,77 @@
   color: var(--ink);
 }
 .header-actions {
+  min-width: 0;
   margin-left: auto;
   display: flex;
   align-items: center;
   gap: 12px;
 }
 .header-actions .small {
+  display: block;
   min-height: 40px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.header-actions .icon-button {
+  flex-shrink: 0;
+}
+.home-page {
+  --home-gutter: 32px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+.home-page .site-header {
+  padding-inline: max(var(--home-gutter), calc((100% - 1120px) / 2));
+}
+.home-main,
+.home-page .footer {
+  width: min(1120px, calc(100% - 2 * var(--home-gutter)));
+  margin-inline: auto;
 }
 .home-main {
-  max-width: 1120px;
-  margin: auto;
-  padding: 58px 0 0;
-  min-height: calc(100dvh - 152px);
+  flex: 1;
+  padding-block: 48px;
 }
 .home-heading {
-  margin-bottom: 34px;
+  margin-bottom: 30px;
 }
 .home-heading h1 {
-  font-size: 36px;
-  font-weight: 650;
+  font-size: clamp(28px, 4vw, 38px);
+  font-weight: 700;
   letter-spacing: -1.25px;
   line-height: 1.2;
 }
 .home-heading p {
   color: var(--muted);
   font-size: 15px;
-  margin-top: 12px;
+  margin-top: 8px;
 }
 .meetings-workspace {
   display: grid;
   grid-template-columns: 390px minmax(0, 1fr);
-  gap: 56px;
+  gap: 24px;
   align-items: start;
 }
-.start-column {
+.launch-card,
+.history-section {
   min-width: 0;
-}
-.launch-card {
   border: 1px solid var(--line);
   border-radius: 12px;
   background: var(--surface);
   padding: 24px;
+  box-shadow: var(--shadow);
 }
 .launch-tabs {
   display: flex;
   background: var(--paper-2);
   border: 1px solid var(--line);
-  border-radius: 7px;
+  border-radius: 9px;
   padding: 4px;
   gap: 4px;
-  margin-bottom: 25px;
+  margin-bottom: 22px;
 }
 .launch-tabs button {
   display: flex;
@@ -107,14 +127,17 @@
   align-items: center;
   gap: 7px;
   flex: 1;
-  min-height: 40px;
+  min-height: 44px;
   border: 1px solid transparent;
-  border-radius: 4px;
+  border-radius: 6px;
   background: transparent;
   font-size: 12px;
   font-weight: 600;
   color: var(--muted);
   white-space: nowrap;
+}
+.launch-tabs button[aria-pressed='false']:hover {
+  color: var(--ink);
 }
 .launch-tabs button[aria-pressed='true'] {
   background: var(--surface);
@@ -150,31 +173,15 @@
   line-height: 1.6;
   font-weight: 400;
 }
-.start-hint {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 7px;
-  margin-top: 17px;
-  font-size: 11px;
-  color: var(--muted);
-}
 .history-section {
-  min-width: 0;
-  scroll-margin-top: 32px;
-}
-.history-section .section-heading {
-  min-height: 35px;
-  margin-bottom: 17px;
+  display: flex;
+  flex-direction: column;
 }
 .history-section h2 {
+  margin-bottom: 16px;
   font-size: 19px;
   letter-spacing: -0.45px;
   font-weight: 650;
-}
-.history-caption {
-  font-size: 11px;
-  color: var(--muted);
 }
 .history-list {
   border-top: 1px solid var(--line);
@@ -183,7 +190,7 @@
   display: flex;
   align-items: center;
   gap: 15px;
-  min-height: 91px;
+  min-height: 72px;
   border-bottom: 1px solid var(--line);
 }
 .history-icon {
@@ -208,6 +215,7 @@
 }
 .history-info p {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   font-size: 11px;
   color: var(--muted);
@@ -230,7 +238,7 @@
   font-size: 11px;
   line-height: 1.7;
   color: var(--muted);
-  margin-top: 18px;
+  margin-top: 14px;
 }
 .history-empty {
   display: flex;
@@ -239,11 +247,11 @@
   align-items: center;
   gap: 13px;
   text-align: center;
-  min-height: 247px;
-  padding: 32px 20px;
-  background: var(--surface);
-  border: 1px dashed var(--line);
-  border-radius: 10px;
+  flex: 1;
+  min-height: 220px;
+  padding: 24px 16px;
+  background: var(--paper-2);
+  border-radius: 8px;
   color: var(--muted);
   font-size: 13px;
 }
@@ -255,77 +263,11 @@
 .history-empty p {
   max-width: 280px;
 }
-.meeting-help {
-  margin-top: 56px;
-  border-top: 1px solid var(--line);
-  padding: 28px 0 32px;
-  display: grid;
-  grid-template-columns: 390px minmax(0, 1fr);
-  column-gap: 56px;
-  scroll-margin-top: 25px;
-}
-.help-intro {
-  grid-row: span 3;
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding-top: 15px;
-}
-.help-intro > svg {
-  margin-top: 3px;
-  color: var(--muted);
-}
-.help-intro h2 {
-  font-size: 15px;
-  letter-spacing: 0;
-}
-.help-intro p {
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 8px;
-  max-width: 260px;
-  line-height: 1.8;
-}
-.meeting-help details {
-  border-bottom: 1px solid var(--line);
-}
-.meeting-help details:last-child {
-  border-bottom: 0;
-}
-.meeting-help summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 15px 0;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 600;
-  list-style: none;
-}
-.meeting-help summary::-webkit-details-marker {
-  display: none;
-}
-.meeting-help summary svg {
-  color: var(--muted);
-  transition: transform 0.15s;
-}
-.meeting-help details[open] summary svg {
-  transform: rotate(180deg);
-}
-.meeting-help details p {
-  padding: 0 28px 17px 0;
-  font-size: 12px;
-  color: var(--muted);
-  line-height: 1.8;
-}
 .footer {
-  max-width: 1120px;
   display: flex;
   align-items: center;
   gap: 24px;
   padding: 22px 0;
-  margin: auto;
   border-top: 1px solid var(--line);
   color: var(--muted);
   font-size: 11px;
@@ -337,53 +279,23 @@
   color: var(--ink);
 }
 @media (max-width: 1180px) {
-  .home-main {
-    margin: 0 32px;
-  }
-  .footer {
-    margin: 0 32px;
-  }
-  .meetings-workspace,
-  .meeting-help {
+  .meetings-workspace {
     grid-template-columns: 360px minmax(0, 1fr);
-    gap: 36px;
   }
   .site-header {
     gap: 32px;
   }
 }
 @media (max-width: 800px) {
-  .home-main {
-    padding-top: 36px;
-    margin: 0 24px;
+  .home-page {
+    --home-gutter: 24px;
   }
-  .home-heading h1 {
-    font-size: 30px;
+  .home-main {
+    padding-block: 36px;
   }
   .meetings-workspace {
     grid-template-columns: 1fr;
-    gap: 36px;
-  }
-  .start-column {
-    max-width: none;
-  }
-  .launch-card {
-    padding: 24px;
-  }
-  .history-section .section-heading {
-    margin-bottom: 12px;
-  }
-  .meeting-help {
-    grid-template-columns: 1fr;
-    margin-top: 36px;
-    gap: 0;
-  }
-  .help-intro {
-    grid-row: auto;
-    padding: 0 0 20px;
-  }
-  .help-intro p {
-    max-width: none;
+    gap: 20px;
   }
   .site-header {
     padding: 0 24px;
@@ -406,17 +318,12 @@
   .meet-word {
     font-size: 18px;
   }
-  .footer {
-    margin: 0 24px;
-  }
 }
 @media (max-width: 560px) {
   .site-header {
-    height: auto;
-    min-height: 105px;
-    flex-wrap: wrap;
-    gap: 0;
-    padding: 18px 20px 0;
+    height: 64px;
+    gap: 8px;
+    padding: 0 20px;
   }
   .header-actions {
     gap: 6px;
@@ -426,35 +333,29 @@
     font-size: 11px;
   }
   .header-links {
-    order: 3;
-    width: 100%;
-    height: 43px;
-    gap: 25px;
+    display: none;
   }
-  .header-links a {
-    font-size: 12px;
+  .home-page {
+    --home-gutter: 20px;
   }
   .home-main {
-    margin: 0 20px;
-    padding-top: 30px;
+    padding-block: 30px;
   }
   .home-heading {
     margin-bottom: 25px;
   }
-  .home-heading h1 {
-    font-size: 28px;
-  }
   .home-heading p {
     font-size: 13px;
   }
-  .launch-card {
+  .launch-card,
+  .history-section {
     padding: 20px;
   }
   .launch-card input {
     font-size: 16px;
   }
-  .history-caption {
-    display: none;
+  .history-empty {
+    min-height: 176px;
   }
   .history-row {
     gap: 11px;
@@ -474,14 +375,8 @@
     width: 17px;
   }
   .footer {
-    margin: 0 20px;
     font-size: 10px;
-    gap: 18px;
-  }
-  .meeting-help {
-    padding-top: 25px;
-  }
-  .meeting-help summary {
-    min-height: 48px;
+    gap: 12px;
+    flex-wrap: wrap;
   }
 }

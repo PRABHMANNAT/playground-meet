@@ -9,10 +9,10 @@ export const metadata: Metadata = {
   icons: { icon: '/brand/icon.png' },
   metadataBase: new URL(appOrigin()),
 };
-export const viewport: Viewport = { width: 'device-width', initialScale: 1, themeColor: '#F8F9F7' };
+export const viewport: Viewport = { width: 'device-width', initialScale: 1, themeColor: '#ffffff' };
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
+    <html lang="en" data-theme="light" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body>
         <a className="skip-link" href="#main">
           Skip to content

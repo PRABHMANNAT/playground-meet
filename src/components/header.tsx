@@ -7,7 +7,6 @@ export function Header({ action }: { action?: React.ReactNode }) {
       <Brand />
       <nav className="header-links" aria-label="Main navigation">
         <Link href="/">Meetings</Link>
-        <Link href="/#help">Help</Link>
       </nav>
       <div className="header-actions">
         <ThemeToggle />

@@ -41,10 +41,7 @@ export function History({
   }, [personId, attempt]);
   return (
     <section className="history-section" id="recent" aria-labelledby="recent-heading">
-      <div className="section-heading">
-        <h2 id="recent-heading">Recent meetings</h2>
-        <span className="history-caption">Your meeting history</span>
-      </div>
+      <h2 id="recent-heading">Recent meetings</h2>
       {sessionLoading || loading ? (
         <p className="history-empty" role="status">
           Loading meetings…
@@ -91,14 +88,12 @@ export function History({
         <div className="history-empty">
           <Clock size={28} />
           <h3>No meetings yet</h3>
-          <p>Your meetings and saved notes will appear here.</p>
+          <p>Start or join a meeting to see it here.</p>
         </div>
       )}
-      <p className="history-note">
-        {personId
-          ? 'Open a recap to view notes, feedback, and download a summary.'
-          : 'Start as a guest, or sign in to keep your history across devices.'}
-      </p>
+      {!personId && !sessionLoading && (
+        <p className="history-note">Sign in to keep your meeting history across devices.</p>
+      )}
     </section>
   );
 }
