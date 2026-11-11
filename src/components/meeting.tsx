@@ -372,7 +372,7 @@ function MeetingInterior({ id }: { id: string }) {
           ))}
         </div>
       )}
-      <footer className="room-toolbar">
+      <footer className="room-toolbar" aria-label="Meeting controls">
         <div className="toolbar-group">
           <div className="toolbar-tool">
             <button

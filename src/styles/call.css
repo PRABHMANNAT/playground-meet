@@ -30,14 +30,13 @@
 .meeting-shell .tile-avatar > .avatar {
   width: clamp(72px, 8vw, 106px);
   height: clamp(72px, 8vw, 106px);
-  border-radius: 35%;
-  background: var(--ink);
-  color: var(--paper);
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
   font-size: 31px;
   font-weight: 600;
-  box-shadow:
-    0 4px 14px #0000000c,
-    inset 0 0 0 1px #ffffff45;
+  box-shadow: var(--shadow);
 }
 .tile-state {
   position: absolute;
@@ -280,9 +279,8 @@
 .meeting-shell .tile {
   background: var(--paper-2);
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 20px;
   min-height: 160px;
-  box-shadow: 0 2px 4px #17201a08;
 }
 .meeting-shell .tile.speaking {
   border-color: var(--ink);
@@ -290,7 +288,7 @@
 }
 .meeting-shell .tile-avatar {
   flex-direction: column;
-  gap: 18px;
+  gap: 11px;
   padding-bottom: 16px;
 }
 .tile-identity {
@@ -305,6 +303,9 @@
   font-weight: 550;
 }
 .tile-identity small {
+  display: flex;
+  align-items: center;
+  gap: 5px;
   color: var(--muted);
   font-size: 11px;
 }
@@ -547,12 +548,12 @@
 .meeting-shell .room-toolbar {
   background: var(--surface);
   border-color: var(--line);
-  min-height: 100px;
-  padding: 16px 28px 14px;
-  gap: 24px;
+  min-height: 84px;
+  padding: 10px 16px max(10px, env(safe-area-inset-bottom));
+  gap: 12px;
 }
 .meeting-shell .toolbar-group {
-  gap: 14px;
+  gap: 8px;
 }
 .meeting-shell .toolbar-divider {
   background: var(--line);
@@ -560,8 +561,8 @@
   margin: 0;
 }
 .meeting-shell .toolbar-tool {
-  gap: 7px;
-  min-width: 54px;
+  gap: 5px;
+  min-width: 50px;
 }
 .meeting-shell .toolbar-tool > span {
   font-size: 10px;
@@ -570,7 +571,7 @@
 .meeting-shell .control {
   width: 48px;
   height: 44px;
-  border-radius: 10px;
+  border-radius: 13px;
 }
 
 .meeting-shell .control svg {
@@ -592,7 +593,7 @@
   font-size: 9px;
 }
 .meeting-shell .reactions-menu {
-  bottom: 110px;
+  bottom: 94px;
   gap: 4px;
 }
 .meeting-shell .reactions-menu button {
@@ -801,11 +802,6 @@
 .meeting-entry {
   min-height: 100dvh;
 }
-.meeting-entry .preview-stage {
-  background: var(--paper-2);
-  border-color: var(--line);
-  color: var(--ink);
-}
 :is(.meeting-entry, .meeting-shell) .button.primary,
 .meeting-entry .preview-controls .control,
 .meeting-shell
@@ -819,6 +815,25 @@
 .meeting-shell
   :is(.room-header .button, .room-header .icon-button, .control, .reactions-menu button):hover {
   opacity: 0.78;
+}
+.meeting-entry .preview-controls .control {
+  width: 42px;
+  height: 40px;
+  border-radius: 11px;
+}
+:is(.meeting-entry, .meeting-shell) .control.off svg {
+  color: var(--media-off);
+}
+.meeting-shell .control.danger {
+  background: var(--leave-bg);
+  border-color: var(--leave-bg);
+  color: var(--leave-fg);
+}
+.meeting-shell .tile-label svg {
+  flex-shrink: 0;
+}
+.meeting-shell .tile-label:empty {
+  display: none;
 }
 .meeting-shell .room-header .icon-button {
   border-radius: 9px;

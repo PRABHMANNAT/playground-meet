@@ -1,6 +1,6 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
-import { ArrowRight, Copy, ShieldCheck, LoaderCircle } from 'lucide-react';
+import { ArrowRight, Link2, ShieldCheck, LoaderCircle } from 'lucide-react';
 import { request } from '@/lib/client';
 import { meetingPath, meetingInviteUrl } from '@/lib/meeting-links';
 import { Header } from './header';
@@ -12,6 +12,7 @@ type Info = {
   title: string;
   ended: boolean;
   locked: boolean;
+  lobby: boolean;
   host: boolean;
   status: string;
 };
@@ -29,6 +30,7 @@ export function Prejoin({ id, onJoin }: { id: string; onJoin: (devices: Devices)
       videoId: '',
     });
   const toast = useToast();
+  const needsApproval = info?.lobby && !info.host && info.status !== 'admitted';
   const onDevices = useCallback((d: Devices) => setDevices(d), []);
   useEffect(() => {
     Promise.all([
@@ -73,27 +75,24 @@ export function Prejoin({ id, onJoin }: { id: string; onJoin: (devices: Devices)
       <Header />
       <main className="prejoin-main" id="main">
         <div className="prejoin-heading">
-          <span className="eyebrow">MEETING PREVIEW</span>
           <h1>{info?.title || 'Meeting preview'}</h1>
-          <p>Check your camera and microphone before joining.</p>
+          {!info?.ended && <p>Device check</p>}
         </div>
-        <div className="prejoin-grid">
-          <DevicePreview onChange={onDevices} />
+        <div className="prejoin-grid" data-ended={info?.ended}>
+          {!info?.ended && <DevicePreview onChange={onDevices} />}
           <section className="join-card">
-            <span className="eyebrow">{waiting ? 'WAITING FOR APPROVAL' : 'JOIN MEETING'}</span>
-            <h2>{waiting ? 'Waiting for the host' : 'Ready to join?'}</h2>
+            <h2>
+              {info?.ended ? 'Meeting ended' : waiting ? 'Waiting for the host' : 'Your details'}
+            </h2>
             {error && (
               <p role="alert" className="error-message">
                 {error}
               </p>
             )}
             {info?.ended ? (
-              <>
-                <p>This meeting has ended.</p>
-                <a className="button primary" href={meetingPath(id, true)}>
-                  View meeting recap
-                </a>
-              </>
+              <a className="button primary full" href={meetingPath(id, true)}>
+                View recap <ArrowRight size={17} />
+              </a>
             ) : waiting ? (
               <div className="waiting-state">
                 <LoaderCircle className="spin" size={38} />
@@ -138,40 +137,38 @@ export function Prejoin({ id, onJoin }: { id: string; onJoin: (devices: Devices)
                 <button className="button primary full" disabled={busy || !info}>
                   {busy
                     ? 'Joining…'
-                    : info?.host
-                      ? 'Join meeting'
-                      : info?.status === 'admitted'
+                    : needsApproval
+                      ? 'Ask to join'
+                      : !info?.host && info?.status === 'admitted'
                         ? 'Rejoin meeting'
-                        : 'Ask to join'}
+                        : 'Join meeting'}
                   <ArrowRight size={18} />
                 </button>
-                <p className="form-footnote">
-                  <ShieldCheck size={15} />
-                  {info?.host
-                    ? 'You’re the host. You decide who joins.'
-                    : 'The host will approve your request.'}
-                </p>
+                {(info?.host || needsApproval) && (
+                  <p className="form-footnote">
+                    <ShieldCheck size={15} />
+                    {info?.host ? 'You’re the host' : 'Host approval required'}
+                  </p>
+                )}
               </form>
             )}
-            <div className="invite-box">
-              <span className="eyebrow">INVITE PEOPLE</span>
-              <p>Share this link with your team.</p>
-              <button
-                className="button secondary full"
-                onClick={() =>
-                  navigator.clipboard
-                    .writeText(meetingInviteUrl(id, location.origin))
-                    .then(() => toast('Meeting link copied.'))
-                    .catch(() => toast('Copy the meeting URL from your address bar.'))
-                }
-              >
-                <Copy size={16} /> Copy invite link
-              </button>
-              <code>{id}</code>
-            </div>
+            {!info?.ended && (
+              <div className="invite-box">
+                <button
+                  className="button secondary full"
+                  onClick={() =>
+                    navigator.clipboard
+                      .writeText(meetingInviteUrl(id, location.origin))
+                      .then(() => toast('Meeting link copied.'))
+                      .catch(() => toast('Copy the meeting URL from your address bar.'))
+                  }
+                >
+                  <Link2 size={17} /> Copy invite link
+                </button>
+              </div>
+            )}
           </section>
         </div>
-        <p className="prejoin-footer">Your camera and microphone stay off until you enable them.</p>
       </main>
     </div>
   );

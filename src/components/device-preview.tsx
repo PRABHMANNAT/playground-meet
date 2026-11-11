@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { Camera, Mic, MicOff, VideoOff, RefreshCw } from 'lucide-react';
+import { Video, Mic, MicOff, VideoOff, SlidersHorizontal } from 'lucide-react';
 import { useToast } from './providers';
 export type Devices = { audio: boolean; video: boolean; audioId: string; videoId: string };
 export function DevicePreview({ onChange }: { onChange: (value: Devices) => void }) {
@@ -87,19 +87,18 @@ export function DevicePreview({ onChange }: { onChange: (value: Devices) => void
   }, [settings]);
   return (
     <div className="device-preview">
-      <div className="preview-stage">
+      <div className="preview-stage" data-live={settings.video}>
         <video ref={ref} autoPlay playsInline muted className={settings.video ? '' : 'hidden'} />
         {!settings.video && (
           <div className="preview-placeholder">
             <div className="preview-orbit">
-              <Camera size={34} />
+              <VideoOff size={29} strokeWidth={1.5} aria-hidden="true" />
             </div>
             <h3>Camera is off</h3>
-            <p>Turn on your camera to see a preview.</p>
           </div>
         )}
         <div className="preview-label">
-          <span className="pulse-dot" /> YOUR PREVIEW
+          <span className="pulse-dot" /> Camera preview
         </div>
         <div className="preview-controls">
           <button
@@ -116,15 +115,16 @@ export function DevicePreview({ onChange }: { onChange: (value: Devices) => void
             aria-label={settings.video ? 'Turn camera off' : 'Turn camera on'}
             onClick={() => enable({ ...settings, video: !settings.video })}
           >
-            {settings.video ? <Camera /> : <VideoOff />}
+            {settings.video ? <Video /> : <VideoOff />}
           </button>
           <button
             className="control"
             disabled={busy}
             aria-label="Enable camera and microphone"
+            title="Enable camera and microphone"
             onClick={() => enable({ ...settings, audio: true, video: true })}
           >
-            <RefreshCw size={18} />
+            <SlidersHorizontal size={18} />
           </button>
         </div>
       </div>
@@ -164,7 +164,14 @@ export function DevicePreview({ onChange }: { onChange: (value: Devices) => void
           </select>
         </label>
       </div>
-      <div className="mic-meter" aria-label="Microphone input level">
+      <div
+        className="mic-meter"
+        role="meter"
+        aria-label="Microphone input level"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.min(Math.round(level * 100), 100)}
+      >
         <span style={{ width: Math.min(level * 100, 100) + '%' }} />
       </div>
     </div>

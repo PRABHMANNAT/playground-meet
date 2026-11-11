@@ -1,20 +1,17 @@
 .prejoin-main {
-  max-width: 1160px;
+  max-width: 1060px;
   margin: 0 auto;
-  padding: 55px 40px 30px;
+  padding: clamp(28px, 5vw, 60px) clamp(20px, 4vw, 40px) 40px;
 }
 .prejoin-heading {
-  text-align: center;
-  margin-bottom: 40px;
-}
-.prejoin-heading > .eyebrow {
-  color: var(--muted);
-  font-size: 9px;
+  margin-bottom: 26px;
 }
 .prejoin-heading h1 {
-  font-size: 34px;
-  margin: 12px 0;
-  line-height: 1.2;
+  font-size: clamp(30px, 5vw, 48px);
+  font-weight: 680;
+  letter-spacing: -0.055em;
+  line-height: 1.08;
+  margin-bottom: 7px;
   overflow-wrap: anywhere;
 }
 .prejoin-heading p {
@@ -23,18 +20,22 @@
 }
 .prejoin-grid {
   display: grid;
-  grid-template-columns: 1.45fr 1fr;
-  gap: 44px;
+  grid-template-columns: minmax(0, 1.5fr) minmax(230px, 1fr);
+  gap: clamp(16px, 3vw, 30px);
   align-items: start;
+}
+.prejoin-grid[data-ended='true'] {
+  grid-template-columns: minmax(0, 420px);
 }
 .preview-stage {
   position: relative;
-  aspect-ratio: 4/3;
+  aspect-ratio: 16 / 11;
+  min-height: 225px;
   overflow: hidden;
-  border-radius: 16px;
-  background: #1d302e;
-  border: 1px solid #ffffff20;
-  color: #f8f4e9;
+  border-radius: 20px;
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  color: var(--ink);
 }
 .preview-stage video {
   width: 100%;
@@ -48,43 +49,56 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding-bottom: 35px;
+  gap: 12px;
+  padding-bottom: 25px;
 }
 .preview-orbit {
-  width: 92px;
-  height: 92px;
-  border: 1px solid #ffffff22;
+  width: 64px;
+  height: 64px;
+  border: 1px solid var(--line);
+  background: var(--surface);
   border-radius: 50%;
   display: grid;
   place-items: center;
-  margin-bottom: 20px;
 }
 .preview-placeholder h3 {
-  font-size: 20px;
-  margin-top: 8px;
-}
-.preview-placeholder p {
-  font-size: 11px;
-  opacity: 0.6;
-  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 600;
 }
 .preview-label {
   position: absolute;
-  top: 20px;
-  left: 20px;
-  font: 8px monospace;
-  letter-spacing: 0.1em;
+  top: 14px;
+  left: 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 10px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 550;
   display: flex;
   align-items: center;
   gap: 8px;
 }
+.preview-label .pulse-dot {
+  display: none;
+  background: currentColor;
+  box-shadow: none;
+}
+.preview-stage[data-live='true'] .pulse-dot {
+  display: inline-block;
+}
 .preview-controls {
   position: absolute;
-  bottom: 24px;
+  bottom: 14px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 12px;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 5px;
+  background: var(--surface);
 }
 .control {
   width: 46px;
@@ -139,48 +153,29 @@
 .mic-meter span {
   display: block;
   height: 100%;
-  background: var(--coral);
+  background: var(--ink);
   transition: width 0.1s;
 }
 .join-card {
-  padding-top: 18px;
-}
-.join-card > .eyebrow {
-  font-size: 8px;
-  color: var(--muted);
+  padding: clamp(18px, 3vw, 28px);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
 }
 .join-card h2 {
-  font-size: 29px;
-  margin: 12px 0 24px;
+  font-size: 21px;
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  margin-bottom: 18px;
 }
 .join-card .error-message {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 .invite-box {
-  margin-top: 27px;
-  padding-top: 25px;
+  margin-top: 16px;
+  padding-top: 16px;
   border-top: 1px solid var(--line);
-}
-.invite-box .eyebrow {
-  font-size: 8px;
-  color: var(--muted);
-}
-.invite-box p {
-  margin: 6px 0 15px;
-  font-size: 12px;
-}
-.invite-box code {
-  display: block;
-  text-align: center;
-  margin-top: 13px;
-  font-size: 10px;
-  color: var(--muted);
-}
-.prejoin-footer {
-  text-align: center;
-  font-size: 10px;
-  color: var(--muted);
-  margin-top: 45px;
 }
 .waiting-state {
   display: flex;
@@ -198,8 +193,8 @@
   height: 100dvh;
   display: flex;
   flex-direction: column;
-  background: var(--dark);
-  color: #f5f1e4;
+  background: var(--paper);
+  color: var(--ink);
   overflow: hidden;
 }
 .room-header {
@@ -232,6 +227,7 @@
   min-width: 0;
 }
 .room-title h1 {
+  color: var(--ink);
   font-size: 13px;
   font-weight: 500;
   letter-spacing: 0;
@@ -776,47 +772,77 @@
   border-radius: 6px;
 }
 .recap {
-  max-width: 800px;
-  margin: 60px auto;
-  padding: 0 24px;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: clamp(28px, 5vw, 56px) 22px 46px;
 }
 .recap-hero {
   text-align: center;
-  margin-bottom: 35px;
+  margin-bottom: 24px;
+}
+.recap-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 17px;
+  background: var(--paper-2);
+  color: var(--ink);
 }
 .recap-hero h1 {
-  font-size: 48px;
-  line-height: 1.15;
-  margin: 15px 0;
+  font-size: clamp(30px, 5vw, 44px);
+  line-height: 1.1;
+  letter-spacing: -0.055em;
+  font-weight: 680;
+  margin: 12px 0 5px;
 }
 .recap-hero p {
   color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.recap-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 22px;
 }
 .recap-card {
-  padding: 28px;
+  padding: clamp(17px, 4vw, 24px);
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 18px;
   background: var(--surface);
-  margin-top: 18px;
+  box-shadow: var(--shadow);
+  margin-top: 12px;
 }
 .recap-card h2 {
-  font-size: 22px;
-  margin-bottom: 17px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 16px;
+  font-weight: 650;
+  margin-bottom: 12px;
+}
+.recap-card textarea {
+  background: var(--paper-2);
 }
 .stars {
   display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin: 20px 0;
+  flex-wrap: wrap;
+  gap: 5px;
 }
 .stars button {
-  padding: 8px;
-  border: 0;
-  background: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
   color: var(--muted);
 }
+.stars button:hover,
 .stars button.selected {
-  color: var(--coral);
+  background: var(--paper-2);
+  color: var(--ink);
 }
 .recap-notes {
   white-space: pre-wrap;
@@ -833,8 +859,8 @@
 }
 .room-connect {
   min-height: 100dvh;
-  background: var(--dark);
-  color: #f5f1e4;
+  background: var(--paper);
+  color: var(--ink);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -871,12 +897,6 @@
   .prejoin-grid {
     gap: 25px;
   }
-  .prejoin-main {
-    padding: 40px 25px;
-  }
-  .prejoin-heading h1 {
-    font-size: 36px;
-  }
 }
 @media (max-width: 720px) {
   .panel-content input,
@@ -888,32 +908,6 @@
   }
   .prejoin-grid {
     grid-template-columns: 1fr;
-    max-width: 500px;
-    margin: auto;
-  }
-  .prejoin-heading h1 {
-    font-size: 29px;
-  }
-  .prejoin-heading p {
-    font-size: 11px;
-  }
-  .prejoin-heading {
-    margin-bottom: 25px;
-  }
-  .prejoin-main {
-    padding: 30px 20px;
-  }
-  .join-card {
-    padding-top: 0;
-  }
-  .join-card h2 {
-    font-size: 25px;
-  }
-  .preview-stage {
-    aspect-ratio: 4/3;
-  }
-  .prejoin-footer {
-    font-size: 9px;
   }
   .room-header {
     padding: 0 14px;
@@ -997,15 +991,6 @@
   }
   .reactions-menu {
     bottom: 152px;
-  }
-  .recap {
-    margin-top: 35px;
-  }
-  .recap-hero h1 {
-    font-size: 36px;
-  }
-  .recap-card {
-    padding: 22px;
   }
   .panel-content {
     padding: 20px 24px;

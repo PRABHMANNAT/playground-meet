@@ -7,7 +7,16 @@ import {
   type TrackReferenceOrPlaceholder,
 } from '@livekit/components-react';
 import { Track } from 'livekit-client';
-import { MicOff, Hand, PictureInPicture2, Maximize, Pin, PinOff, AudioLines } from 'lucide-react';
+import {
+  MicOff,
+  Hand,
+  PictureInPicture2,
+  Maximize,
+  Pin,
+  PinOff,
+  AudioLines,
+  VideoOff,
+} from 'lucide-react';
 import { Avatar } from './avatar';
 import { useToast } from './providers';
 export function VideoTile({
@@ -34,23 +43,28 @@ export function VideoTile({
       data-testid="participant-tile"
       data-focused={pinned}
     >
-      <div className="tile-avatar">
-        <Avatar name={track.participant.name || 'Guest'} size="large" />
-        {!available && (
+      {!available && (
+        <div className="tile-avatar">
+          <Avatar name={track.participant.name || 'Guest'} size="large" />
           <div className="tile-identity">
             <strong>{track.participant.name || 'Guest'}</strong>
-            <small>{screen ? 'Screen share paused' : 'Camera off'}</small>
+            <small>
+              <VideoOff size={13} aria-hidden="true" />
+              {screen ? 'Screen share paused' : 'Camera off'}
+            </small>
           </div>
-        )}
-      </div>
+        </div>
+      )}
       {available && <VideoTrack trackRef={track} className={screen ? 'screen-video' : ''} />}
       <div className="tile-label">
-        {!track.participant.isMicrophoneEnabled && <MicOff size={12} />}
-        <span>
-          {track.participant.name || 'Guest'}
-          {track.participant.isLocal ? ' (you)' : ''}
-          {screen ? ' · screen' : ''}
-        </span>
+        {!track.participant.isMicrophoneEnabled && <MicOff size={13} aria-label="Microphone off" />}
+        {(available || track.participant.isLocal) && (
+          <span>
+            {available ? track.participant.name || 'Guest' : 'You'}
+            {available && track.participant.isLocal ? ' (you)' : ''}
+            {available && screen ? ' · screen' : ''}
+          </span>
+        )}
       </div>
       {(raised || speaking) && (
         <div className="tile-state" role="status">

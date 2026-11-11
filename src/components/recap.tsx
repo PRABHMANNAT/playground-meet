@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Download, Star, ArrowRight, Check } from 'lucide-react';
+import { Download, Star, ArrowLeft, Check, PhoneOff, StickyNote, Flag } from 'lucide-react';
 import { request, downloadSummary } from '@/lib/client';
 import { Header } from './header';
 import { useToast } from './providers';
@@ -18,13 +18,15 @@ export function Recap({ id }: { id: string }) {
       .catch((e) => setError(e.message));
   }, [id]);
   return (
-    <>
+    <div className="meeting-entry">
       <Header />
       <main className="recap" id="main">
         <div className="recap-hero">
-          <span className="eyebrow">MEETING ENDED</span>
+          <span className="recap-icon" aria-hidden="true">
+            <PhoneOff size={24} strokeWidth={1.6} />
+          </span>
           <h1>Meeting recap</h1>
-          <p>{data?.meeting.title || 'Your meeting recap'}</p>
+          {data && <p>{data.meeting.title}</p>}
         </div>
         {error ? (
           <p role="alert" className="error-message">
@@ -34,7 +36,7 @@ export function Recap({ id }: { id: string }) {
           <p className="empty-state">Loading meeting notes…</p>
         ) : (
           <>
-            <div className="field-row">
+            <div className="recap-actions">
               <button
                 className="button primary"
                 onClick={() => downloadSummary(id).catch((e) => toast(e.message))}
@@ -42,11 +44,13 @@ export function Recap({ id }: { id: string }) {
                 <Download size={16} /> Download summary
               </button>
               <a className="button secondary" href="/">
-                Back to meetings <ArrowRight size={16} />
+                <ArrowLeft size={16} /> Back to meetings
               </a>
             </div>
             <section className="recap-card">
-              <h2>Rate this meeting</h2>
+              <h2>
+                <Star size={18} aria-hidden="true" /> Rate this meeting
+              </h2>
               <form
                 className="stack"
                 onSubmit={async (e) => {
@@ -68,7 +72,7 @@ export function Recap({ id }: { id: string }) {
                   }
                 }}
               >
-                <div className="stars" aria-label="Meeting rating">
+                <div className="stars" role="group" aria-label="Meeting rating">
                   {[1, 2, 3, 4, 5].map((n) => (
                     <button
                       type="button"
@@ -81,7 +85,7 @@ export function Recap({ id }: { id: string }) {
                         setSaved(false);
                       }}
                     >
-                      <Star fill={n <= rating ? 'currentColor' : 'none'} size={29} />
+                      <Star fill={n <= rating ? 'currentColor' : 'none'} size={23} />
                     </button>
                   ))}
                 </div>
@@ -89,7 +93,7 @@ export function Recap({ id }: { id: string }) {
                   aria-label="Meeting feedback"
                   name="feedback"
                   maxLength={1000}
-                  placeholder="Anything we should keep doing, or do differently?"
+                  placeholder="Add feedback (optional)"
                   rows={3}
                 />
                 <button className="button secondary" disabled={saved}>
@@ -104,13 +108,17 @@ export function Recap({ id }: { id: string }) {
               </form>
             </section>
             <section className="recap-card">
-              <h2>Shared notes</h2>
+              <h2>
+                <StickyNote size={18} aria-hidden="true" /> Shared notes
+              </h2>
               <p className="recap-notes">
                 {data.meeting.state.notes || 'No notes were saved in this meeting.'}
               </p>
             </section>
             <section className="recap-card">
-              <h2>Feedback markers</h2>
+              <h2>
+                <Flag size={18} aria-hidden="true" /> Feedback markers
+              </h2>
               {data.events
                 .filter((e) => e.kind === 'marker')
                 .map((e) => (
@@ -131,6 +139,6 @@ export function Recap({ id }: { id: string }) {
           </>
         )}
       </main>
-    </>
+    </div>
   );
 }
