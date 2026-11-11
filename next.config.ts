@@ -11,6 +11,18 @@ const config: NextConfig = {
     ];
   },
   async headers() {
+    // LiveKit Cloud fetches regional endpoints over HTTPS as well as signaling over WSS.
+    const mediaSources = [
+      "'self'",
+      'ws:',
+      'wss:',
+      'https://*.livekit.cloud',
+      'https://*.livekit.run',
+    ];
+    const livekitUrl = process.env.LIVEKIT_URL;
+    if (livekitUrl?.startsWith('wss://')) {
+      mediaSources.push(new URL(livekitUrl).origin.replace(/^wss:/, 'https:'));
+    }
     return [
       {
         source: '/:path*',
@@ -24,8 +36,7 @@ const config: NextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value:
-              "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' ws: wss:; media-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
+            value: `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src ${mediaSources.join(' ')}; media-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'`,
           },
         ],
       },
