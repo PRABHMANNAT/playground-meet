@@ -10,7 +10,8 @@ export function Recap({ id }: { id: string }) {
   const [data, setData] = useState<Snapshot | null>(null),
     [error, setError] = useState(''),
     [rating, setRating] = useState(0),
-    [saved, setSaved] = useState(false);
+    [saved, setSaved] = useState(false),
+    [saving, setSaving] = useState(false);
   const toast = useToast();
   useEffect(() => {
     request<Snapshot>(`/api/meetings/${id}/state`)
@@ -26,7 +27,6 @@ export function Recap({ id }: { id: string }) {
             <PhoneOff size={24} strokeWidth={1.6} />
           </span>
           <h1>Meeting recap</h1>
-          {data && <p>{data.meeting.title}</p>}
         </div>
         {error ? (
           <p role="alert" className="error-message">
@@ -47,19 +47,19 @@ export function Recap({ id }: { id: string }) {
                 <ArrowLeft size={16} /> Back to meetings
               </a>
             </div>
-            <section className="recap-card">
-              <h2>
-                <Star size={18} aria-hidden="true" /> Rate this meeting
-              </h2>
+            <section className="recap-card recap-rating" aria-labelledby="recap-rating-heading">
+              <h2 id="recap-rating-heading">Rate this meeting</h2>
               <form
-                className="stack"
+                className="recap-feedback-form"
                 onSubmit={async (e) => {
                   e.preventDefault();
+                  if (saving || saved) return;
                   if (!rating) {
                     toast('Choose a rating first.');
                     return;
                   }
                   const f = new FormData(e.currentTarget);
+                  setSaving(true);
                   try {
                     await request(`/api/meetings/${id}/actions`, {
                       type: 'rating',
@@ -69,6 +69,8 @@ export function Recap({ id }: { id: string }) {
                     setSaved(true);
                   } catch (e) {
                     toast((e as Error).message);
+                  } finally {
+                    setSaving(false);
                   }
                 }}
               >
@@ -78,6 +80,7 @@ export function Recap({ id }: { id: string }) {
                       type="button"
                       aria-label={`Rate ${n} out of 5`}
                       aria-pressed={rating === n}
+                      disabled={saving}
                       className={n <= rating ? 'selected' : ''}
                       key={n}
                       onClick={() => {
@@ -89,22 +92,30 @@ export function Recap({ id }: { id: string }) {
                     </button>
                   ))}
                 </div>
-                <textarea
-                  aria-label="Meeting feedback"
-                  name="feedback"
-                  maxLength={1000}
-                  placeholder="Add feedback (optional)"
-                  rows={3}
-                />
-                <button className="button primary recap-submit" disabled={saved}>
+                <label className="recap-feedback-field">
+                  <span>
+                    Feedback <span className="recap-feedback-optional">Optional</span>
+                  </span>
+                  <textarea
+                    name="feedback"
+                    maxLength={1000}
+                    placeholder="What worked well? What could be better?"
+                    rows={3}
+                    disabled={saving}
+                    onChange={() => setSaved(false)}
+                  />
+                </label>
+                <div className="recap-feedback-footer">
                   {saved ? (
-                    <>
-                      <Check size={16} /> Feedback saved
-                    </>
+                    <p className="recap-feedback-saved" role="status">
+                      <Check size={16} aria-hidden="true" /> Feedback saved
+                    </p>
                   ) : (
-                    'Share feedback'
+                    <button className="button primary recap-submit" disabled={saving}>
+                      {saving ? 'Saving…' : 'Share feedback'}
+                    </button>
                   )}
-                </button>
+                </div>
               </form>
             </section>
             <section className="recap-card">

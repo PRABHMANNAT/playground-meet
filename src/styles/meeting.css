@@ -791,7 +791,7 @@
 }
 .recap-hero {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: clamp(32px, 5vw, 44px);
 }
 .recap-icon {
   display: inline-grid;
@@ -808,10 +808,6 @@
   letter-spacing: -0.055em;
   font-weight: 680;
   margin: 12px 0 5px;
-}
-.recap-hero p {
-  color: var(--muted);
-  overflow-wrap: anywhere;
 }
 .recap-actions {
   display: flex;
@@ -836,12 +832,53 @@
   font-weight: 650;
   margin-bottom: 12px;
 }
-.recap-card textarea {
+.recap-page .recap-rating {
+  padding: clamp(18px, 4vw, 28px);
+  border-radius: 22px;
   background: var(--paper-2);
+}
+.recap-rating h2 {
+  font-size: 18px;
+  letter-spacing: -0.025em;
+}
+.recap-feedback-form {
+  display: grid;
+  gap: 16px;
+}
+.recap-feedback-field {
+  gap: 8px;
+}
+.recap-feedback-optional {
+  margin-inline-start: 6px;
+  color: var(--muted);
+  font-weight: 450;
+}
+.recap-feedback-field textarea {
+  min-height: 96px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--surface);
   color: var(--ink);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  resize: vertical;
+}
+.recap-feedback-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 47px;
 }
 .recap-submit {
-  justify-self: start;
+  border-radius: 10px;
+}
+.recap-feedback-saved {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+  font-size: 13px;
 }
 .recap-page .error-message {
   color: var(--ink);
@@ -851,20 +888,26 @@
 .stars {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 6px;
 }
 .stars button {
   display: grid;
   place-items: center;
   width: 44px;
   height: 44px;
-  border-radius: 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
   color: var(--muted);
 }
-.stars button:hover,
-.stars button.selected {
-  background: var(--paper-2);
+.stars button:hover {
+  border-color: var(--ink);
   color: var(--ink);
+}
+.stars button.selected {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
 }
 .recap-notes {
   white-space: pre-wrap;
