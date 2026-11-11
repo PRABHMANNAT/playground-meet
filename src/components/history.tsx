@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Clock, ArrowRight } from 'lucide-react';
 import { request } from '@/lib/client';
+import { meetingPath } from '@/lib/meeting-links';
 type Recent = { id: string; title: string; created: number; ended: boolean };
 export function History({
   personId,
@@ -78,7 +79,7 @@ export function History({
               <Link
                 className="history-action"
                 aria-label={`${item.ended ? 'View recap for' : 'Join'} ${item.title}`}
-                href={`/room/${item.id}${item.ended ? '/recap' : ''}`}
+                href={meetingPath(item.id, item.ended)}
               >
                 {item.ended ? 'View recap' : 'Join'}
                 <ArrowRight size={15} />

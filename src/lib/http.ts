@@ -2,10 +2,11 @@ import { NextResponse } from 'next/server';
 import { readBody } from './read-body';
 import { ZodError } from 'zod';
 import { HttpError } from './errors';
+import { allowedOrigins } from './app-url';
 export function sameOrigin(req: Request) {
-  const expected = new URL(process.env.APP_URL || 'http://localhost:3000').origin;
   const origin = req.headers.get('origin');
-  if (origin !== expected) throw new HttpError(403, 'Request origin is not allowed.');
+  if (!origin || !allowedOrigins().has(origin))
+    throw new HttpError(403, 'Request origin is not allowed.');
 }
 export async function body(req: Request) {
   if (!req.headers.get('content-type')?.includes('application/json'))

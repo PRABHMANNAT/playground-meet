@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ArrowRight, Copy, ShieldCheck, LoaderCircle } from 'lucide-react';
 import { request } from '@/lib/client';
+import { meetingPath, meetingInviteUrl } from '@/lib/meeting-links';
 import { Header } from './header';
 import { DevicePreview, type Devices } from './device-preview';
 import { useToast } from './providers';
@@ -89,7 +90,7 @@ export function Prejoin({ id, onJoin }: { id: string; onJoin: (devices: Devices)
             {info?.ended ? (
               <>
                 <p>This meeting has ended.</p>
-                <a className="button primary" href={'/room/' + id + '/recap'}>
+                <a className="button primary" href={meetingPath(id, true)}>
                   View meeting recap
                 </a>
               </>
@@ -159,7 +160,7 @@ export function Prejoin({ id, onJoin }: { id: string; onJoin: (devices: Devices)
                 className="button secondary full"
                 onClick={() =>
                   navigator.clipboard
-                    .writeText(location.href)
+                    .writeText(meetingInviteUrl(id, location.origin))
                     .then(() => toast('Meeting link copied.'))
                     .catch(() => toast('Copy the meeting URL from your address bar.'))
                 }

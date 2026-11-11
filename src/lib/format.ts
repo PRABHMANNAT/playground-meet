@@ -15,11 +15,4 @@ export function initials(name: string) {
       .toUpperCase() || '?'
   );
 }
-export function parseMeetingLink(input: string) {
-  const text = input.trim();
-  try {
-    return new URL(text).pathname.split('/').filter(Boolean).at(-1) || '';
-  } catch {
-    return text.replace(/^.*\/room\//, '').split(/[?#]/)[0];
-  }
-}
+export { parseMeetingLink } from './meeting-links';

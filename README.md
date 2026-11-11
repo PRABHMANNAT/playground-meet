@@ -8,7 +8,7 @@ A browser-based meeting space for Playground: Next.js, TypeScript, Motion, Tailw
 
 The implementation is pushed to [PRABHMANNAT/playground-meet](https://github.com/PRABHMANNAT/playground-meet). The initial delivery contained 160 non-empty commits; later interface improvements are recorded in subsequent commits. Build, 30 unit tests, independent-user API scenarios and real LiveKit audio/video/screen transport tests pass; see [verification evidence](docs/VERIFICATION.md).
 
-**Public hosting is pending.** No production server or DNS access was available, and the connected hosting account denied access. `meet.tryplayground.net` has not been deployed. The included setup avoids paid APIs and does not purchase hosting.
+**Ready to import into Vercel.** Follow the [Vercel setup guide](docs/VERCEL.md) to connect PostgreSQL and LiveKit and configure your deployment. Public hosting and external services must be configured before live calls can work; this source update does not deploy a public site or purchase hosting.
 
 ## Run locally
 
@@ -32,6 +32,7 @@ Local development meetings include two clearly labeled **demo participants**, `p
 
 - HD adaptive video/audio, camera/microphone preview, device selection, screen sharing, speaker highlighting, participant pinning, picture-in-picture, fullscreen and keyboard shortcuts.
 - Instant invitation links, persistent guest sessions, optional password accounts, waiting rooms, host admission/removal/muting, room locking and end-for-all.
+- Meeting and recap URLs always include `/playground-meet/`; older `/room/` links redirect, and copied invitations use the current deployment domain.
 - Persistent chat, raised hands, reactions, collaborative drawing, conflict-aware shared notes, polls, focus timers and shared product-review briefs.
 - Timestamped bug/idea/moment reports, ratings, meeting history and Markdown summaries assembled without AI.
 - Official Playground mark, Manrope font and landscape; responsive light/dark themes and reduced-motion support.
@@ -40,7 +41,8 @@ Collaboration uses authorized conditional polling (1.2 seconds foreground, 5 sec
 
 ## Deployment and verification
 
-- [Production deployment](docs/DEPLOYMENT.md) — `meet.tryplayground.net`, HTTPS, DNS and TURN.
+- [Vercel deployment](docs/VERCEL.md) — Next.js on Vercel with external PostgreSQL and LiveKit.
+- [Docker deployment](docs/DEPLOYMENT.md) — HTTPS, DNS and TURN on your own host.
 - [Free-tier and capacity limits](docs/FREE-TIERS.md)
 - [Local setup](docs/LOCAL-DEVELOPMENT.md)
 - [Architecture](docs/ARCHITECTURE.md) and [security model](docs/SECURITY.md)
@@ -54,7 +56,8 @@ npm test
 npm run build
 # With local Next.js and LiveKit running:
 npm run test:integration
+npm run test:links
 npm run test:media
 ```
 
-Public deployment needs a server, control of the domain’s DNS, and GitHub authentication for pushing. The included deployment files do not provision a paid server or enable billing.
+Vercel deployment needs PostgreSQL and LiveKit credentials; its assigned `vercel.app` domain can be used without custom DNS. Docker deployment needs a server and domain DNS access. The included deployment files do not provision paid services or enable billing.

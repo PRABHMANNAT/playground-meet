@@ -1,5 +1,7 @@
 # Deploy at meet.tryplayground.net
 
+For Vercel hosting, use the [Vercel deployment guide](VERCEL.md). The instructions below are for a standalone Linux/Docker host.
+
 ## Prerequisites
 
 A Linux host you already control with Docker Compose, a public IP, disk for PostgreSQL, and access to tryplayground.net DNS. No host has been purchased or account created by this repository. Free software does not remove electricity, bandwidth, domain or hosting costs. Use an existing host to avoid a new subscription.

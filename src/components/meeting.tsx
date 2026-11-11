@@ -39,6 +39,7 @@ import {
 } from 'lucide-react';
 import { request, downloadSummary } from '@/lib/client';
 import { duration } from '@/lib/format';
+import { meetingPath, meetingInviteUrl } from '@/lib/meeting-links';
 import { useRoomState } from '@/hooks/use-room-state';
 import { useShortcuts } from '@/hooks/use-shortcuts';
 import { Brand } from './brand';
@@ -133,7 +134,7 @@ export default function Meeting({
         videoCaptureDefaults: { resolution: VideoPresets.h720.resolution },
       }}
       onError={(e) => setError(e.message)}
-      onDisconnected={() => router.push(`/room/${id}/recap`)}
+      onDisconnected={() => router.push(meetingPath(id, true))}
     >
       <MeetingInterior id={id} />
       <RoomAudioRenderer />
@@ -233,7 +234,7 @@ function MeetingInterior({ id }: { id: string }) {
   useEffect(() => {
     if (data?.meeting.ended) {
       void room.disconnect();
-      router.push(`/room/${id}/recap`);
+      router.push(meetingPath(id, true));
     }
   }, [data?.meeting.ended, room, router, id]);
   useEffect(() => {
@@ -272,7 +273,7 @@ function MeetingInterior({ id }: { id: string }) {
             aria-label="Invite people"
             onClick={() =>
               navigator.clipboard
-                .writeText(location.href)
+                .writeText(meetingInviteUrl(id, location.origin))
                 .then(() => toast('Invite link copied.'))
                 .catch(() => toast('Copy the URL from your address bar.'))
             }
@@ -545,7 +546,7 @@ function MeetingInterior({ id }: { id: string }) {
           className="button primary"
           onClick={() => {
             void room.disconnect();
-            router.push(`/room/${id}/recap`);
+            router.push(meetingPath(id, true));
           }}
         >
           Leave meeting
@@ -556,7 +557,7 @@ function MeetingInterior({ id }: { id: string }) {
             onClick={async () => {
               if (await send({ type: 'end' })) {
                 void room.disconnect();
-                router.push(`/room/${id}/recap`);
+                router.push(meetingPath(id, true));
               }
             }}
           >

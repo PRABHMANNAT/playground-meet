@@ -35,3 +35,17 @@ The parent Playground application was not modified. SSO assertion verification a
 ## Repeat the checks
 
 Follow [TESTING.md](TESTING.md). `node scripts/verify-release.mjs 160` checks the requested commit count, rejects empty commits and checks for tracked local secrets/runtime directories. It does not pretend that a count alone proves meaningful engineering work. Review the implementation history and test evidence together.
+
+# Vercel and invitation update — 11 November 2026
+
+- `npm ci`: clean dependency installation succeeded.
+- `npm run typecheck` and `npm run build`: passed with no deployment credentials; Next.js generated the canonical meeting and recap routes.
+- Unit suite: **36 tests passed across 17 files**, including new invite generation/parsing, preview origin, and Vercel database requirement regressions. Executed with `npx vitest run --configLoader native` because this Windows sandbox denied esbuild's ancestor-directory lookup. The config now uses an ESM-compatible URL for its alias.
+- `tests/links.ts`: passed creation, canonical invite, guest metadata, waiting room, host admission, history, ended-meeting summary, page availability, invalid-code 404, and legacy 308 redirects with query preservation.
+- Existing `tests/integration.ts`: all multi-user scenarios passed, including notes conflicts, authorization, moderation, polls, chat, recap, and account sessions. The two TypeScript scripts used a temporary TypeScript transpilation runner because sandbox account lookup prevented `tsx` startup; their source was executed unchanged.
+- Chrome: created a meeting from the form, reached `/playground-meet/<code>`, used Copy invite link (success notification), joined a connected LiveKit call with devices off, ended it, and reached `/playground-meet/<code>/recap`.
+- Existing external Playground home and privacy links both returned HTTP 200. Changed files passed formatting checks with Windows line endings accepted, and the diff passed whitespace validation. The repository-wide default formatting check flags CRLF checkout files; unrelated files were left alone.
+- The optional native `tests/media.ts` transport check could not run because Windows Application Control blocked the LiveKit RTC native binding. No security settings were changed. Successful browser signaling does not establish audio/video transport or public TURN reachability.
+- No public Vercel deployment or external PostgreSQL service was provisioned in this update. Configure the services in [VERCEL.md](VERCEL.md), then verify public invites and cross-network media on the deployed environment. PostgreSQL cold-start handling was reviewed; integration tests here used local PGlite.
+
+---

@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:integration": "tsx tests/integration.ts",
+    "test:links": "tsx tests/links.ts",
     "test:media": "tsx tests/media.ts",
     "db:cleanup": "tsx scripts/cleanup.ts",
     "test:edges": "tsx tests/edge-cases.ts",

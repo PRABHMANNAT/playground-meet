@@ -4,6 +4,12 @@ const config: NextConfig = {
   serverExternalPackages: ['@electric-sql/pglite', 'pg'],
   poweredByHeader: false,
   devIndicators: false,
+  async redirects() {
+    return [
+      { source: '/room/:path*', destination: '/playground-meet/:path*', permanent: true },
+      { source: '/playground-meet', destination: '/', permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

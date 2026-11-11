@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { ArrowRight, Plus, Link as LinkIcon, ShieldCheck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { request } from '@/lib/client';
-import { parseMeetingLink } from '@/lib/format';
+import { parseMeetingLink, meetingPath } from '@/lib/meeting-links';
 import { useToast } from './providers';
 import type { Person } from '@/lib/types';
 export function MeetingForm({
@@ -43,12 +43,11 @@ export function MeetingForm({
                 title: f.get('title'),
                 lobby: true,
               });
-              router.push('/room/' + id);
+              router.push(meetingPath(id));
             } else {
               const id = parseMeetingLink(String(f.get('link')));
-              if (!/^[a-f0-9]{6}-[a-f0-9]{6}-[a-f0-9]{6}$/.test(id))
-                throw new Error('Paste a valid meeting link or code.');
-              router.push('/room/' + id);
+              if (!id) throw new Error('Paste a valid meeting link or code.');
+              router.push(meetingPath(id));
             }
           } catch (e) {
             toast((e as Error).message);
