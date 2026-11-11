@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { maxBrowserUrl, parseBrowserUrl } from './browser-url';
 export const displayName = z.string().trim().min(1).max(60);
 export const credentials = z.object({
   email: z
@@ -51,6 +52,19 @@ export const actionInput = z.discriminatedUnion('type', [
   z.object({ type: z.literal('clear-board') }),
   z.object({ type: z.literal('timer'), seconds: z.number().int().min(0).max(3600) }),
   z.object({ type: z.literal('review'), url: safeUrl, task: z.string().max(2000) }),
+  z.object({
+    type: z.literal('browser'),
+    url: z
+      .string()
+      .max(maxBrowserUrl)
+      .transform((value, ctx) => {
+        const url = parseBrowserUrl(value);
+        if (url) return url.href;
+        ctx.addIssue({ code: 'custom', message: 'Enter a public HTTPS page URL.' });
+        return z.NEVER;
+      })
+      .nullable(),
+  }),
   z.object({
     type: z.literal('marker'),
     kind: z.enum(['bug', 'idea', 'moment']),

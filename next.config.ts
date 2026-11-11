@@ -23,6 +23,10 @@ const config: NextConfig = {
     if (livekitUrl?.startsWith('wss://')) {
       mediaSources.push(new URL(livekitUrl).origin.replace(/^wss:/, 'https:'));
     }
+    const contentPolicy = (browser: boolean) => ({
+      key: 'Content-Security-Policy',
+      value: `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src ${mediaSources.join(' ')}${browser ? ' https://en.wikipedia.org' : ''}; media-src 'self' blob:; frame-src ${browser ? 'https:' : "'none'"}; frame-ancestors 'none'; base-uri 'self'; form-action 'self'`,
+    });
     return [
       {
         source: '/:path*',
@@ -34,12 +38,10 @@ const config: NextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(self), microphone=(self), display-capture=(self), geolocation=()',
           },
-          {
-            key: 'Content-Security-Policy',
-            value: `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src ${mediaSources.join(' ')}; media-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'`,
-          },
+          contentPolicy(false),
         ],
       },
+      { source: '/playground-meet/:id', headers: [contentPolicy(true)] },
     ];
   },
 };

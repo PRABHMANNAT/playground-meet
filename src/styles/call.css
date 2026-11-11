@@ -55,6 +55,7 @@
 .stage-actions {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 14px;
 }
 .gallery-button {
@@ -404,6 +405,84 @@
   background: var(--surface);
   border-radius: 14px;
   overflow: hidden;
+}
+@media (min-width: 721px) {
+  .meeting-shell .room-panel[data-panel='browser'] {
+    width: min(65%, 900px);
+  }
+}
+.browser-panel form,
+.browser-preview,
+.browser-results {
+  gap: 8px;
+}
+.browser-address {
+  display: flex;
+  gap: 8px;
+}
+.browser-address input {
+  min-width: 0;
+}
+.browser-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.browser-row .text-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.browser-shared,
+.browser-preview-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper-2);
+}
+.browser-shared-info {
+  display: grid;
+  flex: 1 1 160px;
+  min-width: 0;
+}
+.browser-shared-info span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  color: var(--muted);
+}
+.browser-preview-toolbar strong {
+  overflow-wrap: anywhere;
+}
+.browser-preview iframe {
+  width: 100%;
+  height: clamp(320px, 58dvh, 760px);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+.browser-results button {
+  justify-content: space-between;
+  text-align: left;
+}
+.browser-results button span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.browser-empty {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
 }
 .meeting-shell .panel-heading {
   padding: 18px 20px;

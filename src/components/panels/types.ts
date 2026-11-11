@@ -7,4 +7,5 @@ export type PanelProps = {
   demoNames?: string[];
   onRemoveDemo?: (name: string) => void;
 };
-export type Panel = 'chat' | 'people' | 'notes' | 'polls' | 'board' | 'timer' | 'review';
+export type Panel =
+  'chat' | 'people' | 'notes' | 'polls' | 'board' | 'timer' | 'review' | 'browser';

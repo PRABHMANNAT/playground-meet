@@ -7,6 +7,7 @@ import { PollsPanel } from './polls';
 import { BoardPanel } from './board';
 import { TimerPanel } from './timer';
 import { ReviewPanel } from './review';
+import { BrowserPanel } from './browser';
 import type { Panel, PanelProps } from './types';
 const panels = {
   chat: ChatPanel,
@@ -16,6 +17,7 @@ const panels = {
   board: BoardPanel,
   timer: TimerPanel,
   review: ReviewPanel,
+  browser: BrowserPanel,
 };
 const titles = {
   chat: 'Chat',
@@ -25,6 +27,7 @@ const titles = {
   board: 'Whiteboard',
   timer: 'Focus timer',
   review: 'Product review',
+  browser: 'Shared browser',
 };
 export function SidePanel({
   panel,
@@ -33,7 +36,7 @@ export function SidePanel({
 }: PanelProps & { panel: Panel; onClose: () => void }) {
   const Content = panels[panel];
   return (
-    <aside className="room-panel" aria-label={titles[panel]}>
+    <aside className="room-panel" aria-label={titles[panel]} data-panel={panel}>
       <div className="panel-heading">
         <h2>{titles[panel]}</h2>
         <button className="icon-button" onClick={onClose} aria-label="Close panel">

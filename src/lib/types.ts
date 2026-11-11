@@ -40,6 +40,7 @@ export type SharedState = {
   strokes: Stroke[];
   timer: { endsAt: number; duration: number };
   review: { url: string; task: string };
+  browser?: { url: string; sharedBy: string; name: string } | null;
 };
 export type Snapshot = {
   meeting: Meeting;

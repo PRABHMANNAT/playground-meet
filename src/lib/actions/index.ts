@@ -8,6 +8,7 @@ import { stroke } from './stroke';
 import { clearBoard } from './clear-board';
 import { timer } from './timer';
 import { review } from './review';
+import { browser } from './browser';
 import { admit } from './admit';
 import { remove } from './remove';
 import { lock } from './lock';
@@ -29,6 +30,7 @@ export const handlers: Record<Action['type'], Handler> = {
   'clear-board': clearBoard,
   timer,
   review,
+  browser,
   admit,
   remove,
   mute: chat,

@@ -32,6 +32,7 @@ Local development meetings include two clearly labeled **demo participants**, `p
 
 - HD adaptive video/audio, camera/microphone preview, device selection, screen sharing, speaker highlighting, participant pinning, picture-in-picture, fullscreen and keyboard shortcuts.
 - Instant invitation links, persistent guest sessions, optional password accounts, waiting rooms, host admission/removal/muting, room locking and end-for-all.
+- Shared browser for HTTPS previews, Wikipedia search, and sharing a page with admitted participants. Sites that block previews can be opened in a tab or shown with screen sharing.
 - Meeting and recap URLs always include `/playground-meet/`; older `/room/` links redirect, and copied invitations use the current deployment domain.
 - Persistent chat, raised hands, reactions, collaborative drawing, conflict-aware shared notes, polls, focus timers and shared product-review briefs.
 - Timestamped bug/idea/moment reports, ratings, meeting history and Markdown summaries assembled without AI.

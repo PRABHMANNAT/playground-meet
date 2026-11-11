@@ -36,6 +36,7 @@ import {
   LayoutGrid,
   ShieldCheck,
   UserPlus,
+  Globe,
 } from 'lucide-react';
 import { request, downloadSummary } from '@/lib/client';
 import { duration } from '@/lib/format';
@@ -254,6 +255,7 @@ function MeetingInterior({ id }: { id: string }) {
     { icon: BarChart3, p: 'polls', label: 'Polls', description: 'Ask a question and vote' },
     { icon: Timer, p: 'timer', label: 'Focus timer', description: 'Set time for a discussion' },
     { icon: Layers, p: 'review', label: 'Product review', description: 'Collect bugs and ideas' },
+    { icon: Globe, p: 'browser', label: 'Shared browser', description: 'Find and share web pages' },
   ] as const;
   return (
     <main className="meeting-shell" id="main">
@@ -316,6 +318,11 @@ function MeetingInterior({ id }: { id: string }) {
               </span>
             </div>
             <div className="stage-actions">
+              {data?.meeting.state.browser && panel !== 'browser' && (
+                <button className="gallery-button" onClick={() => setPanel('browser')}>
+                  <Globe size={14} /> Shared page
+                </button>
+              )}
               {focused && (
                 <button className="gallery-button" onClick={() => setPinnedTrack(null)}>
                   <LayoutGrid size={14} /> Back to gallery

@@ -16,6 +16,25 @@ test('unbounded or unknown commands cannot enter room state', () => {
   ])
     expect(actionInput.safeParse(command).success).toBe(false);
 });
+test('shared browser accepts only public-looking HTTPS URLs or a stop request', () => {
+  for (const url of [
+    'javascript:alert(1)',
+    'http://example.com',
+    'https://localhost',
+    'https://app.local',
+    'https://127.0.0.1/',
+    'https://0x7f000001',
+    'https://[::1]/',
+    'https://name:password@example.com/',
+    'https://example.com:8443/',
+  ])
+    expect(actionInput.safeParse({ type: 'browser', url }).success).toBe(false);
+  expect(actionInput.parse({ type: 'browser', url: 'https://example.com' })).toEqual({
+    type: 'browser',
+    url: 'https://example.com/',
+  });
+  expect(actionInput.parse({ type: 'browser', url: null })).toEqual({ type: 'browser', url: null });
+});
 test('account and room creation enforce usable limits', () => {
   expect(credentials.safeParse({ email: 'bad', password: 'short' }).success).toBe(false);
   expect(roomInput.safeParse({ title: '   ' }).success).toBe(false);
