@@ -69,7 +69,7 @@ export function Prejoin({ id, onJoin }: { id: string; onJoin: (devices: Devices)
     };
   }, [waiting, id, onJoin, devices]);
   return (
-    <>
+    <div className="meeting-entry">
       <Header />
       <main className="prejoin-main" id="main">
         <div className="prejoin-heading">
@@ -173,6 +173,6 @@ export function Prejoin({ id, onJoin }: { id: string; onJoin: (devices: Devices)
         </div>
         <p className="prejoin-footer">Your camera and microphone stay off until you enable them.</p>
       </main>
-    </>
+    </div>
   );
 }

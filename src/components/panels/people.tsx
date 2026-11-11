@@ -4,7 +4,7 @@ import { Check, X, MicOff, Hand, UserMinus } from 'lucide-react';
 import type { PanelProps } from './types';
 import { Avatar } from '../avatar';
 import { useParticipants } from '@livekit/components-react';
-export function PeoplePanel({ data, send, host, demoNames = [], onRemoveDemo }: PanelProps) {
+export function PeoplePanel({ data, send, host }: PanelProps) {
   const connected = useParticipants();
   const [pending, setPending] = useState(false);
   const inFlight = useRef(false);
@@ -93,32 +93,6 @@ export function PeoplePanel({ data, send, host, demoNames = [], onRemoveDemo }: 
             )}
           </div>
         ))}
-      {demoNames.length > 0 && (
-        <section className="demo-members" aria-label="Demo participants">
-          <h3 className="people-section-title">
-            Local preview <span>{demoNames.length}</span>
-          </h3>
-          {demoNames.map((name) => (
-            <div className="member" key={name}>
-              <Avatar name={name} />
-              <div className="member-info">
-                <strong>{name}</strong>
-                <small>Demo participant</small>
-              </div>
-              <button
-                className="icon-button"
-                aria-label={`Remove demo ${name}`}
-                onClick={() => onRemoveDemo?.(name)}
-              >
-                <X size={16} />
-              </button>
-            </div>
-          ))}
-          <p className="panel-helper">
-            Sample participants for this preview. No audio or video is transmitted.
-          </p>
-        </section>
-      )}
       {host && (
         <div className="host-settings">
           <h3 className="people-section-title">Host controls</h3>

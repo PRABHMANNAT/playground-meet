@@ -40,7 +40,13 @@ export type SharedState = {
   strokes: Stroke[];
   timer: { endsAt: number; duration: number };
   review: { url: string; task: string };
-  browser?: { url: string; sharedBy: string; name: string } | null;
+  browser?: {
+    url: string;
+    sharedBy: string;
+    name: string;
+    id?: string;
+    annotations?: BrowserStroke[];
+  } | null;
 };
 export type Snapshot = {
   meeting: Meeting;
@@ -58,3 +64,5 @@ export const emptyState = (): SharedState => ({
   timer: { endsAt: 0, duration: 300 },
   review: { url: '', task: '' },
 });
+
+export type BrowserStroke = { id: string; points: [number, number][] };

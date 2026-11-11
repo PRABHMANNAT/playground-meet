@@ -32,11 +32,12 @@ const titles = {
 export function SidePanel({
   panel,
   onClose,
+  hidden,
   ...props
-}: PanelProps & { panel: Panel; onClose: () => void }) {
+}: PanelProps & { panel: Panel; hidden?: boolean; onClose: () => void }) {
   const Content = panels[panel];
   return (
-    <aside className="room-panel" aria-label={titles[panel]} data-panel={panel}>
+    <aside className="room-panel" aria-label={titles[panel]} data-panel={panel} hidden={hidden}>
       <div className="panel-heading">
         <h2>{titles[panel]}</h2>
         <button className="icon-button" onClick={onClose} aria-label="Close panel">

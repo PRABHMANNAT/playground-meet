@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
 import { Client, base } from './helpers/client';
 async function main() {
   const host = new Client(),
@@ -23,9 +24,38 @@ async function main() {
   console.log('PASS authentication, isolation, waiting room, host admission');
   await act(guest, { type: 'browser', url: 'https://example.com' });
   const page = (await host.call(path + '/state')).meeting.state.browser;
-  assert.deepEqual(page, { url: 'https://example.com/', sharedBy: gp.id, name: gp.name });
+  assert.equal(page.url, 'https://example.com/');
+  assert.equal(page.sharedBy, gp.id);
+  assert.equal(page.name, gp.name);
+  assert.ok(page.id);
+  const browserStroke = {
+    id: randomUUID(),
+    points: [
+      [0.1, 0.2],
+      [0.2, 0.3],
+    ],
+  };
+  const annotate = { type: 'browser-annotate', shareId: page.id, ...browserStroke };
+  await act(outsider, annotate, 403);
+  await act(host, annotate);
+  await act(host, annotate);
+  const marked = await guest.call(path + '/state');
+  assert.deepEqual(marked.meeting.state.browser.annotations, [browserStroke]);
+  assert.ok(
+    marked.events
+      .filter((e: any) => e.kind === 'browser-annotate')
+      .every((e: any) => !e.payload.points),
+  );
   await outsider.call(path + '/state', undefined, 403);
   await act(host, { type: 'browser', url: 'https://www.iana.org/domains/reserved' });
+  await act(host, annotate, 409);
+  const nextPage = (await guest.call(path + '/state')).meeting.state.browser;
+  assert.deepEqual(nextPage.annotations, []);
+  await act(guest, { ...annotate, shareId: nextPage.id });
+  const clear = { type: 'browser-clear-annotations', shareId: nextPage.id };
+  await act(guest, clear, 403);
+  await act(host, clear);
+  assert.deepEqual((await guest.call(path + '/state')).meeting.state.browser.annotations, []);
   await act(guest, { type: 'browser', url: null }, 403);
   await act(host, { type: 'browser', url: null });
   const cleared = await guest.call(path + '/state');
@@ -33,7 +63,9 @@ async function main() {
   const browserEvents = cleared.events.filter((e: any) => e.kind === 'browser');
   assert.equal(browserEvents.length, 3);
   assert.ok(browserEvents.every((e: any) => !e.payload.url));
-  console.log('PASS shared browser updates, room isolation, stop permissions, and URL history');
+  console.log(
+    'PASS shared browser updates, room isolation, annotation sync, permissions, and URL history',
+  );
   await act(guest, { type: 'chat', text: 'Shared hello' });
   let snapshot = await host.call(path + '/state');
   assert.ok(snapshot.events.some((e: any) => e.payload.text === 'Shared hello'));

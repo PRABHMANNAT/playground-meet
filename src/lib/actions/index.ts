@@ -31,6 +31,8 @@ export const handlers: Record<Action['type'], Handler> = {
   timer,
   review,
   browser,
+  'browser-annotate': browser,
+  'browser-clear-annotations': browser,
   admit,
   remove,
   mute: chat,

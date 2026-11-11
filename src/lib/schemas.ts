@@ -66,6 +66,16 @@ export const actionInput = z.discriminatedUnion('type', [
       .nullable(),
   }),
   z.object({
+    type: z.literal('browser-annotate'),
+    shareId: z.uuid(),
+    id: z.uuid(),
+    points: z
+      .array(z.tuple([z.number().min(0).max(1), z.number().min(0).max(1)]))
+      .min(1)
+      .max(160),
+  }),
+  z.object({ type: z.literal('browser-clear-annotations'), shareId: z.uuid() }),
+  z.object({
     type: z.literal('marker'),
     kind: z.enum(['bug', 'idea', 'moment']),
     text: z.string().trim().min(1).max(2000),

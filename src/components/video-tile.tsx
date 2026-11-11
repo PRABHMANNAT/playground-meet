@@ -108,22 +108,3 @@ export function VideoTile({
     </div>
   );
 }
-export function DemoTile({ name, tone }: { name: string; tone: number }) {
-  return (
-    <div className="tile demo-tile" data-tone={tone} aria-label={`${name}, demo participant`}>
-      <div className="tile-avatar">
-        <Avatar name={name} size="large" />
-        <div className="tile-identity">
-          <strong>{name}</strong>
-          <small>Camera off</small>
-        </div>
-      </div>
-      <div className="tile-label">
-        <MicOff size={14} />
-        <span>{name}</span>
-        <b className="demo-label">Demo</b>
-      </div>
-      <span className="tile-demo-note">Sample participant</span>
-    </div>
-  );
-}

@@ -1,13 +1,88 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
-import { ExternalLink, Globe, Search, Share2 } from 'lucide-react';
+import { useEffect, useId, useRef, useState } from 'react';
+import { ExternalLink, Globe, Plus, Search, Share2, X } from 'lucide-react';
 import { maxBrowserUrl, parseBrowserUrl } from '@/lib/browser-url';
+import { BrowserAnnotations } from './browser-annotations';
 import type { PanelProps } from './types';
 
 type SearchResult = { pageid: number; title: string };
 const looksLikeAddress = /^(?:[a-z][\w+.-]*:|[^\s/]+\.[^\s/]+)/i;
 
-export function BrowserPanel({ data, host, send }: PanelProps) {
+const maxTabs = 5;
+
+export function BrowserPanel(props: PanelProps) {
+  const [tabs, setTabs] = useState([{ id: 1, title: 'New tab' }]);
+  const [selected, setSelected] = useState(1);
+  const nextId = useRef(2);
+
+  function closeTab(id: number) {
+    const index = tabs.findIndex((tab) => tab.id === id);
+    if (tabs.length === 1) return;
+    if (selected === id) setSelected(tabs[index + 1]?.id ?? tabs[index - 1].id);
+    setTabs((items) => items.filter((item) => item.id !== id));
+  }
+
+  return (
+    <div className="stack browser-panel">
+      <div className="browser-tabs" role="group" aria-label="Browser tabs">
+        {tabs.map(({ id, title }) => (
+          <div className="browser-tab" key={id} data-selected={selected === id}>
+            <button
+              type="button"
+              aria-pressed={selected === id}
+              title={title}
+              onClick={() => setSelected(id)}
+            >
+              <Globe size={14} /> <span>{title}</span>
+            </button>
+            {tabs.length > 1 && (
+              <button
+                type="button"
+                className="browser-tab-close"
+                aria-label={'Close ' + title + ' tab'}
+                onClick={() => closeTab(id)}
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+        ))}
+        <button
+          type="button"
+          className="icon-button"
+          aria-label="Add browser tab"
+          title={tabs.length >= maxTabs ? 'Maximum 5 tabs' : 'Add browser tab'}
+          disabled={tabs.length >= maxTabs}
+          onClick={() => {
+            const id = nextId.current++;
+            setTabs((items) => [...items, { id, title: 'New tab' }]);
+            setSelected(id);
+          }}
+        >
+          <Plus size={17} />
+        </button>
+      </div>
+      {tabs.map(({ id }) => (
+        <div key={id} hidden={selected !== id}>
+          <BrowserTab
+            {...props}
+            onTitle={(title) => {
+              setTabs((items) => items.map((item) => (item.id === id ? { ...item, title } : item)));
+            }}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function BrowserTab({
+  data,
+  host,
+  send,
+  onTitle,
+}: PanelProps & { onTitle: (title: string) => void }) {
+  const inputId = useId();
   const [address, setAddress] = useState('');
   const [preview, setPreview] = useState<{ url: string; shared: boolean } | null>(null);
   const [results, setResults] = useState<SearchResult[] | null>(null);
@@ -19,6 +94,17 @@ export function BrowserPanel({ data, host, send }: PanelProps) {
   const current = preview && (!preview.shared || preview.url === shared?.url) ? preview.url : '';
   const target = parseBrowserUrl(current);
   const query = address.trim();
+  const activeShare = shared && target?.href === shared.url ? shared : null;
+  const canManageShare = host || shared?.sharedBy === data.me.id;
+  const frame = target && (
+    <iframe
+      key={target.href}
+      title={'Preview of ' + target.hostname}
+      src={target.href}
+      sandbox="allow-scripts"
+      referrerPolicy="no-referrer"
+    />
+  );
   useEffect(() => () => activeSearch.current?.abort(), []);
 
   function openPage(url: string, fromShare = false) {
@@ -27,6 +113,7 @@ export function BrowserPanel({ data, host, send }: PanelProps) {
     setResults(null);
     setError('');
     setAddress(url);
+    onTitle(new URL(url).hostname);
     setPreview({ url, shared: fromShare });
   }
 
@@ -42,6 +129,7 @@ export function BrowserPanel({ data, host, send }: PanelProps) {
     }
 
     setPreview(null);
+    onTitle(query);
     const controller = new AbortController();
     activeSearch.current = controller;
     setSearching(true);
@@ -80,7 +168,7 @@ export function BrowserPanel({ data, host, send }: PanelProps) {
   }
 
   return (
-    <div className="stack browser-panel">
+    <div className="stack">
       <form
         className="stack"
         onSubmit={(event) => {
@@ -88,10 +176,10 @@ export function BrowserPanel({ data, host, send }: PanelProps) {
           if (query) void openOrSearch();
         }}
       >
-        <label htmlFor="meeting-browser-address">Page address or search</label>
+        <label htmlFor={inputId}>Page address or search</label>
         <div className="browser-address">
           <input
-            id="meeting-browser-address"
+            id={inputId}
             type="text"
             autoComplete="off"
             spellCheck={false}
@@ -133,7 +221,7 @@ export function BrowserPanel({ data, host, send }: PanelProps) {
             <button className="button secondary small" onClick={() => openPage(shared.url, true)}>
               View page
             </button>
-            {(host || shared.sharedBy === data.me.id) && (
+            {canManageShare && (
               <button
                 className="button secondary small"
                 disabled={sharing}
@@ -176,23 +264,29 @@ export function BrowserPanel({ data, host, send }: PanelProps) {
               </a>
               <button
                 className="button primary small"
-                disabled={sharing || shared?.url === target.href}
+                disabled={sharing || !!activeShare?.id}
                 onClick={() => void share(target.href)}
               >
-                <Share2 size={14} /> {shared?.url === target.href ? 'Shared' : 'Share page'}
+                <Share2 size={14} /> {activeShare?.id ? 'Shared' : 'Share page'}
               </button>
             </div>
           </div>
-          <iframe
-            key={target.href}
-            title={`Preview of ${target.hostname}`}
-            src={target.href}
-            sandbox="allow-scripts"
-            referrerPolicy="no-referrer"
-          />
+          {activeShare?.id ? (
+            <BrowserAnnotations
+              key={activeShare.id}
+              shareId={activeShare.id}
+              strokes={activeShare.annotations ?? []}
+              canClear={canManageShare}
+              send={send}
+            >
+              {frame}
+            </BrowserAnnotations>
+          ) : (
+            frame
+          )}
           <p className="panel-helper">
             If the preview is blocked, open the page in a tab. To show your clicks and scrolling,
-            use Screen share.
+            use Screen share. Annotations mark the preview area, so keep the same scroll position.
           </p>
         </section>
       ) : (

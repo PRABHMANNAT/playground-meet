@@ -65,6 +65,30 @@
 .header-actions .icon-button {
   flex-shrink: 0;
 }
+:is(.home-page, .meeting-entry, .meeting-shell) {
+  --mint: var(--paper-2);
+  --paper: #fff;
+  --surface: #fff;
+  --paper-2: #f5f5f5;
+  --ink: #000;
+  --muted: #575757;
+  --line: #dedede;
+  --blue: #555;
+  --shadow: 0 2px 12px #00000006;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+:root[data-theme='dark'] :is(.home-page, .meeting-entry, .meeting-shell) {
+  --paper: #000;
+  --surface: #101010;
+  --paper-2: #191919;
+  --ink: #fff;
+  --muted: #b5b5b5;
+  --line: #333;
+  --blue: #ccc;
+  --shadow: none;
+}
 .home-page {
   --home-gutter: 32px;
   display: flex;
@@ -73,6 +97,27 @@
 }
 .home-page .site-header {
   padding-inline: max(var(--home-gutter), calc((100% - 1120px) / 2));
+  background: var(--paper);
+}
+.home-page .brand-dot {
+  color: inherit;
+}
+:is(.home-page, .meeting-entry) .header-actions > .small {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+:is(.home-page, .meeting-entry) .header-actions > .small:hover {
+  opacity: 0.82;
+}
+.home-page .header-actions > .icon-button {
+  border-color: var(--line);
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--ink);
+}
+.home-page .header-actions > .icon-button:hover {
+  background: var(--paper-2);
 }
 .home-main,
 .home-page .footer {
@@ -87,10 +132,11 @@
   margin-bottom: 30px;
 }
 .home-heading h1 {
-  font-size: clamp(28px, 4vw, 38px);
+  color: var(--ink);
+  font-size: clamp(32px, 5vw, 46px);
   font-weight: 700;
-  letter-spacing: -1.25px;
-  line-height: 1.2;
+  letter-spacing: -0.055em;
+  line-height: 1.08;
 }
 .home-heading p {
   color: var(--muted);
@@ -114,7 +160,7 @@
 }
 .launch-tabs {
   display: flex;
-  background: var(--paper-2);
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 9px;
   padding: 4px;
@@ -138,12 +184,12 @@
 }
 .launch-tabs button[aria-pressed='false']:hover {
   color: var(--ink);
+  background: var(--paper-2);
 }
 .launch-tabs button[aria-pressed='true'] {
-  background: var(--surface);
-  color: var(--ink);
-  border-color: var(--line);
-  box-shadow: 0 1px 2px #00000006;
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
 }
 .launch-card form {
   gap: 20px;
@@ -245,23 +291,51 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 13px;
+  gap: 16px;
   text-align: center;
   flex: 1;
-  min-height: 220px;
-  padding: 24px 16px;
+  min-height: 204px;
+  padding: 28px 16px;
   background: var(--paper-2);
-  border-radius: 8px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
   color: var(--muted);
   font-size: 13px;
 }
+.history-empty-icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: var(--ink);
+  color: var(--paper);
+}
+.history-empty-badge {
+  position: absolute;
+  right: -6px;
+  bottom: -4px;
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  border: 2px solid var(--paper-2);
+  background: var(--surface);
+  color: var(--ink);
+}
 .history-empty h3 {
   color: var(--ink);
-  font-size: 14px;
+  font-size: 16px;
+  font-weight: 650;
   letter-spacing: 0;
 }
 .history-empty p {
   max-width: 280px;
+}
+.history-empty h3 + p {
+  margin-top: 4px;
 }
 .footer {
   display: flex;

@@ -1,7 +1,15 @@
 'use client';
 import { AnimatePresence, motion } from 'motion/react';
+import { Hand, Heart, PartyPopper, ThumbsUp, Lightbulb, Laugh } from 'lucide-react';
 import type { Event } from '@/lib/types';
 export const emojis = ['👏', '❤️', '🎉', '👍', '💡', '😂'] as const;
+const icons = [Hand, Heart, PartyPopper, ThumbsUp, Lightbulb, Laugh] as const;
+
+export function ReactionIcon({ emoji, size = 20 }: { emoji: string; size?: number }) {
+  const Icon = icons[emojis.findIndex((value) => value === emoji)];
+  return Icon ? <Icon size={size} aria-hidden="true" /> : null;
+}
+
 export function Reactions({ events, now }: { events: Event[]; now: number }) {
   return (
     <div aria-live="polite" aria-label="Meeting reactions">
@@ -19,7 +27,9 @@ export function Reactions({ events, now }: { events: Event[]; now: number }) {
               style={{ left: `${25 + (e.id % 50)}%` }}
               title={e.name}
             >
-              <span aria-label={`${e.name} reacted`}>{String(e.payload.emoji)}</span>
+              <span role="img" aria-label={e.name + ' reacted ' + e.payload.emoji}>
+                <ReactionIcon emoji={String(e.payload.emoji)} size={34} />
+              </span>
             </motion.div>
           ))}
       </AnimatePresence>

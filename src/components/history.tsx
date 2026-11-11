@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Clock, ArrowRight } from 'lucide-react';
+import { ArrowRight, Clock, FileText, Video } from 'lucide-react';
 import { request } from '@/lib/client';
 import { meetingPath } from '@/lib/meeting-links';
 type Recent = { id: string; title: string; created: number; ended: boolean };
@@ -57,8 +57,8 @@ export function History({
         <div className="history-list">
           {items.slice(0, 6).map((item) => (
             <article className="history-row" key={item.id}>
-              <span className="history-icon">
-                <Clock size={19} />
+              <span className="history-icon" aria-hidden="true">
+                {item.ended ? <FileText size={18} /> : <Video size={18} />}
               </span>
               <div className="history-info">
                 <h3>{item.title}</h3>
@@ -86,9 +86,16 @@ export function History({
         </div>
       ) : (
         <div className="history-empty">
-          <Clock size={28} />
-          <h3>No meetings yet</h3>
-          <p>Start or join a meeting to see it here.</p>
+          <span className="history-empty-icon" aria-hidden="true">
+            <Video size={25} strokeWidth={1.7} />
+            <span className="history-empty-badge">
+              <Clock size={12} strokeWidth={2} />
+            </span>
+          </span>
+          <div>
+            <h3>No meetings yet</h3>
+            <p>Start or join a meeting to see it here.</p>
+          </div>
         </div>
       )}
       {!personId && !sessionLoading && (

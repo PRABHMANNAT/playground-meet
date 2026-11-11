@@ -31,8 +31,8 @@
   width: clamp(72px, 8vw, 106px);
   height: clamp(72px, 8vw, 106px);
   border-radius: 35%;
-  background: var(--avatar-bg);
-  color: var(--avatar-fg);
+  background: var(--ink);
+  color: var(--paper);
   font-size: 31px;
   font-weight: 600;
   box-shadow:
@@ -46,8 +46,8 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  background: #f0ede2;
-  color: #3d4938;
+  background: var(--ink);
+  color: var(--paper);
   border-radius: 6px;
   padding: 5px 9px;
   font-size: 10px;
@@ -84,7 +84,7 @@
 }
 .meeting-shell .tile-actions button:hover,
 .meeting-shell .tile-actions button[aria-pressed='true'] {
-  background: #ffffff25;
+  background: var(--muted);
 }
 .meeting-shell .chat-message header {
   align-items: center;
@@ -166,31 +166,11 @@
 }
 .meeting-shell .control:focus-visible,
 .meeting-shell .tile-actions button:focus-visible {
-  outline: 2px solid #8b9e80;
+  outline: 2px solid var(--muted);
   outline-offset: 3px;
 }
 .meeting-shell .control:active {
   transform: scale(0.96);
-}
-.meeting-shell {
-  --paper: #f7f8f6;
-  --paper-2: #eef0ec;
-  --surface: #ffffff;
-  --ink: #252c29;
-  --muted: #737c76;
-  --line: #dfe4de;
-  --mint: #e4ebe2;
-  background: var(--paper);
-  color: var(--ink);
-}
-[data-theme='dark'] .meeting-shell {
-  --paper: #181b1a;
-  --paper-2: #2b302d;
-  --surface: #222624;
-  --ink: #edf0e9;
-  --muted: #a5ada6;
-  --line: #373d38;
-  --mint: #354239;
 }
 .meeting-shell .room-header {
   height: 80px;
@@ -225,19 +205,15 @@
 }
 .meeting-shell .pulse-dot {
   box-shadow: none;
-  background: #73886c;
+  background: var(--ink);
 }
 .meeting-shell .room-header .button {
   min-height: 40px;
   padding: 10px 15px;
   font-size: 12px;
-  border-color: var(--line);
-  background: var(--surface);
-  color: var(--ink);
   border-radius: 9px;
 }
 .meeting-shell .room-header .icon-button {
-  color: var(--muted);
   width: 40px;
   height: 40px;
 }
@@ -302,43 +278,20 @@
   grid-auto-rows: minmax(180px, 1fr);
 }
 .meeting-shell .tile {
-  background: #2e3532;
-  border: 1px solid #ffffff08;
+  background: var(--paper-2);
+  border: 1px solid var(--line);
   border-radius: 14px;
   min-height: 160px;
   box-shadow: 0 2px 4px #17201a08;
 }
-.meeting-shell .tile[data-tone='1'] {
-  background: #363c44;
-}
-.meeting-shell .tile[data-tone='2'] {
-  background: #443f3a;
-}
 .meeting-shell .tile.speaking {
-  border-color: #8f9f87;
-  box-shadow: inset 0 0 0 1px #8f9f87;
+  border-color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink);
 }
 .meeting-shell .tile-avatar {
   flex-direction: column;
   gap: 18px;
   padding-bottom: 16px;
-}
-.meeting-shell .tile-avatar > span:not(.avatar) {
-  width: clamp(64px, 7vw, 94px);
-  height: clamp(64px, 7vw, 94px);
-  background: #d4ded1;
-  color: #334330;
-  font-size: 28px;
-  font-weight: 500;
-  letter-spacing: -1px;
-}
-.meeting-shell .tile[data-tone='1'] .tile-avatar > span:not(.avatar) {
-  background: #d7dde7;
-  color: #414d60;
-}
-.meeting-shell .tile[data-tone='2'] .tile-avatar > span:not(.avatar) {
-  background: #e6d9cb;
-  color: #645241;
 }
 .tile-identity {
   display: flex;
@@ -347,12 +300,12 @@
   gap: 5px;
 }
 .tile-identity strong {
-  color: #f0f2ed;
+  color: var(--ink);
   font-size: 15px;
   font-weight: 550;
 }
 .tile-identity small {
-  color: #b2bab4;
+  color: var(--muted);
   font-size: 11px;
 }
 .meeting-shell .tile-label {
@@ -365,11 +318,12 @@
   backdrop-filter: none;
   gap: 8px;
   font-size: 12px;
-  color: #eff2ed;
+  color: var(--ink);
 }
 .meeting-shell .tile:has(video) .tile-label {
   padding: 6px 10px;
-  background: #1c221dd9;
+  background: #000c;
+  color: #fff;
   border-radius: 6px;
 }
 .meeting-shell .tile-actions {
@@ -379,25 +333,10 @@
 .meeting-shell .tile-actions button {
   width: 34px;
   height: 34px;
-  background: #ffffff0c;
-  border: 1px solid #ffffff12;
+  color: var(--paper);
+  background: var(--ink);
+  border: 1px solid var(--ink);
   border-radius: 8px;
-}
-.demo-label {
-  font-size: 9px;
-  font-weight: 500;
-  color: #e1e4de;
-  background: #ffffff12;
-  border: 1px solid #ffffff15;
-  padding: 1px 6px;
-  border-radius: 4px;
-}
-.tile-demo-note {
-  position: absolute;
-  right: 16px;
-  top: 16px;
-  font-size: 10px;
-  color: #c4c9c3;
 }
 .meeting-shell .room-panel {
   width: 330px;
@@ -551,14 +490,6 @@
   font-size: 10px;
   margin-top: 3px;
 }
-.demo-members {
-  border-top: 1px solid var(--line);
-  margin-top: 17px;
-  padding-top: 20px;
-}
-.demo-members .panel-helper {
-  margin-top: 8px;
-}
 .meeting-shell .host-settings {
   margin-top: 24px;
   gap: 20px;
@@ -640,43 +571,35 @@
   width: 48px;
   height: 44px;
   border-radius: 10px;
-  border: 1px solid var(--line);
-  background: var(--surface);
-  color: var(--ink);
 }
-.meeting-shell .control:hover {
-  background: var(--paper-2);
-}
+
 .meeting-shell .control svg {
   width: 19px;
   height: 19px;
   stroke-width: 1.7;
 }
-.meeting-shell .control.off {
-  background: var(--paper-2);
-  color: var(--ink);
-}
 .meeting-shell .toolbar-tool.active .control {
-  background: #e3ebdf;
-  border-color: #c6d2c0;
-  color: #354c2d;
+  box-shadow:
+    0 0 0 2px var(--paper),
+    0 0 0 3px var(--ink);
 }
 .meeting-shell .control.danger {
-  background: #b54b43;
-  color: #fff;
-  border-color: #b54b43;
   width: 60px;
 }
-.meeting-shell .control.danger:hover {
-  background: #9b3933;
-}
 .meeting-shell .toolbar-count {
-  background: #53664d;
-  color: #fff;
+  background: var(--paper);
+  color: var(--ink);
   font-size: 9px;
 }
 .meeting-shell .reactions-menu {
   bottom: 110px;
+  gap: 4px;
+}
+.meeting-shell .reactions-menu button {
+  border-radius: 8px;
+}
+.meeting-shell .reactions-menu button:hover {
+  transform: translateY(-2px);
 }
 .meeting-shell .call-status {
   background: var(--paper-2);
@@ -873,4 +796,117 @@
   .stage-actions .stage-privacy {
     display: none;
   }
+}
+
+.meeting-entry {
+  min-height: 100dvh;
+}
+.meeting-entry .preview-stage {
+  background: var(--paper-2);
+  border-color: var(--line);
+  color: var(--ink);
+}
+:is(.meeting-entry, .meeting-shell) .button.primary,
+.meeting-entry .preview-controls .control,
+.meeting-shell
+  :is(.room-header .button, .room-header .icon-button, .control, .reactions-menu button) {
+  background: var(--ink);
+  color: var(--paper);
+  border: 1px solid var(--ink);
+}
+:is(.meeting-entry, .meeting-shell) .button.primary:hover,
+.meeting-entry .preview-controls .control:hover,
+.meeting-shell
+  :is(.room-header .button, .room-header .icon-button, .control, .reactions-menu button):hover {
+  opacity: 0.78;
+}
+.meeting-shell .room-header .icon-button {
+  border-radius: 9px;
+}
+.meeting-shell .reaction-rain span {
+  display: grid;
+  place-items: center;
+  padding: 8px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
+}
+.meeting-shell .room-panel[hidden],
+.browser-panel > [hidden] {
+  display: none;
+}
+.browser-tabs {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  overflow-x: auto;
+  padding: 3px;
+  border-radius: 9px;
+  background: var(--paper-2);
+}
+.browser-tab {
+  display: flex;
+  flex: 0 0 auto;
+  max-width: 165px;
+  color: var(--muted);
+  border-radius: 7px;
+}
+.browser-tab[data-selected='true'] {
+  background: var(--ink);
+  color: var(--paper);
+}
+.browser-tab button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  min-height: 36px;
+  padding: 0 9px;
+  color: inherit;
+  font-size: 12px;
+}
+.browser-tab button svg {
+  flex: none;
+}
+.browser-tab button span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.browser-tab button.browser-tab-close {
+  padding-inline: 5px 8px;
+}
+.browser-tabs .icon-button {
+  flex: none;
+}
+.browser-preview-stage {
+  position: relative;
+}
+.browser-preview iframe {
+  display: block;
+}
+.browser-ink {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.browser-ink[data-drawing='true'] {
+  pointer-events: auto;
+  touch-action: none;
+  cursor: crosshair;
+}
+.browser-ink polyline,
+.browser-ink circle {
+  stroke: #813bff;
+  stroke-width: 3px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 0 1px #fff);
+}
+.browser-ink circle {
+  fill: #813bff;
 }

@@ -24,15 +24,11 @@ npm run dev
 
 Open **http://localhost:3000** (use localhost, matching APP_URL). On Windows, use `Copy-Item .env.example .env.local` and the official Windows LiveKit executable. No database account is needed locally; PGlite persists data in `.data/meet`.
 
-Local development meetings include two clearly labeled **demo participants**, `prabh2` and `bhumi`, to preview the grid. They are visual samples, not connected users: they publish no media, do not enter server membership or participant counts, and cannot receive chat or notes. Hide them from **Tools → Hide demo participants**, or remove them individually in **People**. They are disabled in production builds and on non-localhost hosts.
-
-![Meeting interface with labeled demo participants](docs/assets/meeting-preview.jpg)
-
 ## What works
 
 - HD adaptive video/audio, camera/microphone preview, device selection, screen sharing, speaker highlighting, participant pinning, picture-in-picture, fullscreen and keyboard shortcuts.
 - Instant invitation links, persistent guest sessions, optional password accounts, waiting rooms, host admission/removal/muting, room locking and end-for-all.
-- Shared browser for HTTPS previews, Wikipedia search, and sharing a page with admitted participants. Sites that block previews can be opened in a tab or shown with screen sharing.
+- Shared browser for multiple local tabs, HTTPS previews, Wikipedia search, and sharing and annotating a page with admitted participants. Sites that block previews can be opened in a tab or shown with screen sharing.
 - Meeting and recap URLs always include `/playground-meet/`; older `/room/` links redirect, and copied invitations use the current deployment domain.
 - Persistent chat, raised hands, reactions, collaborative drawing, conflict-aware shared notes, polls, focus timers and shared product-review briefs.
 - Timestamped bug/idea/moment reports, ratings, meeting history and Markdown summaries assembled without AI.

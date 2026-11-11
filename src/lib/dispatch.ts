@@ -39,7 +39,8 @@ export async function dispatch(id: string, person: Person, action: Action) {
       'UPDATE rooms SET state=$1,ended=$2,locked=$3,lobby=$4,revision=revision+1 WHERE id=$5',
       [JSON.stringify(room.state), room.ended, room.locked, room.lobby, id],
     );
-    const payload = ['notes', 'stroke', 'browser'].includes(action.type) ? {} : action;
+    const payload =
+      action.type.startsWith('browser') || ['notes', 'stroke'].includes(action.type) ? {} : action;
     await db.query(
       'INSERT INTO events(room,kind,actor,name,payload,created) VALUES($1,$2,$3,$4,$5,$6)',
       [id, action.type, person.id, person.name, JSON.stringify(payload), Date.now()],

@@ -35,7 +35,6 @@ import {
   Settings2,
   LayoutGrid,
   ShieldCheck,
-  UserPlus,
   Globe,
 } from 'lucide-react';
 import { request, downloadSummary } from '@/lib/client';
@@ -44,11 +43,12 @@ import { meetingPath, meetingInviteUrl } from '@/lib/meeting-links';
 import { useRoomState } from '@/hooks/use-room-state';
 import { useShortcuts } from '@/hooks/use-shortcuts';
 import { Brand } from './brand';
+import { ThemeToggle } from './theme-toggle';
 import { useToast } from './providers';
-import { VideoTile, DemoTile } from './video-tile';
+import { VideoTile } from './video-tile';
 import { SidePanel } from './panels';
 import type { Panel } from './panels/types';
-import { Reactions, emojis } from './reactions';
+import { ReactionIcon, Reactions, emojis } from './reactions';
 import { Shortcuts } from './shortcuts';
 import { Dialog } from './dialog';
 import { MediaDeviceSelect } from '@livekit/components-react';
@@ -153,18 +153,9 @@ function MeetingInterior({ id }: { id: string }) {
     [leaving, setLeaving] = useState(false),
     [settings, setSettings] = useState(false),
     [toolsOpen, setToolsOpen] = useState(false),
-    [demoNames, setDemoNames] = useState<string[]>([]),
-    [localPreview, setLocalPreview] = useState(false),
     [pinnedTrack, setPinnedTrack] = useState<string | null>(null),
     [now, setNow] = useState(Date.now());
   const participants = useParticipants();
-  useEffect(() => {
-    const enabled =
-      process.env.NODE_ENV === 'development' &&
-      ['localhost', '127.0.0.1'].includes(location.hostname);
-    setLocalPreview(enabled);
-    if (enabled) setDemoNames(['prabh2', 'bhumi']);
-  }, []);
   const local = useLocalParticipant(),
     connection = useConnectionState();
   const tracks = useTracks([
@@ -173,9 +164,7 @@ function MeetingInterior({ id }: { id: string }) {
   ]);
   const trackKey = (t: (typeof tracks)[number]) => t.participant.identity + ':' + t.source;
   const focused =
-    tracks.length + demoNames.length > 1 && tracks.some((t) => trackKey(t) === pinnedTrack)
-      ? pinnedTrack
-      : null;
+    tracks.length > 1 && tracks.some((t) => trackKey(t) === pinnedTrack) ? pinnedTrack : null;
   const visibleTracks = focused
     ? [...tracks].sort((a, b) => Number(trackKey(b) === focused) - Number(trackKey(a) === focused))
     : tracks;
@@ -270,6 +259,7 @@ function MeetingInterior({ id }: { id: string }) {
           </span>
         </div>
         <div className="room-header-right">
+          <ThemeToggle />
           <button
             className="button secondary"
             aria-label="Invite people"
@@ -310,12 +300,7 @@ function MeetingInterior({ id }: { id: string }) {
           <div className="stage-heading">
             <div>
               <h2>In this meeting</h2>
-              <span>
-                {participants.length} connected
-                {demoNames.length > 0
-                  ? ` · ${demoNames.length} demo participant${demoNames.length === 1 ? '' : 's'}`
-                  : ''}
-              </span>
+              <span>{participants.length} connected</span>
             </div>
             <div className="stage-actions">
               {data?.meeting.state.browser && panel !== 'browser' && (
@@ -335,8 +320,8 @@ function MeetingInterior({ id }: { id: string }) {
           </div>
           <div
             className="video-grid"
-            data-count={tracks.length + demoNames.length}
-            data-many={tracks.length + demoNames.length > 4}
+            data-count={tracks.length}
+            data-many={tracks.length > 4}
             data-layout={focused ? 'focus' : 'gallery'}
           >
             {visibleTracks.map((t) => (
@@ -345,31 +330,31 @@ function MeetingInterior({ id }: { id: string }) {
                 track={t}
                 pinned={focused === trackKey(t)}
                 onPin={
-                  tracks.length + demoNames.length > 1
+                  tracks.length > 1
                     ? () => setPinnedTrack(focused === trackKey(t) ? null : trackKey(t))
                     : undefined
                 }
                 raised={data?.members.find((m) => m.id === t.participant.identity)?.hand || false}
               />
             ))}
-            {demoNames.map((name, index) => (
-              <DemoTile key={name} name={name} tone={index + 1} />
-            ))}
           </div>
           {data && <Reactions events={data.events} now={now} />}
         </div>
-        {panel && data && (
-          <SidePanel
-            key={panel}
-            panel={panel}
-            onClose={() => setPanel(null)}
-            data={data}
-            host={host}
-            send={send}
-            demoNames={demoNames}
-            onRemoveDemo={(name) => setDemoNames((names) => names.filter((n) => n !== name))}
-          />
-        )}
+        {data &&
+          (panel && panel !== 'browser'
+            ? (['browser', panel] as const)
+            : (['browser'] as const)
+          ).map((tool) => (
+            <SidePanel
+              key={tool}
+              panel={tool}
+              hidden={tool !== panel}
+              onClose={() => setPanel(null)}
+              data={data}
+              host={host}
+              send={send}
+            />
+          ))}
       </div>
       {reactions && (
         <div className="reactions-menu">
@@ -382,7 +367,7 @@ function MeetingInterior({ id }: { id: string }) {
                 setReactions(false);
               }}
             >
-              {emoji}
+              <ReactionIcon emoji={emoji} />
             </button>
           ))}
         </div>
@@ -521,17 +506,6 @@ function MeetingInterior({ id }: { id: string }) {
             <Download size={20} />
             <span>Download summary</span>
           </button>
-          {localPreview && (
-            <button
-              onClick={() => {
-                setDemoNames(demoNames.length ? [] : ['prabh2', 'bhumi']);
-                setToolsOpen(false);
-              }}
-            >
-              <UserPlus size={20} />
-              <span>{demoNames.length ? 'Hide demo participants' : 'Show demo participants'}</span>
-            </button>
-          )}
         </div>
       </Dialog>
       <Dialog open={settings} onClose={() => setSettings(false)} title="Device settings">
