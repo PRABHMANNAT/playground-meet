@@ -1,60 +1,78 @@
 # Playground Meet
 
-A browser-based meeting space for Playground: Next.js, TypeScript, Motion, Tailwind, LiveKit and PostgreSQL. No paid APIs, AI service or Browserbase integration.
+Start a video call from your browser, invite people with a link, and keep the discussion and feedback in one place. Playground Meet pairs LiveKit calls with a shared browser, notes, a whiteboard, and an exportable meeting recap.
 
-![Playground Meet desktop interface](docs/assets/playground-meet.jpg)
+[**Open Playground Meet**](https://playground-meet.vercel.app/) · [Run locally](#run-locally) · [Deploy on Vercel](docs/VERCEL.md) · [MIT license](LICENSE)
 
-## Delivery status
+![Playground Meet homepage with controls to start or join a meeting and a recent meetings panel](docs/assets/home.jpg)
 
-The implementation is pushed to [PRABHMANNAT/playground-meet](https://github.com/PRABHMANNAT/playground-meet). The initial delivery contained 160 non-empty commits; later interface improvements are recorded in subsequent commits. Build, 30 unit tests, independent-user API scenarios and real LiveKit audio/video/screen transport tests pass; see [verification evidence](docs/VERIFICATION.md).
+## What you can do
 
-**Ready to import into Vercel.** Follow the [Vercel setup guide](docs/VERCEL.md) to connect PostgreSQL and LiveKit and configure your deployment. Public hosting and external services must be configured before live calls can work; this source update does not deploy a public site or purchase hosting.
+| Feature                  | What it does                                                                                                                                                                                       |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Start or join a call** | Create a meeting as a guest, share its invite link, and check your camera and microphone before joining. Sign in to keep meeting history across devices.                                           |
+| **Run the meeting**      | Admit guests from the waiting room, lock the room, moderate participants, or end the call for everyone. Share your screen and pin a participant in your own view.                                  |
+| **Browse together**      | Open up to five tabs, search Wikipedia, and share one HTTPS page at a time. Participants can draw on the shared preview. Use screen sharing for sites that block embeds or to show live scrolling. |
+| **Work together**        | Use chat, reactions, raised hands, shared notes, a whiteboard, polls, a focus timer, and a product review brief.                                                                                   |
+| **Follow up**            | Review notes and timestamped feedback, rate the meeting, and download a Markdown summary.                                                                                                          |
+
+Invites and recaps use the branded `/playground-meet/` route. Existing `/room/` links redirect to the same meeting.
+
+## A look inside
+
+These screenshots show the current local build with example meeting data.
+
+| Device check                                                                                         | In-call tools                                                         |
+| ---------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| ![Camera and microphone preview with device selectors and an invite button](docs/assets/prejoin.jpg) | ![Tools menu inside a LiveKit meeting](docs/assets/meeting-tools.jpg) |
+
+| Shared browser                                                                                        | Meeting recap                                                                                      |
+| ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| ![Shared browser with two tabs and an annotation on the page preview](docs/assets/shared-browser.jpg) | ![Meeting recap with download controls, star rating, and optional feedback](docs/assets/recap.jpg) |
 
 ## Run locally
 
-Requires Node 22+ and a [LiveKit server](https://docs.livekit.io/transport/self-hosting/local/).
+Install Node.js 22 or later and a [local LiveKit server](https://docs.livekit.io/transport/self-hosting/local/).
 
 ```sh
+git clone https://github.com/PRABHMANNAT/playground-meet.git
+cd playground-meet
 npm ci
 cp .env.example .env.local
 livekit-server --dev --bind 127.0.0.1
-# In a second terminal:
+```
+
+On Windows, use `Copy-Item .env.example .env.local` and run the LiveKit Windows executable. In a second terminal, start the app.
+
+```sh
 npm run dev
 ```
 
-Open **http://localhost:3000** (use localhost, matching APP_URL). On Windows, use `Copy-Item .env.example .env.local` and the official Windows LiveKit executable. No database account is needed locally; PGlite persists data in `.data/meet`.
+Open [localhost:3000](http://localhost:3000/). Local data persists in PGlite under `.data/meet`, so you can start without a hosted database. See the [local development guide](docs/LOCAL-DEVELOPMENT.md) for configuration and troubleshooting.
 
-## What works
+## Deploy and verify
 
-- HD adaptive video/audio, camera/microphone preview, device selection, screen sharing, speaker highlighting, participant pinning, picture-in-picture, fullscreen and keyboard shortcuts.
-- Instant invitation links, persistent guest sessions, optional password accounts, waiting rooms, host admission/removal/muting, room locking and end-for-all.
-- Shared browser for multiple local tabs, HTTPS previews, Wikipedia search, and sharing and annotating a page with admitted participants. Sites that block previews can be opened in a tab or shown with screen sharing.
-- Meeting and recap URLs always include `/playground-meet/`; older `/room/` links redirect, and copied invitations use the current deployment domain.
-- Persistent chat, raised hands, reactions, collaborative drawing, conflict-aware shared notes, polls, focus timers and shared product-review briefs.
-- Timestamped bug/idea/moment reports, ratings, meeting history and Markdown summaries assembled without AI.
-- Official Playground mark, Manrope font and landscape; responsive light/dark themes and reduced-motion support.
+- [Vercel](docs/VERCEL.md) connects the Next.js app to hosted PostgreSQL and LiveKit. You can use the assigned `vercel.app` domain.
+- [Docker](docs/DEPLOYMENT.md) runs the stack on your own host with HTTPS and TURN.
+- [Architecture](docs/ARCHITECTURE.md), [security](docs/SECURITY.md), and [Playground SSO](docs/INTEGRATION.md) cover the app and its integrations.
 
-Collaboration uses authorized conditional polling (1.2 seconds foreground, 5 seconds background); media uses actual WebRTC through LiveKit. This is optimized for small product-testing sessions, capped at 25 identities per room. It is not an unlimited enterprise conferencing service.
-
-## Deployment and verification
-
-- [Vercel deployment](docs/VERCEL.md) — Next.js on Vercel with external PostgreSQL and LiveKit.
-- [Docker deployment](docs/DEPLOYMENT.md) — HTTPS, DNS and TURN on your own host.
-- [Free-tier and capacity limits](docs/FREE-TIERS.md)
-- [Local setup](docs/LOCAL-DEVELOPMENT.md)
-- [Architecture](docs/ARCHITECTURE.md) and [security model](docs/SECURITY.md)
-- [Playground SSO integration](docs/INTEGRATION.md)
-- [Design sources](DESIGN.md)
-- [Testing guide](docs/TESTING.md)
+The app uses Next.js, TypeScript, and React. LiveKit carries media over WebRTC. PostgreSQL stores meeting state in production. Rooms support up to 25 identities.
 
 ```sh
 npm run typecheck
 npm test
 npm run build
-# With local Next.js and LiveKit running:
-npm run test:integration
+
+# With the app and LiveKit running locally
 npm run test:links
+npm run test:integration
 npm run test:media
 ```
 
-Vercel deployment needs PostgreSQL and LiveKit credentials; its assigned `vercel.app` domain can be used without custom DNS. Docker deployment needs a server and domain DNS access. The included deployment files do not provision paid services or enable billing.
+See the [testing guide](docs/TESTING.md) for coverage and test requirements.
+
+## Contributing and license
+
+Open a [GitHub issue](https://github.com/PRABHMANNAT/playground-meet/issues) with reproduction steps for bugs or a short description of the workflow you want to improve. See [SECURITY.md](docs/SECURITY.md) for the app's security model.
+
+The project code is available under the [MIT License](LICENSE). Playground branding, bundled fonts, and other third-party assets retain their respective rights. See [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
