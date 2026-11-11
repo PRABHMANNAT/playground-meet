@@ -771,10 +771,23 @@
   border: 1px solid var(--line);
   border-radius: 6px;
 }
+.recap-page :is(.site-header, .recap-card) {
+  background: var(--surface);
+  color: var(--ink);
+}
+.recap-page .brand-dot {
+  color: inherit;
+}
+.recap-page .header-actions .icon-button {
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--ink);
+}
 .recap {
   max-width: 680px;
   margin: 0 auto;
   padding: clamp(28px, 5vw, 56px) 22px 46px;
+  color: var(--ink);
 }
 .recap-hero {
   text-align: center;
@@ -786,8 +799,8 @@
   width: 50px;
   height: 50px;
   border-radius: 17px;
-  background: var(--paper-2);
-  color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
 }
 .recap-hero h1 {
   font-size: clamp(30px, 5vw, 44px);
@@ -825,6 +838,15 @@
 }
 .recap-card textarea {
   background: var(--paper-2);
+  color: var(--ink);
+}
+.recap-submit {
+  justify-self: start;
+}
+.recap-page .error-message {
+  color: var(--ink);
+  background: var(--paper-2);
+  border-color: var(--line);
 }
 .stars {
   display: flex;

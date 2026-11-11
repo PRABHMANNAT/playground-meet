@@ -18,7 +18,7 @@ export function Recap({ id }: { id: string }) {
       .catch((e) => setError(e.message));
   }, [id]);
   return (
-    <div className="meeting-entry">
+    <div className="meeting-entry recap-page">
       <Header />
       <main className="recap" id="main">
         <div className="recap-hero">
@@ -96,7 +96,7 @@ export function Recap({ id }: { id: string }) {
                   placeholder="Add feedback (optional)"
                   rows={3}
                 />
-                <button className="button secondary" disabled={saved}>
+                <button className="button primary recap-submit" disabled={saved}>
                   {saved ? (
                     <>
                       <Check size={16} /> Feedback saved
