@@ -6,4 +6,4 @@ export type PanelProps = {
   host: boolean;
 };
 export type Panel =
-  'chat' | 'people' | 'notes' | 'polls' | 'board' | 'actions' | 'decisions' | 'review' | 'browser';
+  'chat' | 'people' | 'notes' | 'polls' | 'actions' | 'decisions' | 'review' | 'browser';

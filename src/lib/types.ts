@@ -32,7 +32,15 @@ export type Poll = {
   votes: Record<string, number>;
   closed: boolean;
 };
-export type Stroke = { id: string; author: string; color: string; points: number[][] };
+export type Stroke = {
+  id: string;
+  author: string;
+  name?: string;
+  wide?: boolean;
+  width?: number;
+  color: string;
+  points: number[][];
+};
 export type ActionItem = {
   id: string;
   title: string;
@@ -55,6 +63,12 @@ export type SharedState = {
   notesVersion: number;
   polls: Poll[];
   strokes: Stroke[];
+  boardPresenter?: { id: string; name: string } | null;
+  boardEpoch?: number;
+  boardPreviews?: Record<
+    string,
+    { id: string; name: string; points: number[][]; width: number; expires: number }
+  >;
   timer: { endsAt: number; duration: number };
   review: { url: string; task: string };
   browser?: {

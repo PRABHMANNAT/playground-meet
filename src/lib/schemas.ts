@@ -21,6 +21,7 @@ export const safeUrl = z.union([
     .max(2000)
     .refine((v) => new URL(v).protocol === 'https:', 'Use an HTTPS product URL'),
 ]);
+const boardPoint = z.tuple([z.number().min(0).max(1), z.number().min(0).max(1)]);
 export const actionInput = z.discriminatedUnion('type', [
   z.object({ type: z.literal('chat'), text: z.string().trim().min(1).max(2000) }),
   z.object({
@@ -47,13 +48,25 @@ export const actionInput = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('stroke'),
     id: z.string().uuid(),
-    color: z.enum(['#FF7548', '#123B3F', '#0864B6', '#8b5cf6']),
+    wide: z.boolean().optional(),
+    width: z.number().int().min(1).max(12).optional(),
+    epoch: z.number().int().nonnegative().optional(),
+    color: z.enum(['#171717', '#FF7548', '#123B3F', '#0864B6', '#8b5cf6']),
     points: z
       .array(z.tuple([z.number().min(0).max(1), z.number().min(0).max(1)]))
       .min(2)
       .max(500),
   }),
   z.object({ type: z.literal('clear-board') }),
+  z.object({ type: z.literal('board-share'), active: z.boolean() }),
+  z.object({ type: z.literal('board-undo'), id: z.uuid() }),
+  z.object({
+    type: z.literal('board-preview'),
+    id: z.uuid(),
+    epoch: z.number().int().nonnegative(),
+    width: z.number().int().min(1).max(12),
+    points: z.array(boardPoint).min(1).max(50),
+  }),
   z.object({
     type: z.literal('action-item'),
     id: z.uuid(),

@@ -48,6 +48,7 @@ import { Brand } from './brand';
 import { ThemeToggle } from './theme-toggle';
 import { useToast } from './providers';
 import { VideoTile } from './video-tile';
+import { BoardPanel } from './panels/board';
 import { SidePanel } from './panels';
 import type { Panel } from './panels/types';
 import { ReactionPicker, Reactions } from './reactions';
@@ -150,6 +151,8 @@ function MeetingInterior({ id }: { id: string }) {
     router = useRouter(),
     room = useRoomContext();
   const [panel, setPanel] = useState<Panel | null>(null),
+    [boardOpen, setBoardOpen] = useState(false),
+    [boardExpanded, setBoardExpanded] = useState(false),
     [reactions, setReactions] = useState(false),
     [shortcuts, setShortcuts] = useState(false),
     [leaving, setLeaving] = useState(false),
@@ -232,6 +235,11 @@ function MeetingInterior({ id }: { id: string }) {
   useEffect(() => {
     if (error.includes('admit') || error.includes('access')) void room.disconnect();
   }, [error, room]);
+  const presenterId = data?.meeting.state.boardPresenter?.id;
+  const showBoard = !!data && (boardOpen || !!presenterId);
+  useEffect(() => {
+    if (presenterId) setPanel(null);
+  }, [presenterId]);
   const waiting = data?.members.filter((m) => m.status === 'waiting').length || 0;
   const controls = [
     { icon: MessageSquare, p: 'chat', label: 'Chat', description: 'Message the room' },
@@ -311,7 +319,7 @@ function MeetingInterior({ id }: { id: string }) {
       )}
       <StartAudio label="Click to enable meeting audio" className="button primary" />
       <div className="room-body">
-        <div className="call-area">
+        <div className="call-area" data-board-open={showBoard}>
           <div className="stage-heading">
             <div>
               <h2>In this meeting</h2>
@@ -333,6 +341,19 @@ function MeetingInterior({ id }: { id: string }) {
               </span>
             </div>
           </div>
+          {showBoard && data && (
+            <BoardPanel
+              data={data}
+              host={host}
+              send={send}
+              expanded={boardExpanded}
+              onExpand={setBoardExpanded}
+              onClose={() => {
+                setBoardExpanded(false);
+                setBoardOpen(false);
+              }}
+            />
+          )}
           <div
             className="video-grid"
             data-count={tracks.length}
@@ -492,7 +513,11 @@ function MeetingInterior({ id }: { id: string }) {
                 key={p}
                 className={'tool-entry tool-' + p}
                 onClick={() => {
-                  setPanel(p);
+                  if (p === 'board') {
+                    setBoardOpen(true);
+                    setBoardExpanded(true);
+                    setPanel(null);
+                  } else setPanel(p);
                   setToolsOpen(false);
                 }}
               >

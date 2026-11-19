@@ -32,6 +32,8 @@ These screenshots show the current local build with example meeting data.
 
 In a meeting, open **React → Browse stickers** to search the sticker packs and send a reaction. Choose **Edit pins** to save up to six favorites. Each browser starts with Jensen Huang, Elon Musk and a laughing terminal. In **Chat**, use the paperclip to share an individual file up to 200 MB. Admitted participants can download the completed file during the meeting. File contents are stored in the meeting database and removed with the room.
 
+Open **Tools → Whiteboard** to draw on the meeting’s fullscreen canvas. Choose **Share to all** to present it alongside participant video. Admitted participants can draw together, see who is drawing, undo their own marks, and export the saved artwork as a landscape PDF. The presenter or host can stop presenting, and the host can clear the canvas.
+
 ## Run locally
 
 Install Node.js 22 or later and a [local LiveKit server](https://docs.livekit.io/transport/self-hosting/local/).

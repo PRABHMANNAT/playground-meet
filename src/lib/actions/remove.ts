@@ -8,4 +8,6 @@ export const remove: Handler = async ({ db, room }, a) => {
     ['denied', room.id, a.memberId],
   );
   invariant(result.rows.length, 404, 'Participant not found.');
+  if (room.state.boardPresenter?.id === a.memberId) room.state.boardPresenter = null;
+  if (room.state.boardPreviews) delete room.state.boardPreviews[a.memberId];
 };

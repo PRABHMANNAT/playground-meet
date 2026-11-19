@@ -44,6 +44,22 @@ export function Recap({ id }: { id: string }) {
               >
                 <Download size={16} /> Download summary
               </button>
+              {!!data.meeting.state.strokes.length && (
+                <button
+                  className="button secondary"
+                  onClick={async () => {
+                    try {
+                      const { downloadBoardPdf } = await import('@/lib/board-pdf');
+                      await downloadBoardPdf(data.meeting.state.strokes, id, data.meeting.title);
+                    } catch (error) {
+                      toast(error instanceof Error ? error.message : 'Whiteboard export failed.');
+                    }
+                  }}
+                >
+                  <Download size={16} />
+                  Whiteboard PDF
+                </button>
+              )}
               <a className="button secondary" href="/">
                 <ArrowLeft size={16} /> Back to meetings
               </a>

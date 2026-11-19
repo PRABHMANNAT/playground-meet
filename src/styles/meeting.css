@@ -634,38 +634,6 @@
   font-size: 9px;
   color: var(--muted);
 }
-.whiteboard {
-  aspect-ratio: 1;
-  touch-action: none;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background-color: #fffdf5;
-  background-image: radial-gradient(#123b3f22 0.7px, transparent 0.7px);
-  background-size: 18px 18px;
-  display: block;
-  width: 100%;
-  cursor: crosshair;
-}
-.whiteboard-controls {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-.swatch {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  border: 3px solid transparent;
-  outline: 1px solid var(--line);
-}
-.swatch[aria-pressed='true'] {
-  border-color: var(--paper);
-  outline: 2px solid var(--ink);
-}
-.whiteboard-controls .icon-button {
-  margin-left: auto;
-}
 .notes-editor {
   resize: vertical;
   min-height: 280px;

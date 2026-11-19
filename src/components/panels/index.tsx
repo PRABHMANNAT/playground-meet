@@ -4,7 +4,6 @@ import { ChatPanel } from './chat';
 import { PeoplePanel } from './people';
 import { NotesPanel } from './notes';
 import { PollsPanel } from './polls';
-import { BoardPanel } from './board';
 import { ActionItemsPanel, DecisionLogPanel } from './outcomes';
 import { ReviewPanel } from './review';
 import { BrowserPanel } from './browser';
@@ -14,7 +13,6 @@ const panels = {
   people: PeoplePanel,
   notes: NotesPanel,
   polls: PollsPanel,
-  board: BoardPanel,
   actions: ActionItemsPanel,
   decisions: DecisionLogPanel,
   review: ReviewPanel,
@@ -25,7 +23,6 @@ const titles = {
   people: 'People',
   notes: 'Shared notes',
   polls: 'Polls',
-  board: 'Whiteboard',
   actions: 'Action items',
   decisions: 'Decision log',
   review: 'Product review',
