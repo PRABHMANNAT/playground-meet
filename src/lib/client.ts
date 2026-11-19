@@ -19,6 +19,8 @@ export async function downloadSummary(id: string) {
   const link = document.createElement('a');
   link.href = url;
   link.download = `playground-meet-${id}.md`;
+  document.body.append(link);
   link.click();
-  URL.revokeObjectURL(url);
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }

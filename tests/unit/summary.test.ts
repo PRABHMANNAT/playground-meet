@@ -26,3 +26,31 @@ test('summary preserves authored evidence without fabricating AI conclusions', (
   expect(output).toContain('Button did not respond');
   expect(output).toContain('No AI processing');
 });
+
+test('discussion highlights retain speaker attribution and full transcript retains every line', () => {
+  const c = context();
+  const texts = ['hello', 'we agreed to release on friday', 'we agreed to release on friday'];
+  const events = texts.map((text, i) => ({
+    id: i + 1,
+    actor: 'speaker',
+    name: 'Mira',
+    kind: 'transcript',
+    created: c.room.created + i * 1000,
+    payload: { text },
+  }));
+  const markdown = summary({
+    meeting: c.room,
+    me: c.person,
+    events,
+    members: [],
+    serverTime: Date.now(),
+  });
+  expect(markdown.split('## Shared notes')[0]).toContain(
+    '[00:01] Mira: we agreed to release on friday',
+  );
+  expect(markdown.split('## Shared notes')[0]).not.toContain('hello');
+  expect(markdown.split('## Speaker transcript')[1]).toContain('[00:00] Mira: hello');
+  expect(markdown.split('## Speaker transcript')[1]).toContain(
+    '[00:02] Mira: we agreed to release on friday',
+  );
+});

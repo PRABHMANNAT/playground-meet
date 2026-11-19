@@ -1,5 +1,7 @@
 'use client';
 import { X } from 'lucide-react';
+import type { TranscriptControls } from '@/hooks/use-transcript';
+import { TranscriptPanel } from './transcript';
 import { ChatPanel } from './chat';
 import { PeoplePanel } from './people';
 import { NotesPanel } from './notes';
@@ -19,6 +21,7 @@ const panels = {
   browser: BrowserPanel,
 };
 const titles = {
+  transcript: 'Live transcript',
   chat: 'Chat',
   people: 'People',
   notes: 'Shared notes',
@@ -32,9 +35,15 @@ export function SidePanel({
   panel,
   onClose,
   hidden,
+  speech,
   ...props
-}: PanelProps & { panel: Panel; hidden?: boolean; onClose: () => void }) {
-  const Content = panels[panel];
+}: PanelProps & {
+  panel: Panel;
+  speech: TranscriptControls;
+  hidden?: boolean;
+  onClose: () => void;
+}) {
+  const Content = panel === 'transcript' ? null : panels[panel];
   return (
     <aside className="room-panel" aria-label={titles[panel]} data-panel={panel} hidden={hidden}>
       <div className="panel-heading">
@@ -44,7 +53,7 @@ export function SidePanel({
         </button>
       </div>
       <div className="panel-content">
-        <Content {...props} />
+        {Content ? <Content {...props} /> : <TranscriptPanel data={props.data} speech={speech} />}
       </div>
     </aside>
   );

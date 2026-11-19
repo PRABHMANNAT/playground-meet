@@ -4,6 +4,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "predev": "node scripts/prepare-speech.mjs",
+    "prebuild": "node scripts/prepare-speech.mjs",
     "dev": "next dev --hostname 127.0.0.1",
     "build": "next build",
     "start": "next start",
@@ -32,6 +34,7 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "server-only": "^0.0.1",
+    "vosk-browser": "0.0.8",
     "zod": "^4.1.0"
   },
   "devDependencies": {

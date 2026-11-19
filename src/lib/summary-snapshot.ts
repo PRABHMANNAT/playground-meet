@@ -4,8 +4,8 @@ import type { Person, Event } from './types';
 export async function summarySnapshot(id: string, person: Person) {
   const data = await snapshot(id, person);
   const events = await query<Event>(
-    'SELECT id,kind,actor,name,payload,created FROM events WHERE room=$1 AND kind IN ($2,$3) ORDER BY id',
-    [id, 'marker', 'rating'],
+    'SELECT id,kind,actor,name,payload,created FROM events WHERE room=$1 AND kind IN ($2,$3,$4) ORDER BY id',
+    [id, 'marker', 'rating', 'transcript'],
   );
   return {
     ...data,

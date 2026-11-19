@@ -15,9 +15,11 @@ export default function Privacy() {
         <h2>Your camera stays yours.</h2>
         <p>
           Camera and microphone access starts only when you enable them. Audio and video travel
-          through the configured LiveKit server using encrypted WebRTC transport. Calls are not
-          recorded or transcribed by this application. Transport encryption is not end-to-end
-          encryption: the media-server operator is part of the trust boundary.
+          through the configured LiveKit server using encrypted WebRTC transport. When you turn on
+          transcription, your browser converts your own microphone audio into text. The room stores
+          and shares the speaker name, caption and timestamp. The application does not store audio
+          recordings. Transport encryption is not end-to-end encryption: the media-server operator
+          is part of the trust boundary.
         </p>
         <h2>Shared means shared.</h2>
         <p>

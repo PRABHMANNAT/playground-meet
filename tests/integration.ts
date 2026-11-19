@@ -20,6 +20,21 @@ async function main() {
   await act(guest, { type: 'admit', memberId: gp.id }, 403);
   await act(guest, { type: 'browser', url: 'https://example.com/' }, 403);
   await act(host, { type: 'admit', memberId: gp.id });
+  const caption = {
+    type: 'transcript',
+    segment: randomUUID(),
+    text: 'We agreed to release on Friday.',
+  };
+  await act(outsider, caption, 403);
+  await Promise.all([act(guest, caption), act(guest, caption)]);
+  const captions = (await guest.call(path + '/state')).events.filter(
+    (event: { kind: string }) => event.kind === 'transcript',
+  );
+  assert.equal(captions.length, 1);
+  assert.equal(captions[0].name, gp.name);
+  assert.match((await host.call(path + '/summary')).markdown, /## Speaker transcript/);
+  console.log('PASS transcript membership, speaker attribution, idempotent retries and summary');
+
   assert.ok((await guest.call(path + '/token', {})).token);
   console.log('PASS authentication, isolation, waiting room, host admission');
   await act(guest, { type: 'browser', url: 'https://example.com' });

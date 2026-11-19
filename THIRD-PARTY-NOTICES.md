@@ -11,3 +11,7 @@ The repository's MIT license applies to the project's original code and document
 
 - The 3D reaction artwork is from [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji), bundled from Iconify's fluent-emoji 1.2.7 collection. See the [MIT license](public/reactions/packs/Fluent-LICENSE.txt).
 - The developer meme pack uses [Egon Elbre’s Gophers](https://github.com/egonelbre/gophers/tree/63b1f5a9f334f9e23735c6e09ac003479ffe5df5), released under CC0. The original Go gopher was designed by Renée French.
+
+## On-device speech recognition
+
+The browser runtime uses [Vosk-Browser](https://github.com/ccoreilly/vosk-browser) by Ciaran O’Reilly, built on [Vosk](https://github.com/alphacep/vosk-api). The bundled [vosk-model-small-en-us-0.15](https://alphacephei.com/vosk/models) from Alpha Cephei is repackaged from ZIP to tar.gz for the browser. The runtime and model are distributed under the [Apache License 2.0](public/speech/LICENSE-Vosk.txt).

@@ -21,6 +21,7 @@ import type { Action } from '../schemas';
 export const handlers: Record<Action['type'], Handler> = {
   chat,
   reaction: chat,
+  transcript: chat,
   marker: chat,
   hand,
   notes,

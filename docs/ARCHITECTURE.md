@@ -14,4 +14,4 @@ Deployment separates four services: Next.js, PostgreSQL, LiveKit and Caddy. Cadd
 
 ## Boundaries
 
-No recording, transcription, AI inference, email delivery, automatic calendar booking or automatic external issue filing. Bug reports are durable meeting feedback and exports. SSO is an integration contract; the parent Playground application must mint assertions on its trusted server.
+Optional speech recognition runs in the participant’s browser using Vosk. The server stores finalized captions as authenticated meeting events. No audio recording, cloud AI inference, email delivery, automatic calendar booking or automatic external issue filing. Bug reports are durable meeting feedback and exports. SSO is an integration contract; the parent Playground application must mint assertions on its trusted server.

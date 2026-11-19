@@ -16,6 +16,12 @@ Start a video call from your browser, invite people with a link, and keep the di
 | **Work together**        | Use chat, reactions, raised hands, shared notes, a whiteboard, polls, action items with owners and due dates, a decision log, and a product review brief.                                          |
 | **Follow up**            | Review notes and timestamped feedback, rate the meeting, and download a Markdown summary.                                                                                                          |
 
+### Live transcription and meeting notes
+
+Open **Transcript** in the meeting and select **Include my microphone**. Each speaker opts in separately. The first use loads a bundled 39 MiB US English model. Vosk recognizes speech in a browser worker, pauses when the microphone is muted, and sends finalized text to the room with the speaker’s name. Closing the panel keeps recognition running. Select **Stop my transcript** to finish.
+
+Leaving a meeting downloads a Markdown summary of the discussion so far. Ending it for everyone downloads the final notes for connected participants. Notes include spoken highlights, a timestamped transcript, shared notes, decisions and action items. The recap also has a manual download button.
+
 Invites and recaps use the branded `/playground-meet/` route. Existing `/room/` links redirect to the same meeting.
 
 ## A look inside

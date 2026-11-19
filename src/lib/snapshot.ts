@@ -8,7 +8,11 @@ export async function snapshot(id: string, p: Person): Promise<Snapshot> {
     [id],
   );
   const events = await query<Event>(
-    'SELECT * FROM (SELECT id,kind,actor,name,payload,created FROM events WHERE room=$1 ORDER BY id DESC LIMIT 500) e ORDER BY id',
+    `SELECT * FROM (
+      (SELECT id,kind,actor,name,payload,created FROM events WHERE room=$1 AND kind<>'transcript' ORDER BY id DESC LIMIT 500)
+      UNION ALL
+      (SELECT id,kind,actor,name,payload,created FROM events WHERE room=$1 AND kind='transcript' ORDER BY id DESC LIMIT 100)
+    ) AS recent ORDER BY id`,
     [id],
   );
   return {

@@ -1,4 +1,5 @@
 import { transaction } from './db';
+import { finalCaptionWindow } from './transcript';
 import { getRoom } from './authorization';
 import { handlers, hostActions } from './actions';
 import { invariant } from './errors';
@@ -11,7 +12,14 @@ export async function dispatch(id: string, person: Person, action: Action) {
     const {
       rows: [room],
     } = await db.query<Meeting>('SELECT * FROM rooms WHERE id=$1 FOR UPDATE', [id]);
-    invariant(!room.ended || action.type === 'rating', 410, 'This meeting has ended.');
+    const finalCaption =
+      action.type === 'transcript' &&
+      Date.now() < (room.state.transcriptClosedAt ?? 0) + finalCaptionWindow;
+    invariant(
+      !room.ended || action.type === 'rating' || finalCaption,
+      410,
+      'This meeting has ended.',
+    );
     const {
       rows: [member],
     } = await db.query<{ status: string }>(
@@ -24,6 +32,13 @@ export async function dispatch(id: string, person: Person, action: Action) {
       403,
       'Only the host can do that.',
     );
+    if (action.type === 'transcript') {
+      const existing = await db.query(
+        "SELECT 1 FROM events WHERE room=$1 AND actor=$2 AND kind='transcript' AND payload->>'segment'=$3",
+        [id, person.id, action.segment],
+      );
+      if (existing.rows.length) return;
+    }
     if (action.type === 'mute') {
       const {
         rows: [target],

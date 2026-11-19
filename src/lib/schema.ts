@@ -5,6 +5,8 @@ CREATE TABLE IF NOT EXISTS rooms(id TEXT PRIMARY KEY,title TEXT NOT NULL,host TE
 CREATE TABLE IF NOT EXISTS members(room TEXT REFERENCES rooms(id) ON DELETE CASCADE,person TEXT REFERENCES people(id),status TEXT NOT NULL,hand BOOLEAN NOT NULL DEFAULT FALSE,joined BIGINT NOT NULL,PRIMARY KEY(room,person));
 CREATE TABLE IF NOT EXISTS events(id BIGSERIAL PRIMARY KEY,room TEXT REFERENCES rooms(id) ON DELETE CASCADE,kind TEXT NOT NULL,actor TEXT NOT NULL,name TEXT NOT NULL,payload JSONB NOT NULL,created BIGINT NOT NULL);
 CREATE INDEX IF NOT EXISTS events_room_id ON events(room,id);
+CREATE INDEX IF NOT EXISTS captions_by_room ON events(room,id) WHERE kind='transcript';
+CREATE UNIQUE INDEX IF NOT EXISTS caption_segments ON events(room,actor,(payload->>'segment')) WHERE kind='transcript';
 CREATE INDEX IF NOT EXISTS sessions_expires ON sessions(expires);
 CREATE INDEX IF NOT EXISTS members_person ON members(person);
 CREATE TABLE IF NOT EXISTS attachments(id TEXT PRIMARY KEY,room TEXT NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,owner TEXT NOT NULL REFERENCES people(id),filename TEXT NOT NULL,size INTEGER NOT NULL,received INTEGER NOT NULL DEFAULT 0,ready BOOLEAN NOT NULL DEFAULT FALSE,created BIGINT NOT NULL);

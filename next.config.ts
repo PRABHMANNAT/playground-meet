@@ -25,7 +25,7 @@ const config: NextConfig = {
     }
     const contentPolicy = (browser: boolean) => ({
       key: 'Content-Security-Policy',
-      value: `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src ${mediaSources.join(' ')}${browser ? ' https://en.wikipedia.org' : ''}; media-src 'self' blob:; frame-src ${browser ? 'https:' : "'none'"}; frame-ancestors 'none'; base-uri 'self'; form-action 'self'`,
+      value: `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src ${mediaSources.join(' ')}${browser ? ' https://en.wikipedia.org' : ''}; worker-src 'self'${browser ? ' blob:' : ''}; media-src 'self' blob:; frame-src ${browser ? 'https:' : "'none'"}; frame-ancestors 'none'; base-uri 'self'; form-action 'self'`,
     });
     return [
       {

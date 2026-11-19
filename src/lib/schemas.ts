@@ -23,6 +23,11 @@ export const safeUrl = z.union([
 ]);
 const boardPoint = z.tuple([z.number().min(0).max(1), z.number().min(0).max(1)]);
 export const actionInput = z.discriminatedUnion('type', [
+  z.object({
+    type: z.literal('transcript'),
+    segment: z.uuid(),
+    text: z.string().trim().min(1).max(4000),
+  }),
   z.object({ type: z.literal('chat'), text: z.string().trim().min(1).max(2000) }),
   z.object({
     type: z.literal('reaction'),

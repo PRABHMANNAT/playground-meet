@@ -15,6 +15,7 @@ import { Track, VideoPresets, ConnectionState } from 'livekit-client';
 import {
   Mic,
   MicOff,
+  Captions,
   Video,
   VideoOff,
   ScreenShare,
@@ -42,6 +43,7 @@ import {
 import { request, downloadSummary } from '@/lib/client';
 import { duration } from '@/lib/format';
 import { meetingPath, meetingInviteUrl } from '@/lib/meeting-links';
+import { useTranscript } from '@/hooks/use-transcript';
 import { useRoomState } from '@/hooks/use-room-state';
 import { useShortcuts } from '@/hooks/use-shortcuts';
 import { Brand } from './brand';
@@ -138,7 +140,7 @@ export default function Meeting({
         videoCaptureDefaults: { resolution: VideoPresets.h720.resolution },
       }}
       onError={(e) => setError(e.message)}
-      onDisconnected={() => router.push(meetingPath(id, true))}
+      onDisconnected={() => router.push(meetingPath(id, true) + '?notes=download')}
     >
       <MeetingInterior id={id} />
       <RoomAudioRenderer />
@@ -163,6 +165,10 @@ function MeetingInterior({ id }: { id: string }) {
   const participants = useParticipants();
   const local = useLocalParticipant(),
     connection = useConnectionState();
+  const speech = useTranscript(
+    id,
+    local.isMicrophoneEnabled ? local.microphoneTrack?.track?.mediaStreamTrack : undefined,
+  );
   const tracks = useTracks([
     { source: Track.Source.Camera, withPlaceholder: true },
     { source: Track.Source.ScreenShare, withPlaceholder: false },
@@ -229,7 +235,7 @@ function MeetingInterior({ id }: { id: string }) {
   useEffect(() => {
     if (data?.meeting.ended) {
       void room.disconnect();
-      router.push(meetingPath(id, true));
+      router.push(meetingPath(id, true) + '?notes=download');
     }
   }, [data?.meeting.ended, room, router, id]);
   useEffect(() => {
@@ -246,6 +252,12 @@ function MeetingInterior({ id }: { id: string }) {
     { icon: Users, p: 'people', label: 'People', description: 'Participants and host controls' },
   ] as const;
   const tools = [
+    {
+      icon: Captions,
+      p: 'transcript',
+      label: 'Live transcript',
+      description: 'Turn speech into meeting notes',
+    },
     {
       icon: ListChecks,
       p: 'actions',
@@ -326,6 +338,14 @@ function MeetingInterior({ id }: { id: string }) {
               <span>{participants.length} connected</span>
             </div>
             <div className="stage-actions">
+              <button
+                className="gallery-button"
+                onClick={() => toggle('transcript')}
+                aria-pressed={panel === 'transcript'}
+              >
+                <Captions size={16} />
+                {speech.status === 'on' ? 'Transcription on' : 'Transcript'}
+              </button>
               {data?.meeting.state.browser && panel !== 'browser' && (
                 <button className="gallery-button" onClick={() => setPanel('browser')}>
                   <Globe size={14} /> Shared page
@@ -384,6 +404,7 @@ function MeetingInterior({ id }: { id: string }) {
             <SidePanel
               key={tool}
               panel={tool}
+              speech={speech}
               hidden={tool !== panel}
               onClose={() => setPanel(null)}
               data={data}
@@ -566,9 +587,10 @@ function MeetingInterior({ id }: { id: string }) {
         <p className="muted">Your notes and feedback will be waiting in the meeting recap.</p>
         <button
           className="button primary"
-          onClick={() => {
+          onClick={async () => {
+            await speech.stop();
             void room.disconnect();
-            router.push(meetingPath(id, true));
+            router.push(meetingPath(id, true) + '?notes=download');
           }}
         >
           Leave meeting
@@ -577,9 +599,10 @@ function MeetingInterior({ id }: { id: string }) {
           <button
             className="button danger"
             onClick={async () => {
+              await speech.stop();
               if (await send({ type: 'end' })) {
                 void room.disconnect();
-                router.push(meetingPath(id, true));
+                router.push(meetingPath(id, true) + '?notes=download');
               }
             }}
           >

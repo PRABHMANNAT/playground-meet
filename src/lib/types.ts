@@ -61,6 +61,7 @@ export type SharedState = {
   decisions?: Decision[];
   notes: string;
   notesVersion: number;
+  transcriptClosedAt?: number;
   polls: Poll[];
   strokes: Stroke[];
   boardPresenter?: { id: string; name: string } | null;

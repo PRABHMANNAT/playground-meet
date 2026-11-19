@@ -6,6 +6,7 @@ import { ActionList, DecisionList } from './panels/outcomes';
 import { Header } from './header';
 import { useToast } from './providers';
 import type { Snapshot } from '@/lib/types';
+import { finalCaptionWindow, transcriptHighlights } from '@/lib/transcript';
 import { duration } from '@/lib/format';
 export function Recap({ id }: { id: string }) {
   const [data, setData] = useState<Snapshot | null>(null),
@@ -14,6 +15,29 @@ export function Recap({ id }: { id: string }) {
     [saved, setSaved] = useState(false),
     [saving, setSaving] = useState(false);
   const toast = useToast();
+  const [downloadStatus, setDownloadStatus] = useState('');
+  useEffect(() => {
+    if (!data || new URLSearchParams(location.search).get('notes') !== 'download') return;
+    const url = new URL(location.href);
+    const finish = () => {
+      url.searchParams.delete('notes');
+      history.replaceState(history.state, '', url);
+    };
+    const wait = Math.max(
+      0,
+      (data.meeting.state.transcriptClosedAt ?? 0) + finalCaptionWindow - data.serverTime,
+    );
+    setDownloadStatus(wait ? 'Finalizing meeting notes…' : 'Preparing meeting notes…');
+    const timer = setTimeout(() => {
+      finish();
+      downloadSummary(id)
+        .then(() => setDownloadStatus('Meeting notes download started.'))
+        .catch(() =>
+          setDownloadStatus('Automatic download failed. Use Download summary to try again.'),
+        );
+    }, wait);
+    return () => clearTimeout(timer);
+  }, [id, data]);
   useEffect(() => {
     request<Snapshot>(`/api/meetings/${id}/state`)
       .then(setData)
@@ -37,6 +61,11 @@ export function Recap({ id }: { id: string }) {
           <p className="empty-state">Loading meeting notes…</p>
         ) : (
           <>
+            {downloadStatus && (
+              <p role="status" className="panel-helper">
+                {downloadStatus}
+              </p>
+            )}
             <div className="recap-actions">
               <button
                 className="button primary"
@@ -64,6 +93,16 @@ export function Recap({ id }: { id: string }) {
                 <ArrowLeft size={16} /> Back to meetings
               </a>
             </div>
+            {!!transcriptHighlights(data.events).length && (
+              <section className="recap-card">
+                <h2>Discussion highlights</h2>
+                {transcriptHighlights(data.events).map((e) => (
+                  <p key={e.id}>
+                    <strong>{e.name}</strong> · {String(e.payload.text)}
+                  </p>
+                ))}
+              </section>
+            )}
             {!!data.meeting.state.actionItems?.length && (
               <section className="recap-card">
                 <h2>Action items</h2>
