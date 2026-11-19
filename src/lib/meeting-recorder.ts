@@ -18,6 +18,7 @@ type CaptureDevices = MediaDevices & {
 type DisplayTrack = MediaStreamTrack & { getCaptureHandle?: () => { handle: string } | null };
 
 export function identifyMeetingTab(handle: string) {
+  if (window.top !== window) return;
   (navigator.mediaDevices as CaptureDevices | undefined)?.setCaptureHandleConfig?.({
     handle,
     permittedOrigins: [location.origin],
@@ -38,13 +39,19 @@ export async function prepareRecording(
   room: Room,
   handle: string,
   recording: LocalRecording,
-  onFinished: (saved: boolean, error: string) => void,
+  onFinished: (saved: boolean, error: string) => Promise<void>,
 ) {
   const audio = new AudioContext();
   const devices = navigator.mediaDevices as CaptureDevices;
   const options = {
     video: { displaySurface: 'browser', frameRate: { ideal: 24, max: 30 } },
-    audio: { suppressLocalAudioPlayback: false, restrictOwnAudio: false },
+    audio: {
+      suppressLocalAudioPlayback: false,
+      restrictOwnAudio: false,
+      echoCancellation: false,
+      noiseSuppression: false,
+      autoGainControl: false,
+    },
     preferCurrentTab: true,
     selfBrowserSurface: 'include',
     surfaceSwitching: 'exclude',
@@ -135,7 +142,7 @@ export async function prepareRecording(
       mix.stream.getTracks().forEach((t) => t.stop());
       await writes;
       try {
-        onFinished(written > 0, failure);
+        await onFinished(written > 0, failure);
       } finally {
         finish();
       }

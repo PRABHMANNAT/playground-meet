@@ -2009,3 +2009,42 @@
   margin: auto;
   object-fit: contain;
 }
+
+.room-recording-notice {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 4px 12px;
+  font-size: 12px;
+}
+.room-recording-notice span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.recording-dialog-actions,
+.local-recording-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.recording-dialog-actions {
+  flex-wrap: wrap;
+}
+.local-recording-row {
+  border-top: 1px solid var(--line);
+  padding-block: 10px;
+}
+.local-recording-row > div {
+  margin-right: auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.local-recording-row small {
+  display: block;
+  color: var(--muted);
+}

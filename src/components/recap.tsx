@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Download, Star, ArrowLeft, Check, PhoneOff, StickyNote, Flag } from 'lucide-react';
 import { request, downloadSummary } from '@/lib/client';
 import { ActionList, DecisionList } from './panels/outcomes';
+import { LocalRecordingList } from './local-recording-list';
 import { Header } from './header';
 import { useToast } from './providers';
 import type { Snapshot } from '@/lib/types';
@@ -93,6 +94,7 @@ export function Recap({ id }: { id: string }) {
                 <ArrowLeft size={16} /> Back to meetings
               </a>
             </div>
+            <LocalRecordingList scope={id + '/' + data.me.id} />
             {!!transcriptHighlights(data.events).length && (
               <section className="recap-card">
                 <h2>Discussion highlights</h2>

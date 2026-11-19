@@ -15,6 +15,8 @@ import { Track, VideoPresets, ConnectionState } from 'livekit-client';
 import {
   Mic,
   MicOff,
+  Disc,
+  Square,
   Captions,
   Video,
   VideoOff,
@@ -43,6 +45,7 @@ import {
 import { request, downloadSummary } from '@/lib/client';
 import { duration } from '@/lib/format';
 import { meetingPath, meetingInviteUrl } from '@/lib/meeting-links';
+import { useMeetingRecording } from '@/hooks/use-meeting-recording';
 import { useTranscript } from '@/hooks/use-transcript';
 import { useRoomState } from '@/hooks/use-room-state';
 import { useShortcuts } from '@/hooks/use-shortcuts';
@@ -159,10 +162,14 @@ function MeetingInterior({ id }: { id: string }) {
     [shortcuts, setShortcuts] = useState(false),
     [leaving, setLeaving] = useState(false),
     [settings, setSettings] = useState(false),
+    [confirmRecording, setConfirmRecording] = useState(false),
     [toolsOpen, setToolsOpen] = useState(false),
     [pinnedTrack, setPinnedTrack] = useState<string | null>(null),
     [now, setNow] = useState(Date.now());
   const participants = useParticipants();
+  const recording = useMeetingRecording(room, id, toast);
+  const recorders = participants.filter((p) => p.attributes.localRecording === 'on');
+
   const local = useLocalParticipant(),
     connection = useConnectionState();
   const speech = useTranscript(
@@ -327,6 +334,13 @@ function MeetingInterior({ id }: { id: string }) {
       {error && (
         <div className="call-status" role="alert">
           Collaboration connection: {error}
+        </div>
+      )}
+      {recorders.length > 0 && (
+        <div className="room-recording-notice" role="status">
+          <Disc size={14} />
+          <strong>Recording</strong>
+          <span>{recorders.map((p) => p.name || 'Guest').join(', ')}</span>
         </div>
       )}
       <StartAudio label="Click to enable meeting audio" className="button primary" />
@@ -508,6 +522,33 @@ function MeetingInterior({ id }: { id: string }) {
               {p === 'people' && host && waiting > 0 && <b className="toolbar-count">{waiting}</b>}
             </div>
           ))}
+          <div className={'toolbar-tool ' + (recording.phase === 'recording' ? 'active' : '')}>
+            <button
+              className="control"
+              aria-label={
+                recording.phase === 'recording' ? 'Stop and save recording' : 'Record meeting'
+              }
+              disabled={recording.phase === 'selecting' || recording.phase === 'saving' || !data}
+              onClick={() =>
+                recording.phase === 'recording' ? void recording.stop() : setConfirmRecording(true)
+              }
+            >
+              {recording.phase === 'recording' ? (
+                <Square size={16} fill="currentColor" />
+              ) : recording.phase === 'idle' ? (
+                <Disc />
+              ) : (
+                <LoaderCircle className="spin" />
+              )}
+            </button>
+            <span>
+              {recording.phase === 'recording'
+                ? duration((now - recording.started) / 1000)
+                : recording.phase === 'saving'
+                  ? 'Saving…'
+                  : 'Record'}
+            </span>
+          </div>
           <div
             className={
               'toolbar-tool ' + (panel && !['chat', 'people'].includes(panel) ? 'active' : '')
@@ -525,6 +566,34 @@ function MeetingInterior({ id }: { id: string }) {
           </div>
         </div>
       </footer>
+      <Dialog
+        open={confirmRecording}
+        onClose={() => setConfirmRecording(false)}
+        title="Record this meeting?"
+      >
+        <p className="muted">
+          Everyone in the meeting will see that you’re recording. The video saves to this device.
+        </p>
+        <p>
+          Choose this meeting tab to capture the visible cameras, screen shares, whiteboard and
+          chat. Enable tab audio to include media played in the tab. Your unmuted microphone is
+          included.
+        </p>
+        <div className="recording-dialog-actions">
+          <button className="button secondary" onClick={() => setConfirmRecording(false)}>
+            Cancel
+          </button>
+          <button
+            className="button primary"
+            onClick={() => {
+              setConfirmRecording(false);
+              void recording.start(data?.meeting.title || 'Meeting');
+            }}
+          >
+            Confirm and choose tab
+          </button>
+        </div>
+      </Dialog>
       <Shortcuts open={shortcuts} onClose={() => setShortcuts(false)} />
       <Dialog open={toolsOpen} onClose={() => setToolsOpen(false)} title="Meeting tools">
         <div className="tools-launcher">
@@ -588,7 +657,7 @@ function MeetingInterior({ id }: { id: string }) {
         <button
           className="button primary"
           onClick={async () => {
-            await speech.stop();
+            await Promise.all([speech.stop(), recording.stop()]);
             void room.disconnect();
             router.push(meetingPath(id, true) + '?notes=download');
           }}
@@ -599,7 +668,7 @@ function MeetingInterior({ id }: { id: string }) {
           <button
             className="button danger"
             onClick={async () => {
-              await speech.stop();
+              await Promise.all([speech.stop(), recording.stop()]);
               if (await send({ type: 'end' })) {
                 void room.disconnect();
                 router.push(meetingPath(id, true) + '?notes=download');

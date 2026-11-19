@@ -3,6 +3,8 @@ export type LocalRecording = {
   scope: string;
   title: string;
   started: number;
+  lastWrite?: number;
+  finished?: boolean;
   mime: string;
 };
 
@@ -54,8 +56,18 @@ export async function appendRecordingChunk(
 ) {
   const db = await openDatabase();
   const tx = db.transaction(['recordings', 'chunks'], 'readwrite');
-  if (sequence === 0) tx.objectStore('recordings').add(recording);
+  const rows = tx.objectStore('recordings');
+  if (sequence > 0 && !(await result(rows.getKey(recording.id))))
+    throw new Error('Local recording was removed.');
+  rows.put({ ...recording, lastWrite: Date.now() });
   tx.objectStore('chunks').add(blob, [recording.id, sequence]);
+  await committed(tx);
+}
+export async function finishRecording(recording: LocalRecording) {
+  const db = await openDatabase();
+  const tx = db.transaction('recordings', 'readwrite');
+  const rows = tx.objectStore('recordings');
+  if (await result(rows.getKey(recording.id))) rows.put({ ...recording, finished: true });
   await committed(tx);
 }
 export async function localRecordings(scope: string): Promise<LocalRecording[]> {
@@ -85,7 +97,11 @@ export async function downloadRecording(recording: LocalRecording) {
 export async function deleteRecording(id: string) {
   const db = await openDatabase();
   const tx = db.transaction(['recordings', 'chunks'], 'readwrite');
-  tx.objectStore('recordings').delete(id);
+  const rows = tx.objectStore('recordings');
+  const item = await result<LocalRecording | undefined>(rows.get(id));
+  if (item && !item.finished && Date.now() - (item.lastWrite ?? 0) < 60000)
+    throw new Error('Stop recording before deleting this local copy.');
+  rows.delete(id);
   tx.objectStore('chunks').delete(chunkRange(id));
   await committed(tx);
 }
