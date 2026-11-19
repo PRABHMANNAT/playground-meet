@@ -25,7 +25,7 @@ export const actionInput = z.discriminatedUnion('type', [
   z.object({ type: z.literal('chat'), text: z.string().trim().min(1).max(2000) }),
   z.object({
     type: z.literal('reaction'),
-    emoji: z.string().max(32).refine(validReaction, 'Unknown reaction.'),
+    emoji: z.string().max(96).refine(validReaction, 'Unknown reaction.'),
   }),
   z.object({ type: z.literal('hand'), raised: z.boolean() }),
   z.object({

@@ -42,6 +42,7 @@ export function VideoTile({
       className={`tile ${speaking ? 'speaking' : ''} ${screen ? 'screen' : ''} ${track.participant.isLocal && !screen ? 'local' : ''}`}
       data-testid="participant-tile"
       data-focused={pinned}
+      data-camera-off={!available}
     >
       {!available && (
         <div className="tile-avatar">

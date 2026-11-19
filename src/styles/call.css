@@ -804,16 +804,14 @@
 }
 :is(.meeting-entry, .meeting-shell) .button.primary,
 .meeting-entry .preview-controls .control,
-.meeting-shell
-  :is(.room-header .button, .room-header .icon-button, .control, .reactions-menu button) {
+.meeting-shell :is(.room-header .button, .room-header .icon-button, .control) {
   background: var(--ink);
   color: var(--paper);
   border: 1px solid var(--ink);
 }
 :is(.meeting-entry, .meeting-shell) .button.primary:hover,
 .meeting-entry .preview-controls .control:hover,
-.meeting-shell
-  :is(.room-header .button, .room-header .icon-button, .control, .reactions-menu button):hover {
+.meeting-shell :is(.room-header .button, .room-header .icon-button, .control):hover {
   opacity: 0.78;
 }
 .meeting-entry .preview-controls .control {
@@ -926,83 +924,252 @@
   fill: #813bff;
 }
 
+/* Reaction tray and searchable sticker shelf */
 .meeting-shell .sticker-picker {
+  --accent: #a691fc;
   display: grid;
-  gap: 10px;
+  gap: 12px;
   padding: 14px;
   width: max-content;
-  max-width: calc(100vw - 20px);
-  max-height: calc(100dvh - 180px);
-  overflow-y: auto;
+  max-width: calc(100vw - 24px);
+  border-radius: 20px;
+  background: var(--surface);
   color: var(--ink);
+  box-shadow:
+    0 16px 48px #0004,
+    0 2px 8px #0002;
+  transform-origin: 50% 100%;
+  animation: tray-in 0.22s cubic-bezier(0.2, 0.85, 0.35, 1.2);
+  max-height: calc(100dvh - 176px);
+  overflow: auto;
+  z-index: 35;
+}
+.meeting-shell .sticker-picker.expanded {
+  width: min(386px, calc(100vw - 24px));
+  grid-template-rows: auto auto auto minmax(0, 1fr);
 }
 .sticker-heading,
 .sticker-quick,
-.sticker-picker .library-switch {
+.sticker-filter,
+.sticker-search {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
-.sticker-heading {
-  justify-content: space-between;
-  font-size: 14px;
+.sticker-heading strong {
+  flex: 1;
+  font-size: 15px;
+  letter-spacing: -0.03em;
 }
 .meeting-shell .sticker-picker button {
-  display: grid;
-  place-items: center;
   position: relative;
-  padding: 6px;
+  display: inline-grid;
+  place-items: center;
+  padding: 4px;
+  min-height: 30px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
   color: var(--ink);
+  font-size: 12px;
+}
+.meeting-shell .sticker-picker button:hover {
   background: var(--paper-2);
-  border: 1px solid transparent;
+  opacity: 1;
 }
-.meeting-shell .sticker-picker button:focus-visible {
-  outline: 2px solid currentColor;
-}
-.sticker-picker p,
-.sticker-picker h3,
-.sticker-picker small {
-  font-size: 11px;
-  margin: 0;
-}
+.meeting-shell .sticker-picker .pin-mode,
 .meeting-shell .sticker-picker .library-switch {
   display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 8px;
-  font-size: 12px;
-  min-height: 34px;
+  gap: 6px;
+  background: var(--paper-2);
+  padding: 5px 10px;
   font-weight: 650;
+}
+.meeting-shell .sticker-picker .pin-mode[aria-pressed='true'],
+.meeting-shell .sticker-grid button[aria-pressed='true'] {
+  box-shadow: inset 0 0 0 1.5px var(--accent);
+}
+.meeting-shell .sticker-picker .library-switch {
+  min-height: 35px;
 }
 .sticker-quick {
   flex-wrap: wrap;
+  justify-content: center;
+}
+.meeting-shell label.sticker-search {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  padding: 0 10px;
+  border-radius: 12px;
+  color: var(--muted);
+}
+.sticker-search:focus-within {
+  outline: 2px solid var(--accent);
+}
+.sticker-search input {
+  min-width: 0;
+  flex: 1;
+  background: transparent;
+  color: var(--ink);
+  border: 0;
+  padding: 8px 0;
+  font: inherit;
+  outline: 0;
+}
+.sticker-filter {
+  justify-content: space-between;
+}
+.sticker-filter select {
+  width: auto;
+  max-width: 65%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper-2);
+  color: var(--ink);
+  padding: 4px 8px;
+  font-size: 12px;
+}
+.sticker-filter span,
+.sticker-no-results {
+  color: var(--muted);
+  font-size: 12px;
 }
 .sticker-library {
-  width: min(320px, 80vw);
-  max-height: 32dvh;
+  height: min(230px, 35dvh);
+  min-height: 0;
   overflow-y: auto;
-}
-.sticker-library h3 {
-  margin: 8px 0;
-  color: var(--muted);
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
 }
 .sticker-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 4px;
+  padding: 2px;
 }
-.sticker-grid button {
-  gap: 4px;
+.meeting-shell .sticker-grid button {
+  aspect-ratio: 1;
+  background: var(--paper-2);
 }
-.meeting-shell .sticker-grid button[aria-pressed='true'] {
-  border-color: var(--ink);
+.sticker-grid button:disabled {
+  opacity: 0.45;
+}
+.sticker-no-results {
+  padding: 14px;
+  text-align: center;
 }
 .pin-check {
   position: absolute;
-  right: 3px;
-  top: 3px;
+  right: 4px;
+  top: 4px;
+  color: var(--ink);
+  background: var(--surface);
+  border-radius: 50%;
 }
-.sticker-grid button:disabled {
-  opacity: 0.55;
+.sticker-flight-zone {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 5;
+}
+.sticker-flight {
+  position: absolute;
+  bottom: 7%;
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  animation: flight 3.3s both;
+  filter: drop-shadow(0 4px 7px #0004);
+}
+.flight-art {
+  position: relative;
+  animation: sticker-pop 0.65s both;
+}
+.flight-art::after {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border: 2px dotted #e3d4ff;
+  border-radius: 50%;
+  animation: sticker-ring 0.6s ease-out forwards;
+}
+.sticker-flight small {
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-radius: 20px;
+  padding: 2px 9px;
+  background: #232032e8;
+  color: white;
+  font-size: 10px;
+}
+@keyframes tray-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+@keyframes sticker-pop {
+  0% {
+    transform: scale(0.25) rotate(-18deg);
+  }
+  55% {
+    transform: scale(1.18) rotate(8deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+@keyframes sticker-ring {
+  from {
+    opacity: 0.95;
+    transform: scale(0.45);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.38);
+  }
+}
+@keyframes flight {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 10px);
+  }
+  10% {
+    opacity: 1;
+  }
+  32% {
+    transform: translate(calc(-50% + var(--drift)), -25px);
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -145px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .meeting-shell .sticker-picker,
+  .sticker-flight,
+  .flight-art,
+  .flight-art::after {
+    animation: none;
+  }
+  .flight-art::after {
+    display: none;
+  }
 }
 .logo-sticker,
 .tech-sticker {
@@ -1045,4 +1212,193 @@
 .chat-download small {
   display: block;
   color: var(--muted);
+}
+
+/* Conversation */
+.meeting-shell [data-panel='chat'] .panel-heading {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.meeting-shell [data-panel='chat'] .panel-content {
+  padding: 0;
+}
+.chat-panel {
+  gap: 0;
+}
+.chat-panel .chat-messages {
+  padding: 16px;
+  scrollbar-width: thin;
+}
+.chat-empty {
+  height: 100%;
+  min-height: 94px;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 15px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.chat-empty-icon {
+  width: 60px;
+  height: 60px;
+  display: grid;
+  place-items: center;
+  border-radius: 21px;
+  background: linear-gradient(145deg, #d9ceff, #b8a7f2);
+  color: #40355e;
+  box-shadow: 0 0 0 7px color-mix(in srgb, #ad95f5 9%, transparent);
+  transform: rotate(-6deg);
+}
+.chat-panel .panel-helper {
+  margin: 0 14px;
+  overflow-wrap: anywhere;
+}
+.meeting-shell .chat-form {
+  margin: 12px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 5px;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: var(--paper-2);
+}
+.meeting-shell .chat-form:focus-within {
+  border-color: #ab97e2;
+}
+.meeting-shell .chat-form input {
+  flex: 1;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--ink);
+  box-shadow: none;
+  padding: 5px;
+  min-height: 34px;
+}
+.meeting-shell .chat-form .button {
+  min-height: 33px;
+  height: 33px;
+  width: 33px;
+  padding: 4px;
+  border-radius: 11px;
+  border: 0;
+}
+.meeting-shell .chat-form .button.primary {
+  background: #cfbfff;
+  color: #302344;
+}
+.meeting-shell .chat-form .button.primary:disabled {
+  opacity: 0.55;
+}
+.meeting-shell .chat-message p,
+.meeting-shell .chat-download {
+  margin: 0 0 0 31px;
+  font-size: 13px;
+  line-height: 1.5;
+  border-radius: 3px 13px 13px 13px;
+  padding: 9px 12px;
+  width: fit-content;
+  max-width: calc(100% - 31px);
+}
+.meeting-shell .chat-message.mine p {
+  background: color-mix(in srgb, #a68bfa 20%, var(--paper-2));
+}
+.meeting-shell .chat-message header {
+  gap: 6px;
+}
+/* Camera-off portrait */
+.meeting-shell .tile[data-camera-off='true'] {
+  background: radial-gradient(
+    ellipse at 45% 30%,
+    #393347 0%,
+    #272331 38%,
+    #201e28 74%,
+    #1b1922 100%
+  );
+  isolation: isolate;
+}
+.meeting-shell .tile[data-camera-off='true']::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-radial-gradient(
+    ellipse at 110% 125%,
+    transparent 0 23px,
+    #e5d6ff10 24px,
+    transparent 25px 42px
+  );
+  mask-image: linear-gradient(125deg, transparent 12%, #000 85%);
+}
+.meeting-shell .tile[data-camera-off='true'] .tile-avatar {
+  gap: 14px;
+  padding: 12px 16px 22px;
+}
+.meeting-shell .tile-avatar > .avatar {
+  width: clamp(64px, 9vw, 96px);
+  height: clamp(64px, 9vw, 96px);
+  border-radius: 34%;
+  border: 1px solid #ffffff66;
+  color: var(--avatar-fg);
+  background: linear-gradient(145deg, #ffffffd9, transparent 53%, #0001), var(--avatar-bg);
+  box-shadow:
+    0 8px 22px #0003,
+    0 0 0 7px #ffffff08,
+    0 0 0 8px #ffffff0c;
+  font-weight: 700;
+}
+.tile-identity {
+  max-width: 90%;
+  gap: 3px;
+}
+.tile-identity strong {
+  font-size: 16px;
+  color: #faf8ff;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tile-identity small {
+  color: #d3cddd;
+}
+.meeting-shell .tile[data-camera-off='true'] .tile-label {
+  color: white;
+}
+
+.meeting-shell .sticker-grid.meme-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.meeting-shell .meme-grid button {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 4px;
+  aspect-ratio: auto;
+  min-height: 80px;
+  padding: 7px 3px 5px;
+  border-radius: 12px;
+}
+.meme-grid small {
+  font-size: 10px;
+  line-height: 1.2;
+  font-weight: 600;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.meeting-shell .sticker-picker .pin-mode[aria-pressed='true'] {
+  background: #e0d6ff;
+  color: #433267;
+}
+.meeting-shell .sticker-picker button:focus-visible {
+  outline: 2px solid #9c80f0;
+  outline-offset: -2px;
+}
+.meeting-shell .sticker-picker .sticker-search input {
+  width: 100%;
+  min-height: 36px;
+  flex: 1;
+  margin: 0;
 }

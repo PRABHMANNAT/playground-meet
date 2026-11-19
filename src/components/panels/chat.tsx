@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { MessageSquare, Send, Paperclip, Download } from 'lucide-react';
+import { MessagesSquare, ArrowUp, Paperclip, Download } from 'lucide-react';
 import { attachmentProblem, fileSize, attachmentChunkBytes } from '@/lib/attachments';
 import type { PanelProps } from './types';
 import { Avatar } from '../avatar';
@@ -70,9 +70,11 @@ export function ChatPanel({ data, send }: PanelProps) {
         }}
       >
         {!messages.length && (
-          <div className="empty-state">
-            <MessageSquare size={28} />
-            No messages yet.
+          <div className="chat-empty">
+            <div className="chat-empty-icon">
+              <MessagesSquare size={36} strokeWidth={1.5} />
+            </div>
+            <strong>No messages yet</strong>
           </div>
         )}
         {messages.map((e) => (
@@ -140,18 +142,19 @@ export function ChatPanel({ data, send }: PanelProps) {
           aria-label="Message everyone"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Message everyone"
+          placeholder="Message everyone…"
           maxLength={2000}
           required
           disabled={busy}
         />
-        <button className="button primary" aria-label="Send message" disabled={busy}>
-          <Send size={16} />
+        <button
+          className="button primary"
+          aria-label="Send message"
+          disabled={busy || !text.trim()}
+        >
+          <ArrowUp size={18} />
         </button>
       </form>
-      <p className="panel-helper">
-        Share individual files up to 200 MB with everyone in this meeting.
-      </p>
     </div>
   );
 }

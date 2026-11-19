@@ -1,3 +1,4 @@
+import stickerPacks from './sticker-packs.json';
 export const reactionPacks = {
   'Studio stickers': {
     jensen: 'Jensen Huang approves',
@@ -7,6 +8,7 @@ export const reactionPacks = {
     hotfix: 'Hotfix',
     build: 'Build passed',
   },
+  ...stickerPacks,
   'Hardware & tech': {
     nvidia: 'NVIDIA',
     tesla: 'Tesla',
@@ -53,4 +55,10 @@ export function readFavorites(raw: string | null): string[] {
     /* Use the defaults for unreadable preferences. */
   }
   return defaultFavorites;
+}
+
+export function stickerImage(id: string) {
+  if (!Object.hasOwn(reactionNames, id) || ['ship', 'build', 'hotfix'].includes(id)) return null;
+  if (id.startsWith('go-') || id.startsWith('fl-')) return '/reactions/packs/' + id + '.webp';
+  return '/reactions/' + id + (defaultFavorites.includes(id) ? '.webp' : '.svg');
 }

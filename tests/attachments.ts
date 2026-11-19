@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { randomBytes } from 'node:crypto';
 import { base, Client } from './helpers/client';
 import { attachmentChunkBytes, maxAttachmentBytes } from '../src/lib/attachments';
-import { defaultFavorites, reactionNames } from '../src/lib/reaction-library';
+import { defaultFavorites, reactionNames, stickerImage } from '../src/lib/reaction-library';
 
 async function main() {
   const host = new Client(),
@@ -45,7 +45,7 @@ async function main() {
   assert.equal(download.status, 200);
   assert.match(download.headers.get('content-disposition')!, /^attachment;/);
   assert.deepEqual(Buffer.from(await download.arrayBuffer()), bytes);
-  for (const emoji of [...defaultFavorites, 'nvidia', 'docker'])
+  for (const emoji of [...defaultFavorites, 'nvidia', 'docker', 'go-rocket', 'fl-robot'])
     await host.call(room + '/actions', { type: 'reaction', emoji });
   const snapshot = await guest.call(room + '/state');
   assert.equal(snapshot.events.filter((e: { kind: string }) => e.kind === 'attachment').length, 1);
@@ -55,15 +55,9 @@ async function main() {
         e.kind === 'reaction' && e.payload.emoji === 'docker',
     ),
   );
-  for (const id of Object.keys(reactionNames).filter(
-    (id) => !['ship', 'hotfix', 'build'].includes(id),
-  )) {
-    assert.equal(
-      (await fetch(base + '/reactions/' + id + (defaultFavorites.includes(id) ? '.webp' : '.svg')))
-        .status,
-      200,
-      id,
-    );
+  for (const id of Object.keys(reactionNames)) {
+    const path = stickerImage(id);
+    if (path) assert.equal((await fetch(base + path, { method: 'HEAD' })).status, 200, id);
   }
   await host.call(room + '/actions', { type: 'end' });
   console.log(

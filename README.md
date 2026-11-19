@@ -30,7 +30,7 @@ These screenshots show the current local build with example meeting data.
 | ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
 | ![Shared browser with two tabs and an annotation on the page preview](docs/assets/shared-browser.jpg) | ![Meeting recap with download controls, star rating, and optional feedback](docs/assets/recap.jpg) |
 
-In a meeting, open **React → Reaction library** to pin up to six stickers or tech logos. Each browser starts with Jensen Huang, Elon Musk and a laughing terminal. In **Chat**, use the paperclip to share an individual file up to 200 MB. Admitted participants can download the completed file during the meeting. File contents are stored in the meeting database and removed with the room.
+In a meeting, open **React → Browse stickers** to search the sticker packs and send a reaction. Choose **Edit pins** to save up to six favorites. Each browser starts with Jensen Huang, Elon Musk and a laughing terminal. In **Chat**, use the paperclip to share an individual file up to 200 MB. Admitted participants can download the completed file during the meeting. File contents are stored in the meeting database and removed with the room.
 
 ## Run locally
 
