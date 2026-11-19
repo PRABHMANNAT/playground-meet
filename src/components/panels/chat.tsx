@@ -1,15 +1,81 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { MessagesSquare, ArrowUp, Paperclip, Download } from 'lucide-react';
+import { MessagesSquare, ArrowUp, Paperclip, Download, Maximize2 } from 'lucide-react';
 import { attachmentProblem, fileSize, attachmentChunkBytes } from '@/lib/attachments';
 import type { PanelProps } from './types';
 import { Avatar } from '../avatar';
+import { Dialog } from '../dialog';
+import { previewFromName } from '@/lib/attachment-preview';
+import type { Event } from '@/lib/types';
+
+type SharedImage = { url: string; filename: string };
+function ChatAttachment({
+  payload,
+  baseUrl,
+  openImage,
+}: {
+  payload: Event['payload'];
+  baseUrl: string;
+  openImage: (image: SharedImage) => void;
+}) {
+  const [failed, setFailed] = useState(false);
+  const filename = String(payload.filename);
+  const url = baseUrl + '/' + encodeURIComponent(String(payload.file));
+  const previewUrl = url + '?preview=1';
+  const kind = payload.preview === undefined ? previewFromName(filename) : payload.preview;
+  const download = (
+    <a className="chat-download" download href={url} aria-label={'Download ' + filename}>
+      <Download size={17} aria-hidden="true" />
+      <span>
+        {filename}
+        <small>{fileSize(Number(payload.size))}</small>
+      </span>
+    </a>
+  );
+  if (kind !== 'image' && kind !== 'video') return download;
+  return (
+    <div className="chat-media">
+      {failed ? (
+        <span className="chat-media-error">Preview unavailable</span>
+      ) : kind === 'image' ? (
+        <button
+          className="chat-photo"
+          type="button"
+          aria-label={'Enlarge ' + filename}
+          onClick={() => openImage({ url: previewUrl, filename })}
+        >
+          <img
+            src={previewUrl}
+            alt={filename}
+            loading="lazy"
+            decoding="async"
+            onError={() => setFailed(true)}
+          />
+          <span aria-hidden="true">
+            <Maximize2 size={14} />
+          </span>
+        </button>
+      ) : (
+        <video
+          controls
+          playsInline
+          preload="metadata"
+          aria-label={filename}
+          src={previewUrl}
+          onError={() => setFailed(true)}
+        />
+      )}
+      {download}
+    </div>
+  );
+}
 export function ChatPanel({ data, send }: PanelProps) {
   const [text, setText] = useState(''),
     [busy, setBusy] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const chooser = useRef<HTMLInputElement>(null);
   const [uploadStatus, setUploadStatus] = useState('');
+  const [image, setImage] = useState<SharedImage | null>(null);
   const attachmentUrl = '/api/meetings/' + data.meeting.id + '/attachments';
   async function upload(file: File) {
     const error = attachmentProblem(file.name, file.size);
@@ -87,23 +153,18 @@ export function ChatPanel({ data, send }: PanelProps) {
               </time>
             </header>
             {e.kind === 'attachment' ? (
-              <a
-                className="chat-download"
-                download
-                href={attachmentUrl + '/' + encodeURIComponent(String(e.payload.file))}
-              >
-                <Download size={18} />
-                <span>
-                  {String(e.payload.filename)}
-                  <small>{fileSize(Number(e.payload.size))}</small>
-                </span>
-              </a>
+              <ChatAttachment payload={e.payload} baseUrl={attachmentUrl} openImage={setImage} />
             ) : (
               <p>{String(e.payload.text)}</p>
             )}
           </article>
         ))}
       </div>
+      {image && (
+        <Dialog open title={image.filename} onClose={() => setImage(null)}>
+          <img className="chat-image-full" src={image.url} alt={image.filename} />
+        </Dialog>
+      )}
       <input
         ref={chooser}
         type="file"

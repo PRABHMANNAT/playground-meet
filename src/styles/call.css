@@ -1932,3 +1932,80 @@
 .transcript-draft {
   color: var(--muted);
 }
+
+.chat-media {
+  margin-inline-start: 31px;
+  max-width: 420px;
+  overflow: hidden;
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: 3px 13px 13px 13px;
+}
+.chat-photo,
+.chat-media video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: #151515;
+}
+.chat-photo {
+  position: relative;
+  padding: 0;
+  border: 0;
+  cursor: zoom-in;
+}
+.chat-photo:focus-visible {
+  outline-offset: -3px;
+}
+.chat-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.chat-photo > span {
+  position: absolute;
+  right: 7px;
+  bottom: 7px;
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  border-radius: 6px;
+  color: white;
+  background: #000a;
+}
+.chat-media video {
+  object-fit: contain;
+}
+.meeting-shell .chat-media .chat-download {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  width: 100%;
+  max-width: 100%;
+}
+.chat-media-error {
+  display: block;
+  padding: 10px 12px 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.dialog:has(.chat-image-full) {
+  width: min(92vw, 1080px);
+  max-width: 92vw;
+}
+.dialog:has(.chat-image-full) .section-heading h2 {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 16px;
+}
+.chat-image-full {
+  display: block;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  max-height: 72dvh;
+  margin: auto;
+  object-fit: contain;
+}
