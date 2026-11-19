@@ -15,6 +15,7 @@ async function main() {
     return;
   }
   await query('DELETE FROM rooms WHERE ended=TRUE AND created<$1', [now - days * 86400000]);
+  await query('DELETE FROM attachments WHERE NOT ready AND created<$1', [now - 86400000]);
   await query('DELETE FROM sessions WHERE expires<$1', [now]);
   await query('DELETE FROM sso_nonces WHERE expires<$1', [now]);
   await query('DELETE FROM rate_limits WHERE reset<$1', [now]);

@@ -1,3 +1,4 @@
+import { validReaction } from './reaction-library';
 import { z } from 'zod';
 import { maxBrowserUrl, parseBrowserUrl } from './browser-url';
 export const displayName = z.string().trim().min(1).max(60);
@@ -22,7 +23,10 @@ export const safeUrl = z.union([
 ]);
 export const actionInput = z.discriminatedUnion('type', [
   z.object({ type: z.literal('chat'), text: z.string().trim().min(1).max(2000) }),
-  z.object({ type: z.literal('reaction'), emoji: z.enum(['👏', '❤️', '🎉', '👍', '💡', '😂']) }),
+  z.object({
+    type: z.literal('reaction'),
+    emoji: z.string().max(32).refine(validReaction, 'Unknown reaction.'),
+  }),
   z.object({ type: z.literal('hand'), raised: z.boolean() }),
   z.object({
     type: z.literal('notes'),

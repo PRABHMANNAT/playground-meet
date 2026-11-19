@@ -48,7 +48,7 @@ import { useToast } from './providers';
 import { VideoTile } from './video-tile';
 import { SidePanel } from './panels';
 import type { Panel } from './panels/types';
-import { ReactionIcon, Reactions, emojis } from './reactions';
+import { ReactionPicker, Reactions } from './reactions';
 import { Shortcuts } from './shortcuts';
 import { Dialog } from './dialog';
 import { MediaDeviceSelect } from '@livekit/components-react';
@@ -357,20 +357,13 @@ function MeetingInterior({ id }: { id: string }) {
           ))}
       </div>
       {reactions && (
-        <div className="reactions-menu">
-          {emojis.map((emoji) => (
-            <button
-              key={emoji}
-              aria-label={`React ${emoji}`}
-              onClick={() => {
-                void send({ type: 'reaction', emoji });
-                setReactions(false);
-              }}
-            >
-              <ReactionIcon emoji={emoji} />
-            </button>
-          ))}
-        </div>
+        <ReactionPicker
+          onSend={(emoji) => {
+            void send({ type: 'reaction', emoji });
+            setReactions(false);
+          }}
+          onClose={() => setReactions(false)}
+        />
       )}
       <footer className="room-toolbar" aria-label="Meeting controls">
         <div className="toolbar-group">

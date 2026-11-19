@@ -925,3 +925,124 @@
 .browser-ink circle {
   fill: #813bff;
 }
+
+.meeting-shell .sticker-picker {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  width: max-content;
+  max-width: calc(100vw - 20px);
+  max-height: calc(100dvh - 180px);
+  overflow-y: auto;
+  color: var(--ink);
+}
+.sticker-heading,
+.sticker-quick,
+.sticker-picker .library-switch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sticker-heading {
+  justify-content: space-between;
+  font-size: 14px;
+}
+.meeting-shell .sticker-picker button {
+  display: grid;
+  place-items: center;
+  position: relative;
+  padding: 6px;
+  color: var(--ink);
+  background: var(--paper-2);
+  border: 1px solid transparent;
+}
+.meeting-shell .sticker-picker button:focus-visible {
+  outline: 2px solid currentColor;
+}
+.sticker-picker p,
+.sticker-picker h3,
+.sticker-picker small {
+  font-size: 11px;
+  margin: 0;
+}
+.meeting-shell .sticker-picker .library-switch {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12px;
+  min-height: 34px;
+  font-weight: 650;
+}
+.sticker-quick {
+  flex-wrap: wrap;
+}
+.sticker-library {
+  width: min(320px, 80vw);
+  max-height: 32dvh;
+  overflow-y: auto;
+}
+.sticker-library h3 {
+  margin: 8px 0;
+  color: var(--muted);
+}
+.sticker-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+}
+.sticker-grid button {
+  gap: 4px;
+}
+.meeting-shell .sticker-grid button[aria-pressed='true'] {
+  border-color: var(--ink);
+}
+.pin-check {
+  position: absolute;
+  right: 3px;
+  top: 3px;
+}
+.sticker-grid button:disabled {
+  opacity: 0.55;
+}
+.logo-sticker,
+.tech-sticker {
+  padding: 5px;
+  border-radius: 9px;
+  background: #e0eeff;
+  object-fit: contain;
+  box-sizing: border-box;
+}
+.emoji-art {
+  object-fit: contain;
+}
+.tech-sticker {
+  display: inline-grid;
+  place-items: center;
+  color: #222;
+}
+.tech-sticker.ship {
+  background: #9be7ff;
+}
+.tech-sticker.hotfix {
+  background: #ffb27c;
+}
+.tech-sticker.build {
+  background: #b7f59e;
+}
+.chat-download {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.chat-download svg {
+  flex-shrink: 0;
+}
+.chat-download small {
+  display: block;
+  color: var(--muted);
+}

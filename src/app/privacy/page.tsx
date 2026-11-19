@@ -7,10 +7,10 @@ export default function Privacy() {
         <span className="eyebrow">YOUR SPACE. YOUR INFORMATION.</span>
         <h1>Privacy, in plain language.</h1>
         <p>
-          Playground Meet stores your display name, room memberships, messages, notes, drawings,
-          polls, feedback and meeting timestamps on the operator’s server. Account email addresses
-          and salted password hashes are stored if you create an account. A strictly necessary
-          HttpOnly session cookie signs you in for seven days.
+          Playground Meet stores your display name, room memberships, messages, chat attachments,
+          notes, drawings, polls, feedback and meeting timestamps on the operator’s server. Account
+          email addresses and salted password hashes are stored if you create an account. A strictly
+          necessary HttpOnly session cookie signs you in for seven days.
         </p>
         <h2>Your camera stays yours.</h2>
         <p>
@@ -23,8 +23,8 @@ export default function Privacy() {
         <p>
           Admitted participants can access shared collaboration content and download meeting
           summaries. Hosts control admission and can remove participants. People who already
-          downloaded a summary retain their copy. Avoid adding confidential information unless
-          everyone in the room is authorized to see it.
+          downloaded a file or summary retain their copy. Avoid adding confidential information
+          unless everyone in the room is authorized to see it.
         </p>
         <h2>No paid AI. No ad trackers.</h2>
         <p>

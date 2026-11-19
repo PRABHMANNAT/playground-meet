@@ -20,7 +20,11 @@ export async function body(req: Request) {
 }
 export function api(fn: () => Promise<unknown>) {
   return fn()
-    .then((v) => NextResponse.json(v, { headers: { 'Cache-Control': 'no-store' } }))
+    .then((v) =>
+      v instanceof Response
+        ? v
+        : NextResponse.json(v, { headers: { 'Cache-Control': 'no-store' } }),
+    )
     .catch((e) => {
       const status = e instanceof HttpError ? e.status : e instanceof ZodError ? 400 : 500;
       if (status === 500) console.error('API failure:', e instanceof Error ? e.message : 'Unknown');
