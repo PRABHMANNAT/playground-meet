@@ -17,9 +17,15 @@ export default function Privacy() {
           Camera and microphone access starts only when you enable them. Audio and video travel
           through the configured LiveKit server using encrypted WebRTC transport. When you turn on
           transcription, your browser converts your own microphone audio into text. The room stores
-          and shares the speaker name, caption and timestamp. The application does not store audio
-          recordings. Transport encryption is not end-to-end encryption: the media-server operator
-          is part of the trust boundary.
+          and shares the speaker name, caption and timestamp. The media server handles transport
+          encryption and is part of the trust boundary.
+        </p>
+        <h2>Local meeting recordings</h2>
+        <p>
+          A participant can confirm recording and choose the meeting tab in their browser. Everyone
+          in the room can see who is recording. The recorder’s browser saves the visible tab and
+          meeting audio on that device. The meeting server receives recording status only. The
+          recorder can download or delete their browser copy from the meeting recap.
         </p>
         <h2>Shared means shared.</h2>
         <p>

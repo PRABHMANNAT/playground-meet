@@ -16,6 +16,12 @@ Start a video call from your browser, invite people with a link, and keep the di
 | **Work together**        | Use chat, reactions, raised hands, shared notes, a whiteboard, polls, action items with owners and due dates, a decision log, and a product review brief.                                          |
 | **Follow up**            | Review notes and timestamped feedback, rate the meeting, and download a Markdown summary.                                                                                                          |
 
+### Record a meeting locally
+
+Select **Record** before **Tools** in the call toolbar. Confirm, then choose the meeting tab in the browser picker. The recording follows what is visible in that tab, including cameras, screen shares, the whiteboard and open panels. Enable tab audio in the picker to include playback from chat videos and embedded pages. Meeting voices are included with either audio choice.
+
+Participants, including anyone joining late, see who is recording. **Stop and save recording** downloads a video. Leaving or disconnecting also stops capture. The recap’s **Local recordings** section lets you download another copy or delete the browser copy on the same device and browser profile. Desktop Chrome and Edge support the tab picker. Available recording time depends on free browser storage.
+
 ### Live transcription and meeting notes
 
 Open **Transcript** in the meeting and select **Include my microphone**. Each speaker opts in separately. The first use loads a bundled 39 MiB US English model. Vosk recognizes speech in a browser worker, pauses when the microphone is muted, and sends finalized text to the room with the speaker’s name. Closing the panel keeps recognition running. Select **Stop my transcript** to finish.

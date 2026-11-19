@@ -82,6 +82,19 @@ async function main() {
     await sender.connect(a.url, a.token);
     await receiver.connect(b.url, b.token);
     console.log('PASS two independently authenticated WebRTC participants connected');
+    const own = sender.localParticipant!;
+    const status = root + '/recording-status';
+    await guest.call(status, { active: true, sid: own.sid }, 409);
+    for (const active of [true, false]) {
+      await host.call(status, { active, sid: own.sid });
+      const isRecording = () =>
+        receiver.remoteParticipants.get(own.identity)?.attributes.localRecording === 'on';
+      for (let i = 0; i < 50 && isRecording() !== active; i++) await sleep(100);
+      assert.equal(isRecording(), active);
+    }
+    console.log(
+      'PASS recording notice reaches room members and is bound to the recorder connection',
+    );
     for (const [name, source] of [
       ['camera', TrackSource.SOURCE_CAMERA],
       ['screen', TrackSource.SOURCE_SCREENSHARE],
