@@ -11,7 +11,7 @@ With Next.js at http://localhost:3000 and LiveKit at ws://localhost:7880, run `n
 1. Load the homepage at desktop and 390px mobile width. Check horizontal overflow, keyboard focus, both themes, motion preference and navigation.
 2. Create a room, inspect preview, test permission denial, join muted and confirm connected status. On a real device, deliberately grant mic/camera access and check selection, echo cancellation and track cleanup on leave.
 3. Join from another browser/device/session. The host must admit it before token issuance. Test denial, reconnect, room lock and removal.
-4. Use chat, notes, board, polls, reactions, raised hand, focus timer and review markers. Switch panels with an unsaved note draft and confirm recovery.
+4. Use chat, notes, board, polls, reactions, raised hand, action items, decisions and review markers. Switch panels with an unsaved note draft and confirm recovery.
 5. Present a browser tab and entire screen where supported. Verify remote output. Screen-share audio varies by platform/browser. Test PiP on a published video track in a supported desktop browser.
 6. Simulate network loss, restore it and observe reconnection. End the meeting; verify everyone leaves and future tokens fail. Download the recap and inspect ratings/notes/markers.
 7. On public infrastructure, repeat from two unrelated networks and a mobile network. Local/native tests do not prove restrictive-network TURN/TLS or mobile hardware behavior.

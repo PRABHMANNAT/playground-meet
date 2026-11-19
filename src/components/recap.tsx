@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Download, Star, ArrowLeft, Check, PhoneOff, StickyNote, Flag } from 'lucide-react';
 import { request, downloadSummary } from '@/lib/client';
+import { ActionList, DecisionList } from './panels/outcomes';
 import { Header } from './header';
 import { useToast } from './providers';
 import type { Snapshot } from '@/lib/types';
@@ -47,6 +48,18 @@ export function Recap({ id }: { id: string }) {
                 <ArrowLeft size={16} /> Back to meetings
               </a>
             </div>
+            {!!data.meeting.state.actionItems?.length && (
+              <section className="recap-card">
+                <h2>Action items</h2>
+                <ActionList items={data.meeting.state.actionItems} />
+              </section>
+            )}
+            {!!data.meeting.state.decisions?.length && (
+              <section className="recap-card">
+                <h2>Decision log</h2>
+                <DecisionList decisions={data.meeting.state.decisions} />
+              </section>
+            )}
             <section className="recap-card recap-rating" aria-labelledby="recap-rating-heading">
               <h2 id="recap-rating-heading">Rate this meeting</h2>
               <form

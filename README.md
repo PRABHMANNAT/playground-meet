@@ -13,7 +13,7 @@ Start a video call from your browser, invite people with a link, and keep the di
 | **Start or join a call** | Create a meeting as a guest, share its invite link, and check your camera and microphone before joining. Sign in to keep meeting history across devices.                                           |
 | **Run the meeting**      | Admit guests from the waiting room, lock the room, moderate participants, or end the call for everyone. Share your screen and pin a participant in your own view.                                  |
 | **Browse together**      | Open up to five tabs, search Wikipedia, and share one HTTPS page at a time. Participants can draw on the shared preview. Use screen sharing for sites that block embeds or to show live scrolling. |
-| **Work together**        | Use chat, reactions, raised hands, shared notes, a whiteboard, polls, a focus timer, and a product review brief.                                                                                   |
+| **Work together**        | Use chat, reactions, raised hands, shared notes, a whiteboard, polls, action items with owners and due dates, a decision log, and a product review brief.                                          |
 | **Follow up**            | Review notes and timestamped feedback, rate the meeting, and download a Markdown summary.                                                                                                          |
 
 Invites and recaps use the branded `/playground-meet/` route. Existing `/room/` links redirect to the same meeting.

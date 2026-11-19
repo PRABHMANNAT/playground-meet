@@ -54,6 +54,20 @@ export const actionInput = z.discriminatedUnion('type', [
       .max(500),
   }),
   z.object({ type: z.literal('clear-board') }),
+  z.object({
+    type: z.literal('action-item'),
+    id: z.uuid(),
+    title: z.string().trim().min(1).max(240),
+    ownerId: z.string().min(1).max(80),
+    due: z.union([z.literal(''), z.iso.date()]),
+  }),
+  z.object({ type: z.literal('action-item-status'), id: z.uuid(), done: z.boolean() }),
+  z.object({
+    type: z.literal('decision'),
+    id: z.uuid(),
+    title: z.string().trim().min(1).max(240),
+    reason: z.string().trim().max(1200),
+  }),
   z.object({ type: z.literal('timer'), seconds: z.number().int().min(0).max(3600) }),
   z.object({ type: z.literal('review'), url: safeUrl, task: z.string().max(2000) }),
   z.object({

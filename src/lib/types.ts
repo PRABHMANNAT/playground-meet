@@ -33,7 +33,24 @@ export type Poll = {
   closed: boolean;
 };
 export type Stroke = { id: string; author: string; color: string; points: number[][] };
+export type ActionItem = {
+  id: string;
+  title: string;
+  ownerId: string;
+  ownerName: string;
+  due: string;
+  done: boolean;
+};
+export type Decision = {
+  id: string;
+  title: string;
+  reason: string;
+  recordedBy: string;
+  created: number;
+};
 export type SharedState = {
+  actionItems?: ActionItem[];
+  decisions?: Decision[];
   notes: string;
   notesVersion: number;
   polls: Poll[];

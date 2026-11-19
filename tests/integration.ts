@@ -125,6 +125,31 @@ async function main() {
   await act(host, { type: 'clear-board' });
   assert.equal((await guest.call(path + '/state')).meeting.state.strokes.length, 0);
   console.log('PASS shared whiteboard and host clearing');
+  const item = {
+    type: 'action-item',
+    id: crypto.randomUUID(),
+    title: 'Verify onboarding',
+    ownerId: gp.id,
+    due: '2027-02-15',
+  };
+  await act(host, { ...item, ownerId: 'absent' }, 400);
+  await act(host, item);
+  await act(host, item);
+  const close = { type: 'action-item-status', id: item.id, done: true };
+  await act(guest, close);
+  const decision = {
+    type: 'decision',
+    id: crypto.randomUUID(),
+    title: 'Pilot with design partners',
+    reason: 'Validate the signup flow.',
+  };
+  await act(guest, decision);
+  const outcomes = (await host.call(path + '/state')).meeting.state;
+  assert.equal(outcomes.actionItems.length, 1);
+  assert.equal(outcomes.actionItems[0].done, true);
+  assert.equal(outcomes.actionItems[0].ownerName, gp.name);
+  assert.equal(outcomes.decisions[0].recordedBy, gp.name);
+  await act(host, { ...close, done: false });
   await act(host, { type: 'timer', seconds: 300 });
   assert.ok((await guest.call(path + '/state')).meeting.state.timer.endsAt > Date.now());
   await act(host, { type: 'review', url: 'javascript:alert(1)', task: 'bad' }, 400);
@@ -137,10 +162,13 @@ async function main() {
   await act(guest, { type: 'rating', rating: 4, text: 'Useful review' });
   await act(guest, { type: 'rating', rating: 5, text: 'Updated feedback' });
   const markdown = (await host.call(path + '/summary')).markdown;
+  assert.ok(markdown.includes('- [ ] Verify onboarding'));
+  assert.ok(markdown.includes('2027-02-15'));
+  assert.ok(markdown.includes(decision.title) && markdown.includes(decision.reason));
   assert.ok(markdown.includes('Merged notes'));
   assert.ok(markdown.includes('Signup button is unclear'));
   assert.ok(markdown.includes('5/5'));
-  console.log('PASS review, feedback, timer and deterministic summary');
+  console.log('PASS action items, decision log, product review and exported meeting summary');
   await act(host, { type: 'lock', locked: true });
   await outsider.call(path + '/join', {}, 423);
   await act(guest, { type: 'end' }, 403);

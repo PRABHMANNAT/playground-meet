@@ -26,7 +26,9 @@ import {
   PenTool,
   StickyNote,
   BarChart3,
-  Timer,
+  ListChecks,
+  BookOpenCheck,
+  ArrowUpRight,
   Layers,
   Copy,
   Keyboard,
@@ -234,17 +236,30 @@ function MeetingInterior({ id }: { id: string }) {
   const controls = [
     { icon: MessageSquare, p: 'chat', label: 'Chat', description: 'Message the room' },
     { icon: Users, p: 'people', label: 'People', description: 'Participants and host controls' },
-    { icon: PenTool, p: 'board', label: 'Whiteboard', description: 'Sketch ideas together' },
+  ] as const;
+  const tools = [
     {
-      icon: StickyNote,
-      p: 'notes',
-      label: 'Shared notes',
-      description: 'Keep decisions in one place',
+      icon: ListChecks,
+      p: 'actions',
+      label: 'Action items',
+      description: 'Assign owners and due dates',
     },
-    { icon: BarChart3, p: 'polls', label: 'Polls', description: 'Ask a question and vote' },
-    { icon: Timer, p: 'timer', label: 'Focus timer', description: 'Set time for a discussion' },
-    { icon: Layers, p: 'review', label: 'Product review', description: 'Collect bugs and ideas' },
-    { icon: Globe, p: 'browser', label: 'Shared browser', description: 'Find and share web pages' },
+    {
+      icon: BookOpenCheck,
+      p: 'decisions',
+      label: 'Decision log',
+      description: 'Record agreements and rationale',
+    },
+    {
+      icon: Layers,
+      p: 'review',
+      label: 'Product review',
+      description: 'Set a brief and capture feedback',
+    },
+    { icon: Globe, p: 'browser', label: 'Shared browser', description: 'Review a page together' },
+    { icon: StickyNote, p: 'notes', label: 'Shared notes', description: 'Write together' },
+    { icon: BarChart3, p: 'polls', label: 'Polls', description: 'Vote on options' },
+    { icon: PenTool, p: 'board', label: 'Whiteboard', description: 'Sketch a workflow' },
   ] as const;
   return (
     <main className="meeting-shell" id="main">
@@ -437,7 +452,7 @@ function MeetingInterior({ id }: { id: string }) {
         </div>
         <span className="toolbar-divider" />
         <div className="toolbar-group">
-          {controls.slice(0, 2).map(({ icon: Icon, p, label }) => (
+          {controls.map(({ icon: Icon, p, label }) => (
             <div className={'toolbar-tool ' + (panel === p ? 'active' : '')} key={p}>
               <button
                 className="control"
@@ -470,35 +485,43 @@ function MeetingInterior({ id }: { id: string }) {
       </footer>
       <Shortcuts open={shortcuts} onClose={() => setShortcuts(false)} />
       <Dialog open={toolsOpen} onClose={() => setToolsOpen(false)} title="Meeting tools">
-        <div className="meeting-tools">
-          {controls.slice(2).map(({ icon: Icon, p, label, description }) => (
+        <div className="tools-launcher">
+          <div className="tools-cards">
+            {tools.map(({ icon: Icon, p, label, description }) => (
+              <button
+                key={p}
+                className={'tool-entry tool-' + p}
+                onClick={() => {
+                  setPanel(p);
+                  setToolsOpen(false);
+                }}
+              >
+                <span className="tool-symbol">
+                  <Icon size={20} />
+                </span>
+                <span className="tool-copy">
+                  <strong>{label}</strong>
+                  <small>{description}</small>
+                </span>
+                <ArrowUpRight className="tool-arrow" size={15} />
+              </button>
+            ))}
+          </div>
+          <div className="tool-utilities">
             <button
-              key={p}
               onClick={() => {
-                setPanel(p);
                 setToolsOpen(false);
+                setShortcuts(true);
               }}
             >
-              <Icon size={20} />
-              <span>
-                <strong>{label}</strong>
-                <small>{description}</small>
-              </span>
+              <Keyboard size={20} />
+              <span>Keyboard shortcuts</span>
             </button>
-          ))}
-          <button
-            onClick={() => {
-              setToolsOpen(false);
-              setShortcuts(true);
-            }}
-          >
-            <Keyboard size={20} />
-            <span>Keyboard shortcuts</span>
-          </button>
-          <button onClick={() => downloadSummary(id).catch((e) => toast(e.message))}>
-            <Download size={20} />
-            <span>Download summary</span>
-          </button>
+            <button onClick={() => downloadSummary(id).catch((e) => toast(e.message))}>
+              <Download size={20} />
+              <span>Download summary</span>
+            </button>
+          </div>
         </div>
       </Dialog>
       <Dialog open={settings} onClose={() => setSettings(false)} title="Device settings">

@@ -5,7 +5,7 @@ import { PeoplePanel } from './people';
 import { NotesPanel } from './notes';
 import { PollsPanel } from './polls';
 import { BoardPanel } from './board';
-import { TimerPanel } from './timer';
+import { ActionItemsPanel, DecisionLogPanel } from './outcomes';
 import { ReviewPanel } from './review';
 import { BrowserPanel } from './browser';
 import type { Panel, PanelProps } from './types';
@@ -15,7 +15,8 @@ const panels = {
   notes: NotesPanel,
   polls: PollsPanel,
   board: BoardPanel,
-  timer: TimerPanel,
+  actions: ActionItemsPanel,
+  decisions: DecisionLogPanel,
   review: ReviewPanel,
   browser: BrowserPanel,
 };
@@ -25,7 +26,8 @@ const titles = {
   notes: 'Shared notes',
   polls: 'Polls',
   board: 'Whiteboard',
-  timer: 'Focus timer',
+  actions: 'Action items',
+  decisions: 'Decision log',
   review: 'Product review',
   browser: 'Shared browser',
 };

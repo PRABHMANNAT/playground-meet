@@ -20,6 +20,17 @@ export function summary(data: Snapshot) {
     lines.push(
       `- [${duration((e.created - meeting.created) / 1000)}] ${e.name} · ${e.payload.kind}: ${e.payload.text}`,
     );
+  lines.push('', '## Action items');
+  for (const item of meeting.state.actionItems ?? [])
+    lines.push(
+      `- [${item.done ? 'x' : ' '}] ${item.title} — ${item.ownerName}${item.due ? ' · due ' + item.due : ''}`,
+    );
+  lines.push('', '## Decision log');
+  for (const decision of meeting.state.decisions ?? [])
+    lines.push(
+      `- ${decision.title} — ${decision.recordedBy} (${new Date(decision.created).toISOString().slice(0, 10)})`,
+      ...(decision.reason ? ['  ' + decision.reason] : []),
+    );
   lines.push('', '## Polls');
   for (const p of meeting.state.polls) {
     lines.push(

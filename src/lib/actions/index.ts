@@ -6,6 +6,7 @@ import { vote } from './vote';
 import { closePoll } from './close-poll';
 import { stroke } from './stroke';
 import { clearBoard } from './clear-board';
+import { outcomes } from './outcomes';
 import { timer } from './timer';
 import { review } from './review';
 import { browser } from './browser';
@@ -29,6 +30,9 @@ export const handlers: Record<Action['type'], Handler> = {
   stroke,
   'clear-board': clearBoard,
   timer,
+  'action-item': outcomes,
+  'action-item-status': outcomes,
+  decision: outcomes,
   review,
   browser,
   'browser-annotate': browser,
