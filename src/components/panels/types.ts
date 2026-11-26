@@ -14,4 +14,6 @@ export type Panel =
   | 'actions'
   | 'decisions'
   | 'review'
+  | 'timer'
+  | 'bookmarks'
   | 'browser';

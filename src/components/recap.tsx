@@ -4,6 +4,7 @@ import { Download, Star, ArrowLeft, Check, PhoneOff, StickyNote, Flag } from 'lu
 import { request, downloadSummary } from '@/lib/client';
 import { ActionList, DecisionList } from './panels/outcomes';
 import { LocalRecordingList } from './local-recording-list';
+import { BookmarkList } from './panels/bookmarks';
 import { Header } from './header';
 import { useToast } from './providers';
 import type { Snapshot } from '@/lib/types';
@@ -164,6 +165,12 @@ export function Recap({ id }: { id: string }) {
               )}
             </section>
             <LocalRecordingList scope={id + '/' + data.me.id} />
+            {!!data.meeting.state.bookmarks?.length && (
+              <section className="recap-card">
+                <h2>Bookmarks</h2>
+                <BookmarkList entries={data.meeting.state.bookmarks} start={data.meeting.created} />
+              </section>
+            )}
             {!!transcriptHighlights(data.events).length && (
               <section className="recap-card">
                 <h2>Discussion highlights</h2>

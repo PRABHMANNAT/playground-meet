@@ -3,6 +3,8 @@ import { X } from 'lucide-react';
 import type { TranscriptControls } from '@/hooks/use-transcript';
 import type { CaptionTranslation } from '@/hooks/use-caption-translation';
 import { TranscriptPanel } from './transcript';
+import { BookmarksPanel } from './bookmarks';
+import { CountdownPanel } from './countdown';
 import { ChatPanel } from './chat';
 import { PeoplePanel } from './people';
 import { NotesPanel } from './notes';
@@ -12,6 +14,7 @@ import { ReviewPanel } from './review';
 import { BrowserPanel, type BrowserControls } from './browser';
 import type { Panel, PanelProps } from './types';
 const panels = {
+  bookmarks: BookmarksPanel,
   chat: ChatPanel,
   people: PeoplePanel,
   notes: NotesPanel,
@@ -21,6 +24,8 @@ const panels = {
   review: ReviewPanel,
 };
 const titles = {
+  timer: 'Countdown',
+  bookmarks: 'Bookmarks',
   transcript: 'Live transcript',
   chat: 'Chat',
   people: 'People',
@@ -35,6 +40,7 @@ export function SidePanel({
   panel,
   onClose,
   hidden,
+  now,
   speech,
   translation,
   browser,
@@ -45,9 +51,11 @@ export function SidePanel({
   translation: CaptionTranslation;
   browser: BrowserControls;
   hidden?: boolean;
+  now: number;
   onClose: () => void;
 }) {
-  const Content = panel === 'transcript' || panel === 'browser' ? null : panels[panel];
+  const Content =
+    panel === 'transcript' || panel === 'browser' || panel === 'timer' ? null : panels[panel];
   return (
     <aside className="room-panel" aria-label={titles[panel]} data-panel={panel} hidden={hidden}>
       <div className="panel-heading">
@@ -59,6 +67,8 @@ export function SidePanel({
       <div className="panel-content">
         {panel === 'browser' ? (
           <BrowserPanel {...props} controls={browser} visible={!hidden} />
+        ) : panel === 'timer' ? (
+          <CountdownPanel {...props} now={now} />
         ) : Content ? (
           <Content {...props} />
         ) : (

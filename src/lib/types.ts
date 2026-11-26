@@ -57,6 +57,7 @@ export type Decision = {
   created: number;
 };
 export type SharedState = {
+  bookmarks?: { id: string; label: string; created: number; author: string; name: string }[];
   actionItems?: ActionItem[];
   decisions?: Decision[];
   notes: string;
@@ -70,7 +71,7 @@ export type SharedState = {
     string,
     { id: string; name: string; points: number[][]; width: number; expires: number }
   >;
-  timer: { endsAt: number; duration: number };
+  timer: { endsAt: number; duration: number; pausedSeconds?: number };
   review: { url: string; task: string };
   browser?: {
     url: string;

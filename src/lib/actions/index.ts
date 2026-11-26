@@ -8,6 +8,7 @@ import { stroke } from './stroke';
 import { clearBoard } from './clear-board';
 import { outcomes } from './outcomes';
 import { timer } from './timer';
+import { bookmarks } from './bookmarks';
 import { review } from './review';
 import { browser } from './browser';
 import { admit } from './admit';
@@ -34,6 +35,9 @@ export const handlers: Record<Action['type'], Handler> = {
   'board-undo': stroke,
   'clear-board': clearBoard,
   timer,
+  'timer-control': timer,
+  bookmark: bookmarks,
+  'remove-bookmark': bookmarks,
   'action-item': outcomes,
   'action-item-status': outcomes,
   decision: outcomes,
@@ -54,6 +58,7 @@ export const hostActions = new Set<Action['type']>([
   'close-poll',
   'clear-board',
   'timer',
+  'timer-control',
   'review',
   'admit',
   'remove',

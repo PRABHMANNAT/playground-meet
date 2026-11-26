@@ -21,6 +21,14 @@ export function summary(data: Snapshot) {
   const highlights = transcriptHighlights(transcript);
   if (highlights.length) lines.push('## Discussion highlights', ...highlights.map(line), '');
   lines.push('## Shared notes', meeting.state.notes || 'No notes saved.');
+  if (meeting.state.bookmarks?.length) {
+    lines.push('', '## Bookmarks');
+    for (const mark of meeting.state.bookmarks) {
+      lines.push(
+        `- [${duration((mark.created - meeting.created) / 1000)}] ${mark.label} — ${mark.name}`,
+      );
+    }
+  }
   const markers = events.filter((e) => e.kind === 'marker');
   if (markers.length) lines.push('', '## Feedback & moments');
   for (const e of markers)

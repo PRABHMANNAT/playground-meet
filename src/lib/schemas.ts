@@ -108,6 +108,9 @@ export const actionInput = z.discriminatedUnion('type', [
     reason: z.string().trim().max(1200),
   }),
   z.object({ type: z.literal('timer'), seconds: z.number().int().min(0).max(3600) }),
+  z.object({ type: z.literal('timer-control'), operation: z.enum(['pause', 'resume']) }),
+  z.object({ type: z.literal('bookmark'), id: z.uuid(), label: z.string().trim().min(1).max(160) }),
+  z.object({ type: z.literal('remove-bookmark'), id: z.uuid() }),
   z.object({ type: z.literal('review'), url: safeUrl, task: z.string().max(2000) }),
   z.object({
     type: z.literal('browser'),

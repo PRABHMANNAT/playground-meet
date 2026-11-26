@@ -16,9 +16,13 @@ Start a video call from your browser, invite people with a link, and keep the di
 | **Work together**        | Use chat, reactions, raised hands, shared notes, a whiteboard, polls, action items with owners and due dates, a decision log, and a product review brief.                                          |
 | **Follow up**            | Review notes and timestamped feedback, rate the meeting, and download a Markdown summary.                                                                                                          |
 
+### Meeting tools
+
+Hover over **More tools** or tap it to open the menu. **Countdown** lets the host start, pause and resume a room-wide timer. **Bookmarks** saves labeled timestamps in the recap and downloadable summary. Action items, Decision log and Product review are under **More options**.
+
 ### Share a web page during a call
 
-Open **Tools → Shared browser**, enter a public HTTPS address, and select **Share page**. Participants can click **Shared page** above the video gallery to open the room’s current link and follow new links as they are shared. Everyone can annotate an embeddable shared page. Each personal tab has its own Back, Forward, and Reload controls, including for Wikipedia searches.
+Open **More tools → Shared browser**, enter a public HTTPS address, and select **Share page**. Participants can click **Shared page** above the video gallery to open the room’s current link and follow new links as they are shared. Everyone can annotate an embeddable shared page. Each personal tab has its own Back, Forward, and Reload controls, including for Wikipedia searches.
 
 To present clicks, scrolling, or a site that blocks previews, choose **Open in tab**, return to the meeting, and select **Present a browser tab**. Choose the site in the browser’s sharing picker. **Stop live presentation** ends the video share.
 
@@ -30,7 +34,7 @@ The browser downloads the model from Playground Meet and processes camera frames
 
 ### Record a meeting locally
 
-Select **Record** before **Tools** in the call toolbar. Confirm, then choose the meeting tab in the browser picker. The recording follows what is visible in that tab, including cameras, screen shares, the whiteboard and open panels. Enable tab audio in the picker to include playback from chat videos and embedded pages. Meeting voices are included with either audio choice.
+Select **Record** in the call toolbar. Confirm, then choose the meeting tab in the browser picker. The recording follows what is visible in that tab, including cameras, screen shares, the whiteboard and open panels. Enable tab audio in the picker to include playback from chat videos and embedded pages. Meeting voices are included with either audio choice.
 
 Participants, including anyone joining late, see who is recording. **Stop and save recording** downloads a video. Leaving or disconnecting also stops capture. The recap’s **Local recordings** section lets you download another copy or delete the browser copy on the same device and browser profile. Desktop Chrome and Edge support the tab picker. Available recording time depends on free browser storage.
 
@@ -66,7 +70,7 @@ In a meeting, open **React → Browse stickers** to search the library. **Studio
 
 In **Chat**, choose **Everyone** or an admitted participant under **Send to**. Send text, pick a sticker, or share a named place or a device location. **Files** accepts multiple documents, presentations, images and other files up to 200 MB each. You can also drop files on the chat panel. Direct messages and their attachments are accessible only to the sender and recipient within the meeting. File contents are stored in the meeting database and removed with the room.
 
-Open **Tools → Whiteboard** to draw on the meeting’s fullscreen canvas. Choose **Share to all** to present it alongside participant video. Admitted participants can draw together, see who is drawing, undo their own marks, and export the saved artwork as a landscape PDF. The presenter or host can stop presenting, and the host can clear the canvas.
+Open **More tools → Whiteboard** to draw on the meeting’s fullscreen canvas. Choose **Share to all** to present it alongside participant video. Admitted participants can draw together, see who is drawing, undo their own marks, and export the saved artwork as a landscape PDF. The presenter or host can stop presenting, and the host can clear the canvas.
 
 ## Run locally
 
