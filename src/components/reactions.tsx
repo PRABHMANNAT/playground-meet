@@ -9,6 +9,7 @@ import {
   readFavorites,
   legacyReactions,
   stickerImage,
+  stickerLabel,
   studioGroups,
 } from '@/lib/reaction-library';
 import type { Event } from '@/lib/types';
@@ -137,7 +138,7 @@ export function StickerLibrary({
         </div>
       )}
       <div className="sticker-library" ref={results}>
-        <div className={'sticker-grid' + (pack === 'Gopher memes' && !query ? ' meme-grid' : '')}>
+        <div className="sticker-grid">
           {visible.map(([id, name]) => {
             const pinned = favorites.includes(id);
             const captioned = id.startsWith('photo-') || id.startsWith('meme-');
@@ -152,7 +153,6 @@ export function StickerLibrary({
                 onClick={() => onSelect(id)}
               >
                 <ReactionIcon emoji={id} size={captioned ? 44 : 52} />
-                {!query && pack === 'Gopher memes' && <small>{name}</small>}
                 {pinned && <Check className="pin-check" size={12} />}
               </button>
             );
@@ -300,7 +300,7 @@ export function Reactions({ events, now }: { events: Event[]; now: number }) {
               key={e.id}
               className="sticker-flight"
               role="img"
-              aria-label={e.name + ' reacted with ' + (reactionNames[id] ?? id)}
+              aria-label={e.name + ' reacted with ' + stickerLabel(id)}
               style={
                 {
                   left: 17 + ((e.id * 17) % 63) + '%',

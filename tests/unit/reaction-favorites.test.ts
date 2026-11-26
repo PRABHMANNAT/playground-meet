@@ -9,6 +9,7 @@ import {
   reactionNames,
   reactionPacks,
   stickerImage,
+  stickerLabel,
   studioGroups,
 } from '../../src/lib/reaction-library';
 it('shows three defaults and restores at most six unique library items', () => {
@@ -99,11 +100,13 @@ it('ships at least 250 selectable reactions with matching artwork and valid even
   }
 });
 
-it('ships 100 distinct credited photo stickers usable in chat and reactions', () => {
+it('ships the expanded city and people packs with distinct credited photos usable in chat and reactions', () => {
   const credits = readFileSync('public/reactions/photos/credits.html', 'utf8');
   const ids = Object.values(photoPacks).flatMap(Object.keys);
   const hashes = new Set<string>();
-  expect(ids).toHaveLength(100);
+  expect(Object.keys(photoPacks['City postcards'])).toHaveLength(58);
+  expect(Object.keys(photoPacks['People & punchlines'])).toHaveLength(53);
+  expect(ids).toHaveLength(168);
   for (const sticker of ids) {
     expect(credits).toContain('id="' + sticker + '"');
     expect(actionInput.safeParse({ type: 'chat', sticker }).success).toBe(true);
@@ -113,5 +116,15 @@ it('ships 100 distinct credited photo stickers usable in chat and reactions', ()
         .digest('hex'),
     );
   }
-  expect(hashes.size).toBe(100);
+  expect(hashes.size).toBe(168);
+});
+
+it('retires Gopher memes from selection and sending while rendering existing messages', () => {
+  expect(Object.hasOwn(reactionPacks, 'Gopher memes')).toBe(false);
+  expect(Object.keys(reactionNames).some((id) => id.startsWith('go-'))).toBe(false);
+  expect(readFavorites('["go-gamer","elon"]')).toEqual(['elon']);
+  expect(actionInput.safeParse({ type: 'chat', sticker: 'go-gamer' }).success).toBe(false);
+  expect(actionInput.safeParse({ type: 'reaction', emoji: 'go-gamer' }).success).toBe(false);
+  expect(stickerLabel('go-gamer')).toBe('One more level');
+  expect(existsSync('public' + stickerImage('go-gamer'))).toBe(true);
 });

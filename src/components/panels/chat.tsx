@@ -20,7 +20,7 @@ import { Avatar } from '../avatar';
 import { Dialog } from '../dialog';
 import { previewFromName } from '@/lib/attachment-preview';
 import type { Event } from '@/lib/types';
-import { reactionNames } from '@/lib/reaction-library';
+import { stickerLabel } from '@/lib/reaction-library';
 import { ReactionIcon, StickerLibrary } from '../reactions';
 import { ChatLocationDialog, mapLink, type ChatLocation } from './chat-location';
 
@@ -290,7 +290,7 @@ export function ChatPanel({ data, send }: PanelProps) {
               <div
                 className="chat-sticker-message"
                 role="img"
-                aria-label={reactionNames[e.payload.sticker] ?? e.payload.sticker}
+                aria-label={stickerLabel(e.payload.sticker)}
               >
                 <ReactionIcon emoji={e.payload.sticker} size={96} />
               </div>
