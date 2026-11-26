@@ -7,12 +7,13 @@ The repository's MIT license applies to the project's original code and document
 - The shared browser screenshot includes [Example Domain](https://example.com/), a public example page for documentation.
 - Dependencies are subject to the licenses published by their respective authors.
 
-- The hardware and developer logo packs use [Simple Icons v13.0.0](https://github.com/simple-icons/simple-icons/tree/13.0.0), distributed under CC0. Individual brands retain their trademark rights.
+- The hardware and developer logo cutouts adapt [Simple Icons v13.0.0](https://github.com/simple-icons/simple-icons/tree/13.0.0) (CC0) and [Devicon](https://github.com/devicons/devicon) (Iconify collection 1.2.85, [MIT license](public/reactions/tech-3d/Devicon-LICENSE.txt)). The renders add colour, perspective, bevels and extruded edges. Individual brands retain their trademark rights.
 
 - The 3D reaction artwork is from [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji), bundled from Iconify's fluent-emoji 1.2.7 collection. See the [MIT license](public/reactions/packs/Fluent-LICENSE.txt).
 - The developer meme pack uses [Egon Elbre’s Gophers](https://github.com/egonelbre/gophers/tree/63b1f5a9f334f9e23735c6e09ac003479ffe5df5), released under CC0. The original Go gopher was designed by Renée French.
 
 - The 100 captioned People & punchlines, City postcards and Meeting memes stickers use Wikimedia Commons imagery. The [photo sticker credits](public/reactions/photos/credits.html) identify the source, author and license for each image.
+- The [Studio action credits](public/reactions/studio/credits.html) identify the photographers, original files and licenses for the 19 portrait cutouts.
 
 ## On-device camera background blur
 

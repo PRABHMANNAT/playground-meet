@@ -62,7 +62,7 @@ These screenshots show the current local build with example meeting data.
 | ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
 | ![Shared browser with two tabs and an annotation on the page preview](docs/assets/shared-browser.jpg) | ![Meeting recap with download controls, star rating, and optional feedback](docs/assets/recap.jpg) |
 
-In a meeting, open **React → Browse stickers** to search the library, including 100 captioned photo stickers in **People & punchlines**, **City postcards** and **Meeting memes**. Choose **Edit pins** to save up to six favorites. Each browser starts with Jensen Huang, Elon Musk and a laughing terminal.
+In a meeting, open **React → Browse stickers** to search the cutout library. **Studio stickers** includes action poses of Narendra Modi, Elon Musk and Jensen Huang. **Hardware & tech** has 105 logos and **Developer logos** has 111 colourful 3D logos. **People & punchlines**, **City postcards** and **Meeting memes** contain 100 captioned photo cutouts. Choose **Edit pins** to save up to six favorites. Each browser starts with Jensen Huang, Elon Musk and a laughing terminal.
 
 In **Chat**, choose **Everyone** or an admitted participant under **Send to**. Send text, pick a sticker, or share a named place or a device location. **Files** accepts multiple documents, presentations, images and other files up to 200 MB each. You can also drop files on the chat panel. Direct messages and their attachments are accessible only to the sender and recipient within the meeting. File contents are stored in the meeting database and removed with the room.
 

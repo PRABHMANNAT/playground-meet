@@ -22,7 +22,7 @@ export function ReactionIcon({ emoji, size = 36 }: { emoji: string; size?: numbe
         className={'tech-sticker ' + emoji}
         style={{ width: size, height: size }}
       >
-        <Icon size={size * 0.63} />
+        <Icon size={size * 0.79} />
       </span>
     );
   }
@@ -57,20 +57,22 @@ export function StickerLibrary({
   favorites?: string[];
   editing?: boolean;
 }) {
-  const [pack, setPack] = useState('People & punchlines');
+  const [pack, setPack] = useState('Studio stickers');
   const [search, setSearch] = useState('');
   const results = useRef<HTMLDivElement>(null);
   const packs: Record<string, Record<string, string>> = reactionPacks;
   const query = search.trim().toLowerCase();
-  const visible = Object.entries(query ? reactionNames : packs[pack]).filter(
-    ([id, name]) => !query || (name + ' ' + id).toLowerCase().includes(query),
-  );
+  const compact = (value: string) => value.toLowerCase().replace(/[\s._-]+/g, '');
+  const needle = compact(query);
+  const visible = Object.entries(query ? reactionNames : packs[pack]).filter(([id, name]) => {
+    const alias = name.startsWith('Jensen Huang') ? 'NVIDIA CEO' : '';
+    return !query || compact(name + ' ' + id + ' ' + alias).includes(needle);
+  });
   useEffect(() => {
     results.current?.scrollTo({ top: 0 });
   }, [pack, query]);
   return (
     <>
-      {' '}
       <label className="sticker-search">
         <Search size={16} />
         <input
@@ -109,7 +111,7 @@ export function StickerLibrary({
                 disabled={editing && !pinned && favorites.length >= 6}
                 onClick={() => onSelect(id)}
               >
-                <ReactionIcon emoji={id} size={44} />
+                <ReactionIcon emoji={id} size={id.startsWith('photo-') ? 44 : 52} />
                 {!query && pack === 'Gopher memes' && <small>{name}</small>}
                 {pinned && <Check className="pin-check" size={12} />}
               </button>
@@ -120,11 +122,11 @@ export function StickerLibrary({
       </div>
       <a
         className="sticker-credits"
-        href="/reactions/photos/credits.html"
+        href="/reactions/credits.html"
         target="_blank"
         rel="noreferrer"
       >
-        Photo credits
+        Sticker credits
       </a>
     </>
   );
