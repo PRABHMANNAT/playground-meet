@@ -1,5 +1,7 @@
 import stickerPacks from './sticker-packs.json';
+import photoPacks from './photo-stickers.json';
 export const reactionPacks = {
+  ...photoPacks,
   'Studio stickers': {
     jensen: 'Jensen Huang approves',
     elon: 'Elon Musk eyebrow raise',
@@ -59,6 +61,7 @@ export function readFavorites(raw: string | null): string[] {
 
 export function stickerImage(id: string) {
   if (!Object.hasOwn(reactionNames, id) || ['ship', 'build', 'hotfix'].includes(id)) return null;
+  if (id.startsWith('photo-')) return '/reactions/photos/' + id + '.webp';
   if (id.startsWith('go-') || id.startsWith('fl-')) return '/reactions/packs/' + id + '.webp';
   return '/reactions/' + id + (defaultFavorites.includes(id) ? '.webp' : '.svg');
 }

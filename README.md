@@ -16,6 +16,18 @@ Start a video call from your browser, invite people with a link, and keep the di
 | **Work together**        | Use chat, reactions, raised hands, shared notes, a whiteboard, polls, action items with owners and due dates, a decision log, and a product review brief.                                          |
 | **Follow up**            | Review notes and timestamped feedback, rate the meeting, and download a Markdown summary.                                                                                                          |
 
+### Share a web page during a call
+
+Open **Tools → Shared browser**, enter a public HTTPS address, and select **Share page**. Participants can click **Shared page** above the video gallery to open the room’s current link and follow new links as they are shared. Everyone can annotate an embeddable shared page. Each personal tab has its own Back, Forward, and Reload controls, including for Wikipedia searches.
+
+To present clicks, scrolling, or a site that blocks previews, choose **Open in tab**, return to the meeting, and select **Present a browser tab**. Choose the site in the browser’s sharing picker. **Stop live presentation** ends the video share.
+
+### Blur your camera background
+
+During a call, turn on your camera and open **Device settings → Background blur**. The preview shows the same effect other participants receive. Blur stays on when you hide the preview or turn your camera off and back on. Switch it off to share the original picture again.
+
+The browser downloads the model from Playground Meet and processes camera frames on your device. This requires WebGL 2 and a compatible browser video pipeline. No API key or paid processing service is required.
+
 ### Record a meeting locally
 
 Select **Record** before **Tools** in the call toolbar. Confirm, then choose the meeting tab in the browser picker. The recording follows what is visible in that tab, including cameras, screen shares, the whiteboard and open panels. Enable tab audio in the picker to include playback from chat videos and embedded pages. Meeting voices are included with either audio choice.
@@ -50,7 +62,9 @@ These screenshots show the current local build with example meeting data.
 | ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
 | ![Shared browser with two tabs and an annotation on the page preview](docs/assets/shared-browser.jpg) | ![Meeting recap with download controls, star rating, and optional feedback](docs/assets/recap.jpg) |
 
-In a meeting, open **React → Browse stickers** to search the sticker packs and send a reaction. Choose **Edit pins** to save up to six favorites. Each browser starts with Jensen Huang, Elon Musk and a laughing terminal. In **Chat**, use the paperclip to share an individual file up to 200 MB. Admitted participants can download the completed file during the meeting. File contents are stored in the meeting database and removed with the room.
+In a meeting, open **React → Browse stickers** to search the library, including 100 captioned photo stickers in **People & punchlines**, **City postcards** and **Meeting memes**. Choose **Edit pins** to save up to six favorites. Each browser starts with Jensen Huang, Elon Musk and a laughing terminal.
+
+In **Chat**, choose **Everyone** or an admitted participant under **Send to**. Send text, pick a sticker, or share a named place or a device location. **Files** accepts multiple documents, presentations, images and other files up to 200 MB each. You can also drop files on the chat panel. Direct messages and their attachments are accessible only to the sender and recipient within the meeting. File contents are stored in the meeting database and removed with the room.
 
 Open **Tools → Whiteboard** to draw on the meeting’s fullscreen canvas. Choose **Share to all** to present it alongside participant video. Admitted participants can draw together, see who is drawing, undo their own marks, and export the saved artwork as a landscape PDF. The presenter or host can stop presenting, and the host can clear the canvas.
 

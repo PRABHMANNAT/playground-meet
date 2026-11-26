@@ -11,7 +11,7 @@ import {
   stickerImage,
 } from '@/lib/reaction-library';
 import type { Event } from '@/lib/types';
-function ReactionIcon({ emoji, size = 36 }: { emoji: string; size?: number }) {
+export function ReactionIcon({ emoji, size = 36 }: { emoji: string; size?: number }) {
   if (legacyReactions.includes(emoji)) return <span aria-hidden="true">{emoji}</span>;
   const symbols = { ship: Rocket, hotfix: Flame, build: Terminal };
   if (Object.hasOwn(symbols, emoji)) {
@@ -28,6 +28,15 @@ function ReactionIcon({ emoji, size = 36 }: { emoji: string; size?: number }) {
   }
   const src = stickerImage(emoji);
   if (!src) return null;
+  if (emoji.startsWith('photo-')) {
+    const [subject, caption] = reactionNames[emoji].split(' · ');
+    return (
+      <span className="photo-sticker" style={{ '--sticker-size': size + 'px' } as CSSProperties}>
+        <img src={src} alt={subject} loading="lazy" decoding="async" />
+        <b>{caption}</b>
+      </span>
+    );
+  }
   return (
     <img
       alt=""
@@ -39,6 +48,87 @@ function ReactionIcon({ emoji, size = 36 }: { emoji: string; size?: number }) {
     />
   );
 }
+export function StickerLibrary({
+  onSelect,
+  favorites = [],
+  editing = false,
+}: {
+  onSelect: (id: string) => void;
+  favorites?: string[];
+  editing?: boolean;
+}) {
+  const [pack, setPack] = useState('People & punchlines');
+  const [search, setSearch] = useState('');
+  const results = useRef<HTMLDivElement>(null);
+  const packs: Record<string, Record<string, string>> = reactionPacks;
+  const query = search.trim().toLowerCase();
+  const visible = Object.entries(query ? reactionNames : packs[pack]).filter(
+    ([id, name]) => !query || (name + ' ' + id).toLowerCase().includes(query),
+  );
+  useEffect(() => {
+    results.current?.scrollTo({ top: 0 });
+  }, [pack, query]);
+  return (
+    <>
+      {' '}
+      <label className="sticker-search">
+        <Search size={16} />
+        <input
+          aria-label="Search all stickers"
+          placeholder={'Search ' + Object.keys(reactionNames).length + ' stickers'}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </label>
+      <div className="sticker-filter">
+        <select
+          aria-label="Sticker pack"
+          value={pack}
+          onChange={(e) => {
+            setPack(e.target.value);
+            setSearch('');
+          }}
+        >
+          {Object.keys(packs).map((name) => (
+            <option key={name}>{name}</option>
+          ))}
+        </select>
+        <span>{editing ? favorites.length + '/6 pinned' : visible.length + ' stickers'}</span>
+      </div>
+      <div className="sticker-library" ref={results}>
+        <div className={'sticker-grid' + (pack === 'Gopher memes' && !query ? ' meme-grid' : '')}>
+          {visible.map(([id, name]) => {
+            const pinned = favorites.includes(id);
+            return (
+              <button
+                key={id}
+                className={id.startsWith('photo-') ? 'photo-tile' : undefined}
+                title={name}
+                aria-label={(editing ? (pinned ? 'Unpin ' : 'Pin ') : 'Send ') + name}
+                aria-pressed={editing ? pinned : undefined}
+                disabled={editing && !pinned && favorites.length >= 6}
+                onClick={() => onSelect(id)}
+              >
+                <ReactionIcon emoji={id} size={44} />
+                {!query && pack === 'Gopher memes' && <small>{name}</small>}
+                {pinned && <Check className="pin-check" size={12} />}
+              </button>
+            );
+          })}
+        </div>
+        {!visible.length && <p className="sticker-no-results">No matching stickers</p>}
+      </div>
+      <a
+        className="sticker-credits"
+        href="/reactions/photos/credits.html"
+        target="_blank"
+        rel="noreferrer"
+      >
+        Photo credits
+      </a>
+    </>
+  );
+}
 export function ReactionPicker({
   onSend,
   onClose,
@@ -48,22 +138,14 @@ export function ReactionPicker({
 }) {
   const [favorites, setFavorites] = useState(defaultFavorites);
   const [library, setLibrary] = useState(false);
-  const [pack, setPack] = useState('Gopher memes');
+
   const [editing, setEditing] = useState(false);
-  const [search, setSearch] = useState('');
+
   useEffect(() => {
     panel.current?.focus();
   }, []);
-  const results = useRef<HTMLDivElement>(null);
+
   const panel = useRef<HTMLElement>(null);
-  const packs: Record<string, Record<string, string>> = reactionPacks;
-  const query = search.trim().toLowerCase();
-  const visible = Object.entries(query ? reactionNames : packs[pack]).filter(
-    ([id, name]) => !query || (name + ' ' + id).toLowerCase().includes(query),
-  );
-  useEffect(() => {
-    results.current?.scrollTo({ top: 0 });
-  }, [pack, query]);
   useEffect(() => {
     const trigger = document.querySelector<HTMLButtonElement>(
       'button[aria-label="Send a reaction"]',
@@ -135,54 +217,11 @@ export function ReactionPicker({
       </div>
       {library ? (
         <>
-          <label className="sticker-search">
-            <Search size={16} />
-            <input
-              aria-label="Search all stickers"
-              placeholder={'Search ' + Object.keys(reactionNames).length + ' stickers'}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </label>
-          <div className="sticker-filter">
-            <select
-              aria-label="Sticker pack"
-              value={pack}
-              onChange={(e) => {
-                setPack(e.target.value);
-                setSearch('');
-              }}
-            >
-              {Object.keys(packs).map((name) => (
-                <option key={name}>{name}</option>
-              ))}
-            </select>
-            <span>{editing ? favorites.length + '/6 pinned' : visible.length + ' stickers'}</span>
-          </div>
-          <div className="sticker-library" ref={results}>
-            <div
-              className={'sticker-grid' + (!query && pack === 'Gopher memes' ? ' meme-grid' : '')}
-            >
-              {visible.map(([id, name]) => {
-                const pinned = favorites.includes(id);
-                return (
-                  <button
-                    key={id}
-                    title={name}
-                    aria-label={(editing ? (pinned ? 'Unpin ' : 'Pin ') : 'Send ') + name}
-                    aria-pressed={editing ? pinned : undefined}
-                    disabled={editing && !pinned && favorites.length >= 6}
-                    onClick={() => (editing ? toggle(id) : onSend(id))}
-                  >
-                    <ReactionIcon emoji={id} size={44} />
-                    {!query && pack === 'Gopher memes' && <small>{name}</small>}
-                    {pinned && <Check className="pin-check" size={12} />}
-                  </button>
-                );
-              })}
-            </div>
-            {!visible.length && <p className="sticker-no-results">No matching stickers</p>}
-          </div>
+          <StickerLibrary
+            favorites={favorites}
+            editing={editing}
+            onSelect={editing ? toggle : onSend}
+          />
         </>
       ) : (
         <>

@@ -8,9 +8,11 @@ Sessions are HttpOnly, SameSite=Lax, secure in production and revocable in the d
 
 ## Authorization
 
+Room snapshots filter direct chat before selecting recent events. Attachment previews, downloads and byte ranges check the same sender-or-recipient restriction in addition to room membership.
+
 Each token, snapshot, command and summary request checks server-side room membership. Host-only commands are checked inside the room transaction. Notes use a revision compare-and-swap; votes are keyed by authenticated identity. Roles are not trusted from LiveKit metadata or data packets. Media JWTs include one room and identity, no roomAdmin grant, and no publish-data permission. Chat/collaboration travels through the authenticated API.
 
-Mutations reject missing and foreign Origin headers. APP_URL must be a trusted fixed deployment value. The browser policy denies framing and geolocation; user-controlled review URLs require HTTPS. React escapes chat/notes; no user HTML is injected. JSON bodies and event fields are bounded. Database calls are parameterized. Persistent counters provide basic request limits; deploy a reverse-proxy/IP limiter for anonymous abuse prevention. Creating new guest identities can bypass identity-specific limits.
+Mutations reject missing and foreign Origin headers. APP_URL must be a trusted fixed deployment value. The browser policy denies framing and allows first-party geolocation on the meeting page for user-confirmed map pins; user-controlled review URLs require HTTPS. React escapes chat/notes; no user HTML is injected. JSON bodies and event fields are bounded. Database calls are parameterized. Persistent counters provide basic request limits; deploy a reverse-proxy/IP limiter for anonymous abuse prevention. Creating new guest identities can bypass identity-specific limits.
 
 ## Media boundaries
 

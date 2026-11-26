@@ -9,11 +9,13 @@ export async function snapshot(id: string, p: Person): Promise<Snapshot> {
   );
   const events = await query<Event>(
     `SELECT * FROM (
-      (SELECT id,kind,actor,name,payload,created FROM events WHERE room=$1 AND kind<>'transcript' ORDER BY id DESC LIMIT 500)
+      (SELECT id,kind,actor,name,payload,created FROM events WHERE room=$1 AND kind<>'transcript'
+       AND (payload->>'recipient' IS NULL OR actor=$2 OR payload->>'recipient'=$2)
+       ORDER BY id DESC LIMIT 500)
       UNION ALL
       (SELECT id,kind,actor,name,payload,created FROM events WHERE room=$1 AND kind='transcript' ORDER BY id DESC LIMIT 100)
     ) AS recent ORDER BY id`,
-    [id],
+    [id, p.id],
   );
   return {
     meeting,

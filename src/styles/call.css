@@ -630,6 +630,13 @@
   border: 1px dashed var(--line);
   border-radius: 8px;
 }
+.browser-present {
+  display: grid;
+  justify-items: start;
+  gap: 6px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
 .meeting-shell .panel-heading {
   padding: 18px 20px;
 }
@@ -1975,6 +1982,21 @@
 .transcript-draft {
   color: var(--muted);
 }
+.camera-background {
+  display: grid;
+  gap: 8px;
+}
+.camera-background-preview {
+  width: 100%;
+  max-height: 20vh;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #101918;
+  transform: scaleX(-1);
+}
+.camera-background .button {
+  justify-content: space-between;
+}
 
 .chat-media {
   margin-inline-start: 31px;
@@ -1983,6 +2005,133 @@
   background: var(--paper-2);
   border: 1px solid var(--line);
   border-radius: 3px 13px 13px 13px;
+}
+.chat-audience,
+.chat-tools,
+.chat-conversations,
+.chat-map {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.chat-audience {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+}
+.chat-audience label {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 10px;
+  font-size: 12px;
+}
+.chat-audience select {
+  min-width: 0;
+  flex: 1;
+  font: inherit;
+  font-weight: 650;
+  color: var(--ink);
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px;
+}
+.chat-conversations {
+  padding: 6px 12px;
+  overflow: auto;
+}
+.chat-tools {
+  margin: 0 12px 12px;
+  flex-wrap: wrap;
+}
+.chat-tools button,
+.chat-conversations button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 30px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--ink);
+  background: var(--paper-2);
+}
+.chat-panel[data-dragging='true'] {
+  outline: 2px dashed var(--accent);
+  outline-offset: -3px;
+}
+.chat-panel .chat-form {
+  margin-bottom: 6px;
+}
+.chat-map,
+.chat-sticker-message {
+  margin-inline-start: 31px;
+}
+.chat-map {
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  color: var(--ink);
+}
+.chat-map span {
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+.chat-map small,
+.chat-empty small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+}
+.meeting-shell .chat-sticker-shelf {
+  width: 100%;
+  max-width: 100%;
+  border: 0;
+  box-shadow: none;
+  animation: none;
+  padding: 0;
+}
+.chat-sticker-shelf .sticker-library {
+  height: min(340px, 40dvh);
+}
+.sticker-credits {
+  font-size: 11px;
+  color: var(--muted);
+  justify-self: end;
+}
+.photo-sticker {
+  display: inline-grid;
+  width: calc(var(--sticker-size) * 1.45);
+  max-width: 100%;
+  padding: 3px;
+  gap: 2px;
+  background: white;
+  color: #16131c;
+  border-radius: 7px;
+  box-shadow: 0 1px 4px #0003;
+  text-align: center;
+  vertical-align: middle;
+}
+.photo-sticker img {
+  display: block;
+  width: 100%;
+  height: var(--sticker-size);
+  border-radius: 4px;
+  object-fit: cover;
+  object-position: 50% 35%;
+}
+.photo-sticker b {
+  font-size: clamp(10px, calc(var(--sticker-size) * 0.18), 15px);
+  font-weight: 750;
+  line-height: 1.13;
+}
+.meeting-shell .sticker-grid:has(.photo-tile) {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.meeting-shell .sticker-grid .photo-tile {
+  aspect-ratio: auto;
+  padding: 3px;
 }
 .chat-photo,
 .chat-media video {

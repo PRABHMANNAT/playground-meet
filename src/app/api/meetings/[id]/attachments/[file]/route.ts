@@ -6,9 +6,16 @@ import { invariant } from '@/lib/errors';
 import { api, sameOrigin } from '@/lib/http';
 import { readBytes } from '@/lib/read-body';
 import { requirePerson } from '@/lib/session';
+import { checkChatRecipient } from '@/lib/actions/chat';
 
 type Context = { params: Promise<{ id: string; file: string }> };
-type Attachment = { filename: string; size: number; received: number; ready: boolean };
+type Attachment = {
+  filename: string;
+  size: number;
+  received: number;
+  ready: boolean;
+  recipient: string | null;
+};
 
 export const PUT = (req: Request, { params }: Context) =>
   api(async () => {
@@ -57,6 +64,7 @@ export const PUT = (req: Request, { params }: Context) =>
         file,
       ]);
       if (ready) {
+        await checkChatRecipient(db, id, person.id, entry.recipient);
         const header =
           offset === 0
             ? bytes
@@ -74,7 +82,13 @@ export const PUT = (req: Request, { params }: Context) =>
             'attachment',
             person.id,
             person.name,
-            JSON.stringify({ file, filename: entry.filename, size: entry.size, preview }),
+            JSON.stringify({
+              file,
+              filename: entry.filename,
+              size: entry.size,
+              preview,
+              recipient: entry.recipient ?? undefined,
+            }),
             Date.now(),
           ],
         );
@@ -93,8 +107,9 @@ function serveAttachment(req: Request, { params }: Context) {
     const [entry] = await query<Attachment & { header: Uint8Array }>(
       `SELECT filename,size, CASE WHEN $3 THEN
         (SELECT substring(content from 1 for 256) FROM attachment_chunks WHERE file_id=$1 AND start_byte=0)
-        END AS header FROM attachments WHERE id=$1 AND room=$2 AND ready`,
-      [file, id, preview],
+        END AS header FROM attachments WHERE id=$1 AND room=$2 AND ready
+        AND (recipient IS NULL OR owner=$4 OR recipient=$4)`,
+      [file, id, preview, person.id],
     );
     invariant(entry, 404, 'File not found.');
     const mime = preview ? previewMime(entry.header, entry.filename) : 'application/octet-stream';

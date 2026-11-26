@@ -22,6 +22,15 @@ export const safeUrl = z.union([
     .refine((v) => new URL(v).protocol === 'https:', 'Use an HTTPS product URL'),
 ]);
 const boardPoint = z.tuple([z.number().min(0).max(1), z.number().min(0).max(1)]);
+export const chatRecipient = z.string().min(1).max(80).optional();
+const chatLocation = z.union([
+  z.object({
+    label: z.string().trim().min(1).max(160),
+    latitude: z.number().min(-90).max(90),
+    longitude: z.number().min(-180).max(180),
+  }),
+  z.object({ label: z.string().trim().min(1).max(160) }).strict(),
+]);
 export const actionInput = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('transcript'),
@@ -29,7 +38,18 @@ export const actionInput = z.discriminatedUnion('type', [
     spokenAt: z.number().int().nonnegative().optional(),
     text: z.string().trim().min(1).max(4000),
   }),
-  z.object({ type: z.literal('chat'), text: z.string().trim().min(1).max(2000) }),
+  z
+    .object({
+      type: z.literal('chat'),
+      recipient: chatRecipient,
+      text: z.string().trim().min(1).max(2000).optional(),
+      sticker: z.string().max(96).refine(validReaction, 'Unknown sticker.').optional(),
+      location: chatLocation.optional(),
+    })
+    .refine(
+      (message) => [message.text, message.sticker, message.location].filter(Boolean).length === 1,
+      'Choose one message, sticker, or location.',
+    ),
   z.object({
     type: z.literal('reaction'),
     emoji: z.string().max(96).refine(validReaction, 'Unknown reaction.'),

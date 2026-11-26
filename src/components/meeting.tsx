@@ -56,11 +56,13 @@ import { useToast } from './providers';
 import { VideoTile } from './video-tile';
 import { BoardPanel } from './panels/board';
 import { SidePanel } from './panels';
+import type { BrowserTabId } from './panels/browser';
 import type { Panel } from './panels/types';
 import { ReactionPicker, Reactions } from './reactions';
 import { Shortcuts } from './shortcuts';
 import { Dialog } from './dialog';
 import { MediaDeviceSelect } from '@livekit/components-react';
+import { CameraBlur } from './camera-blur';
 import type { Devices } from './device-preview';
 import type { Action } from '@/lib/schemas';
 export default function Meeting({
@@ -157,6 +159,7 @@ function MeetingInterior({ id }: { id: string }) {
     router = useRouter(),
     room = useRoomContext();
   const [panel, setPanel] = useState<Panel | null>(null),
+    [browserTab, setBrowserTab] = useState<BrowserTabId>(1),
     [boardOpen, setBoardOpen] = useState(false),
     [boardExpanded, setBoardExpanded] = useState(false),
     [reactions, setReactions] = useState(false),
@@ -219,13 +222,27 @@ function MeetingInterior({ id }: { id: string }) {
       .setCameraEnabled(!local.isCameraEnabled)
       .catch((e) => toast(e.message));
   }, [local.localParticipant, local.isCameraEnabled, toast]);
-  const screen = useCallback(() => {
-    void local.localParticipant
-      .setScreenShareEnabled(!local.isScreenShareEnabled, { audio: true })
-      .catch(() =>
-        toast('Screen sharing was cancelled or is not supported. Try a desktop browser.'),
-      );
-  }, [local.localParticipant, local.isScreenShareEnabled, toast]);
+  const toggleScreenShare = useCallback(
+    async (preferTab = false) => {
+      try {
+        await local.localParticipant.setScreenShareEnabled(
+          !local.isScreenShareEnabled,
+          preferTab
+            ? {
+                audio: true,
+                video: { displaySurface: 'browser' },
+                selfBrowserSurface: 'exclude',
+                surfaceSwitching: 'include',
+              }
+            : { audio: true },
+        );
+      } catch {
+        toast('Screen sharing was cancelled or is not supported. Try a desktop browser.');
+      }
+    },
+    [local.localParticipant, local.isScreenShareEnabled, toast],
+  );
+  const screen = useCallback(() => void toggleScreenShare(), [toggleScreenShare]);
   const hand = useCallback(() => {
     void send({ type: 'hand', raised: !raised });
   }, [send, raised]);
@@ -364,7 +381,13 @@ function MeetingInterior({ id }: { id: string }) {
                 {speech.status === 'on' ? 'Transcription on' : 'Transcript'}
               </button>
               {data?.meeting.state.browser && panel !== 'browser' && (
-                <button className="gallery-button" onClick={() => setPanel('browser')}>
+                <button
+                  className="gallery-button"
+                  onClick={() => {
+                    setBrowserTab('shared');
+                    setPanel('browser');
+                  }}
+                >
                   <Globe size={14} /> Shared page
                 </button>
               )}
@@ -420,15 +443,21 @@ function MeetingInterior({ id }: { id: string }) {
           )}
         </div>
         {data &&
-          (panel && panel !== 'browser'
-            ? (['browser', panel] as const)
-            : (['browser'] as const)
+          (panel && panel !== 'browser' && panel !== 'chat'
+            ? (['browser', 'chat', panel] as const)
+            : (['browser', 'chat'] as const)
           ).map((tool) => (
             <SidePanel
               key={tool}
               panel={tool}
               speech={speech}
               translation={translation}
+              browser={{
+                selected: browserTab,
+                select: setBrowserTab,
+                presenting: local.isScreenShareEnabled,
+                present: () => toggleScreenShare(true),
+              }}
               hidden={tool !== panel}
               onClose={() => setPanel(null)}
               data={data}
@@ -658,6 +687,11 @@ function MeetingInterior({ id }: { id: string }) {
           Camera
           <MediaDeviceSelect kind="videoinput" />
         </label>
+        <CameraBlur
+          track={local.localParticipant.getTrackPublication(Track.Source.Camera)?.videoTrack}
+          cameraOn={local.isCameraEnabled}
+          showPreview={settings}
+        />
         <p className="panel-helper">
           Headphones help prevent echo. Your browser controls permission to access these devices.
         </p>

@@ -1,170 +1,266 @@
 'use client';
+
 import { useEffect, useId, useRef, useState } from 'react';
-import { ExternalLink, Globe, Plus, Search, Share2, X } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  ExternalLink,
+  Globe,
+  MonitorUp,
+  Plus,
+  RefreshCw,
+  Search,
+  Share2,
+  X,
+} from 'lucide-react';
 import { maxBrowserUrl, parseBrowserUrl } from '@/lib/browser-url';
+import type { SharedState } from '@/lib/types';
 import { BrowserAnnotations } from './browser-annotations';
+import { WikipediaResults } from './wikipedia-results';
 import type { PanelProps } from './types';
 
-type SearchResult = { pageid: number; title: string };
-const looksLikeAddress = /^(?:[a-z][\w+.-]*:|[^\s/]+\.[^\s/]+)/i;
-
 const maxTabs = 5;
+export type BrowserTabId = number | 'shared';
+export type BrowserControls = {
+  selected: BrowserTabId;
+  select: (id: BrowserTabId) => void;
+  presenting: boolean;
+  present: () => Promise<void>;
+};
+type SharedPage = NonNullable<SharedState['browser']>;
+type Destination = { kind: 'page' | 'search'; value: string };
+type Tab = { id: number; history: Destination[]; index: number };
 
-export function BrowserPanel(props: PanelProps) {
-  const [tabs, setTabs] = useState([{ id: 1, title: 'New tab' }]);
-  const [selected, setSelected] = useState(1);
+function newTab(id: number): Tab {
+  return { id, history: [], index: -1 };
+}
+
+function tabTitle(tab: Tab) {
+  const entry = tab.history[tab.index];
+  if (!entry) return 'New tab';
+  return entry.kind === 'page' ? new URL(entry.value).hostname : entry.value;
+}
+
+export function BrowserPanel({
+  data,
+  host,
+  send,
+  controls,
+  visible,
+}: PanelProps & {
+  controls: BrowserControls;
+  visible: boolean;
+}) {
+  const [tabs, setTabs] = useState<Tab[]>(() => [newTab(1)]);
+  const [pending, setPending] = useState(false);
+  const [choosingTab, setChoosingTab] = useState(false);
   const nextId = useRef(2);
+  const lastPersonal = useRef(1);
+  const shared = data.meeting.state.browser;
+  const { selected, select, presenting, present } = controls;
+  const hasSharedPage = !!shared;
+  const following = selected === 'shared' && hasSharedPage;
+  const returnTab = tabs.some((tab) => tab.id === lastPersonal.current)
+    ? lastPersonal.current
+    : tabs[0].id;
+  const selectedId = selected === 'shared' && !hasSharedPage ? returnTab : selected;
+  const canStop = host || shared?.sharedBy === data.me.id;
+
+  useEffect(() => {
+    if (selected !== 'shared') lastPersonal.current = selected;
+    else if (!hasSharedPage) select(returnTab);
+  }, [selected, hasSharedPage, returnTab, select]);
 
   function closeTab(id: number) {
     const index = tabs.findIndex((tab) => tab.id === id);
     if (tabs.length === 1) return;
-    if (selected === id) setSelected(tabs[index + 1]?.id ?? tabs[index - 1].id);
+    if (selectedId === id) select(tabs[index + 1]?.id ?? tabs[index - 1].id);
     setTabs((items) => items.filter((item) => item.id !== id));
+  }
+
+  async function share(url: string | null) {
+    setPending(true);
+    try {
+      await send({ type: 'browser', url });
+    } finally {
+      setPending(false);
+    }
+  }
+
+  function updateTab(id: number, update: (tab: Tab) => Tab) {
+    setTabs((items) => items.map((tab) => (tab.id === id ? update(tab) : tab)));
   }
 
   return (
     <div className="stack browser-panel">
       <div className="browser-tabs" role="group" aria-label="Browser tabs">
-        {tabs.map(({ id, title }) => (
-          <div className="browser-tab" key={id} data-selected={selected === id}>
-            <button
-              type="button"
-              aria-pressed={selected === id}
-              title={title}
-              onClick={() => setSelected(id)}
-            >
-              <Globe size={14} /> <span>{title}</span>
+        {shared && (
+          <div className="browser-tab" data-selected={following}>
+            <button type="button" aria-pressed={following} onClick={() => select('shared')}>
+              <Share2 size={14} /> <span>Shared page</span>
             </button>
-            {tabs.length > 1 && (
+          </div>
+        )}
+        {tabs.map((tab) => {
+          const title = tabTitle(tab);
+          return (
+            <div className="browser-tab" key={tab.id} data-selected={selectedId === tab.id}>
               <button
                 type="button"
-                className="browser-tab-close"
-                aria-label={'Close ' + title + ' tab'}
-                onClick={() => closeTab(id)}
+                aria-pressed={selectedId === tab.id}
+                title={title}
+                onClick={() => select(tab.id)}
               >
-                <X size={14} />
+                <Globe size={14} /> <span>{title}</span>
               </button>
-            )}
-          </div>
-        ))}
+              {tabs.length > 1 && (
+                <button
+                  type="button"
+                  className="browser-tab-close"
+                  aria-label={'Close ' + title + ' tab'}
+                  onClick={() => closeTab(tab.id)}
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+          );
+        })}
         <button
           type="button"
           className="icon-button"
           aria-label="Add browser tab"
-          title={tabs.length >= maxTabs ? 'Maximum 5 tabs' : 'Add browser tab'}
+          title={tabs.length >= maxTabs ? 'Maximum 5 personal tabs' : 'Add browser tab'}
           disabled={tabs.length >= maxTabs}
           onClick={() => {
             const id = nextId.current++;
-            setTabs((items) => [...items, { id, title: 'New tab' }]);
-            setSelected(id);
+            setTabs((items) => [...items, newTab(id)]);
+            select(id);
           }}
         >
           <Plus size={17} />
         </button>
       </div>
-      {tabs.map(({ id }) => (
-        <div key={id} hidden={selected !== id}>
-          <BrowserTab
-            {...props}
-            onTitle={(title) => {
-              setTabs((items) => items.map((item) => (item.id === id ? { ...item, title } : item)));
-            }}
+      {following && shared && visible && (
+        <section className="stack" aria-label="Shared page">
+          <div className="browser-shared">
+            <div className="browser-shared-info">
+              <strong>Shared by {shared.name}</strong>
+              <span title={shared.url}>{shared.url}</span>
+            </div>
+            {canStop && (
+              <button
+                className="button secondary small"
+                disabled={pending}
+                onClick={() => void share(null)}
+              >
+                Stop sharing page
+              </button>
+            )}
+          </div>
+          <PagePreview
+            key={shared.id ?? shared.url}
+            url={shared.url}
+            shared={shared}
+            canClear={canStop}
+            send={send}
+          />
+        </section>
+      )}
+      {tabs.map((tab) => (
+        <div key={tab.id} hidden={selectedId !== tab.id}>
+          <PersonalTab
+            tab={tab}
+            navigate={(next) =>
+              updateTab(tab.id, (item) => {
+                const history = [...item.history.slice(0, item.index + 1), next].slice(-50);
+                return { ...item, history, index: history.length - 1 };
+              })
+            }
+            move={(offset) =>
+              updateTab(tab.id, (item) => ({
+                ...item,
+                index: Math.max(0, Math.min(item.index + offset, item.history.length - 1)),
+              }))
+            }
+            shared={shared}
+            share={share}
+            pending={pending}
+            follow={() => select('shared')}
           />
         </div>
       ))}
+      <div className="browser-present">
+        <button
+          type="button"
+          className="button secondary small"
+          disabled={choosingTab}
+          onClick={async () => {
+            setChoosingTab(true);
+            try {
+              await present();
+            } finally {
+              setChoosingTab(false);
+            }
+          }}
+        >
+          <MonitorUp size={16} /> {presenting ? 'Stop live presentation' : 'Present a browser tab'}
+        </button>
+        <p className="panel-helper">
+          To show clicks and scrolling, open the site in its own tab and choose it in the sharing
+          picker.
+        </p>
+      </div>
     </div>
   );
 }
 
-function BrowserTab({
-  data,
-  host,
-  send,
-  onTitle,
-}: PanelProps & { onTitle: (title: string) => void }) {
+function PersonalTab({
+  tab,
+  navigate,
+  move,
+  shared,
+  share,
+  pending,
+  follow,
+}: {
+  tab: Tab;
+  navigate: (next: Destination) => void;
+  move: (offset: number) => void;
+  shared: SharedState['browser'];
+  share: (url: string) => Promise<void>;
+  pending: boolean;
+  follow: () => void;
+}) {
   const inputId = useId();
-  const [address, setAddress] = useState('');
-  const [preview, setPreview] = useState<{ url: string; shared: boolean } | null>(null);
-  const [results, setResults] = useState<SearchResult[] | null>(null);
+  const entry = tab.history[tab.index];
+  const [draft, setDraft] = useState<string | null>(null);
   const [error, setError] = useState('');
-  const [searching, setSearching] = useState(false);
-  const [sharing, setSharing] = useState(false);
-  const activeSearch = useRef<AbortController | null>(null);
-  const shared = data.meeting.state.browser;
-  const current = preview && (!preview.shared || preview.url === shared?.url) ? preview.url : '';
-  const target = parseBrowserUrl(current);
+  const [revision, setRevision] = useState(0);
+  const address = draft ?? entry?.value ?? '';
   const query = address.trim();
-  const activeShare = shared && target?.href === shared.url ? shared : null;
-  const canManageShare = host || shared?.sharedBy === data.me.id;
-  const frame = target && (
-    <iframe
-      key={target.href}
-      title={'Preview of ' + target.hostname}
-      src={target.href}
-      sandbox="allow-scripts"
-      referrerPolicy="no-referrer"
-    />
-  );
-  useEffect(() => () => activeSearch.current?.abort(), []);
 
-  function openPage(url: string, fromShare = false) {
-    activeSearch.current?.abort();
-    setSearching(false);
-    setResults(null);
+  function open(next: Destination) {
+    setDraft(null);
     setError('');
-    setAddress(url);
-    onTitle(new URL(url).hostname);
-    setPreview({ url, shared: fromShare });
+    if (next.kind === entry?.kind && next.value === entry.value) setRevision((r) => r + 1);
+    else navigate(next);
   }
 
-  async function openOrSearch() {
+  function step(offset: number) {
+    setDraft(null);
     setError('');
-    setResults(null);
-    activeSearch.current?.abort();
-    if (looksLikeAddress.test(query) && (!/\s/.test(query) || /^[a-z][\w+.-]*:/i.test(query))) {
-      const url = parseBrowserUrl(/^[a-z][\w+.-]*:/i.test(query) ? query : `https://${query}`);
-      if (url) openPage(url.href);
+    move(offset);
+  }
+
+  function submit() {
+    if (!query) return;
+    const hasScheme = /^[a-z][\w+.-]*:/i.test(query);
+    if (hasScheme || /^[^\s/]+\.[^\s/]+(?:\/\S*)?$/.test(query)) {
+      const url = parseBrowserUrl(hasScheme ? query : 'https://' + query);
+      if (url) open({ kind: 'page', value: url.href });
       else setError('Enter a public HTTPS page URL.');
-      return;
-    }
-
-    setPreview(null);
-    onTitle(query);
-    const controller = new AbortController();
-    activeSearch.current = controller;
-    setSearching(true);
-    try {
-      const params = new URLSearchParams({
-        action: 'query',
-        list: 'search',
-        srsearch: query,
-        srlimit: '6',
-        srprop: '',
-        format: 'json',
-        origin: '*',
-      });
-      const response = await fetch(`https://en.wikipedia.org/w/api.php?${params}`, {
-        signal: AbortSignal.any([controller.signal, AbortSignal.timeout(8000)]),
-        credentials: 'omit',
-        referrerPolicy: 'no-referrer',
-      });
-      const payload = await response.json();
-      if (!response.ok || !Array.isArray(payload.query?.search)) throw new Error('Search failed');
-      if (!controller.signal.aborted) setResults(payload.query.search);
-    } catch {
-      if (!controller.signal.aborted) setError('Wikipedia search is unavailable. Try web search.');
-    } finally {
-      if (activeSearch.current === controller) setSearching(false);
-    }
-  }
-
-  async function share(url: string | null) {
-    setSharing(true);
-    try {
-      await send({ type: 'browser', url });
-    } finally {
-      setSharing(false);
-    }
+    } else open({ kind: 'search', value: query });
   }
 
   return (
@@ -173,7 +269,7 @@ function BrowserTab({
         className="stack"
         onSubmit={(event) => {
           event.preventDefault();
-          if (query) void openOrSearch();
+          submit();
         }}
       >
         <label htmlFor={inputId}>Page address or search</label>
@@ -186,18 +282,47 @@ function BrowserTab({
             maxLength={maxBrowserUrl}
             placeholder="example.com or a search topic"
             value={address}
-            onChange={(event) => setAddress(event.target.value)}
+            onChange={(event) => setDraft(event.target.value)}
           />
-          <button className="button primary" disabled={!query || searching}>
-            <Search size={15} /> {searching ? 'Searching…' : 'Go'}
+          <button className="button primary" disabled={!query}>
+            <Search size={15} /> Go
           </button>
         </div>
-        <div className="browser-row">
-          <p className="panel-helper">Search Wikipedia here, or search the web in a new tab.</p>
+        <div className="browser-row" role="group" aria-label="Page navigation">
+          <button
+            type="button"
+            className="icon-button"
+            aria-label="Back"
+            title="Back"
+            disabled={tab.index <= 0}
+            onClick={() => step(-1)}
+          >
+            <ArrowLeft size={16} />
+          </button>
+          <button
+            type="button"
+            className="icon-button"
+            aria-label="Forward"
+            title="Forward"
+            disabled={tab.index >= tab.history.length - 1}
+            onClick={() => step(1)}
+          >
+            <ArrowRight size={16} />
+          </button>
+          <button
+            type="button"
+            className="icon-button"
+            aria-label="Reload"
+            title="Reload"
+            disabled={!entry}
+            onClick={() => entry && open(entry)}
+          >
+            <RefreshCw size={16} />
+          </button>
           {query && (
             <a
               className="text-button"
-              href={`https://duckduckgo.com/?q=${encodeURIComponent(query)}`}
+              href={'https://duckduckgo.com/?q=' + encodeURIComponent(query)}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -211,72 +336,97 @@ function BrowserTab({
           {error}
         </p>
       )}
-      {shared && (
-        <section className="browser-shared" aria-label="Shared page">
-          <div className="browser-shared-info">
-            <strong>Shared by {shared.name}</strong>
-            <span title={shared.url}>{shared.url}</span>
-          </div>
-          <div className="browser-row">
-            <button className="button secondary small" onClick={() => openPage(shared.url, true)}>
-              View page
-            </button>
-            {canManageShare && (
-              <button
-                className="button secondary small"
-                disabled={sharing}
-                onClick={() => void share(null)}
-              >
-                Stop sharing
+      {entry?.kind === 'search' && (
+        <WikipediaResults
+          key={entry.value + ':' + revision}
+          query={entry.value}
+          open={(url) => open({ kind: 'page', value: url })}
+        />
+      )}
+      {entry?.kind === 'page' && (
+        <PagePreview
+          key={entry.value + ':' + revision}
+          url={entry.value}
+          action={
+            shared?.url === entry.value ? (
+              <button className="button secondary small" onClick={follow}>
+                <Share2 size={14} /> View shared page
               </button>
-            )}
-          </div>
-        </section>
-      )}
-      {results && (
-        <section aria-label="Wikipedia search results" className="stack browser-results">
-          <h3>Wikipedia results</h3>
-          {results.length === 0 && <p className="panel-helper">No results found.</p>}
-          {results.map(({ pageid, title }) => (
-            <button
-              key={pageid}
-              className="button secondary"
-              onClick={() => openPage(`https://en.wikipedia.org/?curid=${pageid}`)}
-            >
-              <span>{title}</span>
-              <Globe size={16} />
-            </button>
-          ))}
-        </section>
-      )}
-      {target ? (
-        <section className="stack browser-preview" aria-label="Page preview">
-          <div className="browser-row browser-preview-toolbar">
-            <strong title={target.href}>{target.hostname}</strong>
-            <div className="browser-row">
-              <a
-                className="button secondary small"
-                href={target.href}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Open in tab <ExternalLink size={14} />
-              </a>
+            ) : (
               <button
                 className="button primary small"
-                disabled={sharing || !!activeShare?.id}
-                onClick={() => void share(target.href)}
+                disabled={pending}
+                onClick={() => void share(entry.value)}
               >
-                <Share2 size={14} /> {activeShare?.id ? 'Shared' : 'Share page'}
+                <Share2 size={14} /> Share page
               </button>
-            </div>
-          </div>
-          {activeShare?.id ? (
+            )
+          }
+        />
+      )}
+      {!entry && (
+        <p className="panel-helper browser-empty">
+          <Globe size={20} /> Enter a public HTTPS address or search Wikipedia.
+        </p>
+      )}
+    </div>
+  );
+}
+
+function PagePreview({
+  url,
+  shared,
+  canClear = false,
+  send,
+  action,
+}: {
+  url: string;
+  shared?: SharedPage;
+  canClear?: boolean;
+  send?: PanelProps['send'];
+  action?: React.ReactNode;
+}) {
+  const target = parseBrowserUrl(url);
+  if (!target) return <p className="error-message">This page address is unavailable.</p>;
+  const externalOnly =
+    ['github.com', 'www.github.com'].includes(target.hostname) ||
+    (['google.com', 'www.google.com'].includes(target.hostname) &&
+      ['/', '/search', '/webhp'].includes(target.pathname));
+  const frame = (
+    <iframe
+      title={'Preview of ' + target.hostname}
+      src={target.href}
+      sandbox="allow-scripts"
+      referrerPolicy="no-referrer"
+    />
+  );
+  return (
+    <section className="stack browser-preview" aria-label="Page preview">
+      <div className="browser-row browser-preview-toolbar">
+        <strong title={target.href}>{target.hostname}</strong>
+        <div className="browser-row">
+          <a
+            className="button secondary small"
+            href={target.href}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Open in tab <ExternalLink size={14} />
+          </a>
+          {action}
+        </div>
+      </div>
+      {externalOnly ? (
+        <p className="panel-helper browser-empty">
+          Open this site in a tab. To show it to everyone, use Present a browser tab.
+        </p>
+      ) : (
+        <>
+          {shared?.id && send ? (
             <BrowserAnnotations
-              key={activeShare.id}
-              shareId={activeShare.id}
-              strokes={activeShare.annotations ?? []}
-              canClear={canManageShare}
+              shareId={shared.id}
+              strokes={shared.annotations ?? []}
+              canClear={canClear}
               send={send}
             >
               {frame}
@@ -285,19 +435,11 @@ function BrowserTab({
             frame
           )}
           <p className="panel-helper">
-            If the preview is blocked, open the page in a tab. To show your clicks and scrolling,
-            use Screen share. Annotations mark the preview area, so keep the same scroll position.
+            If the preview is blank, use Open in tab. For annotations, keep the same scroll
+            position.
           </p>
-        </section>
-      ) : (
-        !results &&
-        !searching &&
-        !shared && (
-          <p className="panel-helper browser-empty">
-            <Globe size={20} /> Open a page, then share it with the meeting.
-          </p>
-        )
+        </>
       )}
-    </div>
+    </section>
   );
 }

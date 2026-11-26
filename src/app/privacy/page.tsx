@@ -30,9 +30,12 @@ export default function Privacy() {
         <h2>Shared means shared.</h2>
         <p>
           Admitted participants can access shared collaboration content and download meeting
-          summaries. Hosts control admission and can remove participants. People who already
-          downloaded a file or summary retain their copy. Avoid adding confidential information
-          unless everyone in the room is authorized to see it.
+          summaries. Chat messages, files, stickers and map pins addressed to one participant are
+          available to the sender and that recipient. The meeting server stores them. Sharing your
+          current location requires browser permission and a separate send action. Hosts control
+          admission and can remove participants. People who already downloaded a file or summary
+          retain their copy. Avoid adding confidential information unless everyone in the room is
+          authorized to see it.
         </p>
         <h2>No paid AI. No ad trackers.</h2>
         <p>

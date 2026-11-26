@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { Client, base } from './helpers/client';
+import { verifyDirectChat } from './direct-chat';
 async function main() {
+  await verifyDirectChat();
   const host = new Client(),
     guest = new Client(),
     outsider = new Client();

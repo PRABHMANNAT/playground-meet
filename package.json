@@ -4,8 +4,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "predev": "node scripts/prepare-speech.mjs",
-    "prebuild": "node scripts/prepare-speech.mjs",
+    "predev": "node scripts/prepare-camera.mjs && node scripts/prepare-speech.mjs",
+    "prebuild": "node scripts/prepare-camera.mjs && node scripts/prepare-speech.mjs",
     "dev": "next dev --hostname 127.0.0.1",
     "build": "next build",
     "start": "next start",
@@ -23,6 +23,7 @@
     "@electric-sql/pglite": "^0.3.14",
     "@livekit/components-react": "2.9.25",
     "@livekit/components-styles": "^1.2.0",
+    "@livekit/track-processors": "0.8.3",
     "jose": "^6.1.0",
     "livekit-client": "2.23.0",
     "livekit-server-sdk": "^2.15.0",

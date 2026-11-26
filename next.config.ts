@@ -41,7 +41,16 @@ const config: NextConfig = {
           contentPolicy(false),
         ],
       },
-      { source: '/playground-meet/:id', headers: [contentPolicy(true)] },
+      {
+        source: '/playground-meet/:id',
+        headers: [
+          contentPolicy(true),
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(self), microphone=(self), display-capture=(self), geolocation=(self)',
+          },
+        ],
+      },
     ];
   },
 };

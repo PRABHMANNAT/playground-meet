@@ -9,7 +9,7 @@ import { NotesPanel } from './notes';
 import { PollsPanel } from './polls';
 import { ActionItemsPanel, DecisionLogPanel } from './outcomes';
 import { ReviewPanel } from './review';
-import { BrowserPanel } from './browser';
+import { BrowserPanel, type BrowserControls } from './browser';
 import type { Panel, PanelProps } from './types';
 const panels = {
   chat: ChatPanel,
@@ -19,7 +19,6 @@ const panels = {
   actions: ActionItemsPanel,
   decisions: DecisionLogPanel,
   review: ReviewPanel,
-  browser: BrowserPanel,
 };
 const titles = {
   transcript: 'Live transcript',
@@ -38,15 +37,17 @@ export function SidePanel({
   hidden,
   speech,
   translation,
+  browser,
   ...props
 }: PanelProps & {
   panel: Panel;
   speech: TranscriptControls;
   translation: CaptionTranslation;
+  browser: BrowserControls;
   hidden?: boolean;
   onClose: () => void;
 }) {
-  const Content = panel === 'transcript' ? null : panels[panel];
+  const Content = panel === 'transcript' || panel === 'browser' ? null : panels[panel];
   return (
     <aside className="room-panel" aria-label={titles[panel]} data-panel={panel} hidden={hidden}>
       <div className="panel-heading">
@@ -56,7 +57,9 @@ export function SidePanel({
         </button>
       </div>
       <div className="panel-content">
-        {Content ? (
+        {panel === 'browser' ? (
+          <BrowserPanel {...props} controls={browser} visible={!hidden} />
+        ) : Content ? (
           <Content {...props} />
         ) : (
           <TranscriptPanel data={props.data} speech={speech} translation={translation} />
