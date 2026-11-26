@@ -1908,6 +1908,36 @@
 .transcript-heading {
   justify-content: space-between;
 }
+.caption-language {
+  display: grid;
+  gap: 4px;
+}
+.caption-language small {
+  color: var(--muted);
+}
+.transcript-feed .translated-line {
+  border-inline-start: 2px solid var(--blue);
+  padding-inline-start: 0.65rem;
+}
+.live-translation {
+  position: absolute;
+  z-index: 4;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 88%;
+  padding: 0.5rem 0.85rem;
+  border-radius: 8px;
+  background: #10211fed;
+  color: white;
+  pointer-events: none;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.live-translation strong {
+  margin-inline-end: 0.65rem;
+}
 .transcript-heading h3 {
   margin: 0;
   font-size: 14px;

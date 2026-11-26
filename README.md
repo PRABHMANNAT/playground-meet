@@ -26,7 +26,11 @@ Participants, including anyone joining late, see who is recording. **Stop and sa
 
 Open **Transcript** in the meeting and select **Include my microphone**. Each speaker opts in separately. Whisper Base English processes short phrases on the participant’s device and sends captions to the room with the speaker’s name and timestamp. Muting pauses microphone capture. Select **Lite** before starting to use Vosk on slower devices.
 
-The first dev start or build downloads and verifies about 97 MiB of open-source Whisper assets. The app serves these files itself, and participants load them when they use Whisper. No speech API key or external inference service is required.
+In a local Chromium test, the meeting phrase splitter and Whisper worker scored **3.98% word error rate** (33 word edits over 829 reference words). The test used the first clip for each of 40 speakers in the [LibriSpeech clean validation split](https://huggingface.co/datasets/openslr/librispeech_asr/tree/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/clean/validation), totaling 5 minutes 12 seconds of read English. The score ignores capitalization and punctuation except apostrophes. Accuracy in noisy or overlapping conversations can differ.
+
+In **Transcript → Caption language for me**, each viewer can translate finalized English captions into Spanish, French, German, Hindi, Portuguese, or Simplified Chinese. The transcript panel shows the original alongside the translation. Close the panel to see new translated captions over the call. To turn translation off, select **English (original)**. The meeting transcript and exports keep the original English text.
+
+The first dev start or build downloads and verifies the Whisper assets (about 97 MiB) and the six OPUS-MT language packs (about 665 MiB combined). The app serves these locally. Participants load only the recognition or translation packs they select. The first translation in a language loads a pack of about 107–114 MiB plus the shared runtime. No speech or translation API key is required.
 
 After the meeting, open **Meeting recap → Meeting transcript** and choose **Download TXT** or **Download PDF** for the full speaker transcript. While other participants finish transcribing their last phrase, the recap shows a short finalization status.
 

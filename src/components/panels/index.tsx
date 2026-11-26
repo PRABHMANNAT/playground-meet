@@ -1,6 +1,7 @@
 'use client';
 import { X } from 'lucide-react';
 import type { TranscriptControls } from '@/hooks/use-transcript';
+import type { CaptionTranslation } from '@/hooks/use-caption-translation';
 import { TranscriptPanel } from './transcript';
 import { ChatPanel } from './chat';
 import { PeoplePanel } from './people';
@@ -36,10 +37,12 @@ export function SidePanel({
   onClose,
   hidden,
   speech,
+  translation,
   ...props
 }: PanelProps & {
   panel: Panel;
   speech: TranscriptControls;
+  translation: CaptionTranslation;
   hidden?: boolean;
   onClose: () => void;
 }) {
@@ -53,7 +56,11 @@ export function SidePanel({
         </button>
       </div>
       <div className="panel-content">
-        {Content ? <Content {...props} /> : <TranscriptPanel data={props.data} speech={speech} />}
+        {Content ? (
+          <Content {...props} />
+        ) : (
+          <TranscriptPanel data={props.data} speech={speech} translation={translation} />
+        )}
       </div>
     </aside>
   );

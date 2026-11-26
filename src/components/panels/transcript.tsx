@@ -3,18 +3,29 @@ import { useEffect, useRef, useState } from 'react';
 import { AudioLines, Captions, LoaderCircle, Square } from 'lucide-react';
 import { duration } from '@/lib/format';
 import type { TranscriptControls } from '@/hooks/use-transcript';
+import {
+  captionLanguages,
+  type CaptionLanguage,
+  type CaptionTranslation,
+} from '@/hooks/use-caption-translation';
 import type { Snapshot } from '@/lib/types';
 
-export function TranscriptPanel({ data, speech }: { data: Snapshot; speech: TranscriptControls }) {
+export function TranscriptPanel({
+  data,
+  speech,
+  translation,
+}: {
+  data: Snapshot;
+  speech: TranscriptControls;
+  translation: CaptionTranslation;
+}) {
   const [follow, setFollow] = useState(true);
   const scroll = useRef<HTMLDivElement>(null);
-  const entries = data.events
-    .filter((e) => e.kind === 'transcript')
-    .sort((a, b) => a.created - b.created || a.id - b.id);
+  const { entries, language, lines } = translation;
   const last = entries.at(-1)?.id;
   useEffect(() => {
     if (follow && scroll.current) scroll.current.scrollTop = scroll.current.scrollHeight;
-  }, [last, speech.draft, follow]);
+  }, [last, lines, speech.draft, follow]);
   const active = speech.status !== 'off';
   const status = {
     off: 'Your microphone is excluded',
@@ -80,6 +91,35 @@ export function TranscriptPanel({ data, speech }: { data: Snapshot; speech: Tran
           </div>
         )}
       </section>
+      <div className="caption-language">
+        <label className="transcript-engine">
+          <span>Caption language for me</span>
+          <select
+            value={language}
+            onChange={(e) => translation.setLanguage(e.target.value as CaptionLanguage)}
+          >
+            {Object.entries(captionLanguages).map(([code, name]) => (
+              <option value={code} key={code}>
+                {name}
+              </option>
+            ))}
+          </select>
+        </label>
+        {language === 'en' && (
+          <small>Translation downloads a language pack on first use (about 107–114 MiB).</small>
+        )}
+        {translation.status === 'loading' && (
+          <small role="status">Loading {captionLanguages[language]} on this device…</small>
+        )}
+        {translation.status === 'error' && (
+          <p role="alert">
+            Translation stopped.{' '}
+            <button className="text-button" onClick={translation.retry}>
+              Retry translation
+            </button>
+          </p>
+        )}
+      </div>
       <div className="transcript-heading">
         <h3>Room transcript</h3>
         <button aria-pressed={follow} onClick={() => setFollow(!follow)}>
@@ -105,6 +145,11 @@ export function TranscriptPanel({ data, speech }: { data: Snapshot; speech: Tran
               <time>{duration((e.created - data.meeting.created) / 1000)}</time>
             </header>
             <p>{String(e.payload.text)}</p>
+            {language !== 'en' && lines[e.id] && (
+              <p className="translated-line" lang={language}>
+                {lines[e.id]}
+              </p>
+            )}
           </article>
         ))}
         {speech.draft && (

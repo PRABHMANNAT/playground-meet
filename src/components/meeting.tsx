@@ -47,6 +47,7 @@ import { duration } from '@/lib/format';
 import { meetingPath, meetingInviteUrl } from '@/lib/meeting-links';
 import { useMeetingRecording } from '@/hooks/use-meeting-recording';
 import { useTranscript } from '@/hooks/use-transcript';
+import { useCaptionTranslation } from '@/hooks/use-caption-translation';
 import { useRoomState } from '@/hooks/use-room-state';
 import { useShortcuts } from '@/hooks/use-shortcuts';
 import { Brand } from './brand';
@@ -177,6 +178,7 @@ function MeetingInterior({ id }: { id: string }) {
     local.isMicrophoneEnabled ? local.microphoneTrack?.track?.mediaStreamTrack : undefined,
     data?.clockOffset,
   );
+  const translation = useCaptionTranslation(data?.events);
   const tracks = useTracks([
     { source: Track.Source.Camera, withPlaceholder: true },
     { source: Track.Source.ScreenShare, withPlaceholder: false },
@@ -410,6 +412,12 @@ function MeetingInterior({ id }: { id: string }) {
             ))}
           </div>
           {data && <Reactions events={data.events} now={now} />}
+          {panel !== 'transcript' && translation.language !== 'en' && translation.live && (
+            <div className="live-translation" role="status">
+              <strong>{translation.live.speaker}</strong>
+              <span lang={translation.language}>{translation.live.text}</span>
+            </div>
+          )}
         </div>
         {data &&
           (panel && panel !== 'browser'
@@ -420,6 +428,7 @@ function MeetingInterior({ id }: { id: string }) {
               key={tool}
               panel={tool}
               speech={speech}
+              translation={translation}
               hidden={tool !== panel}
               onClose={() => setPanel(null)}
               data={data}

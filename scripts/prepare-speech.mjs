@@ -1,6 +1,7 @@
 import { copyFile, mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import { createHash, randomUUID } from 'node:crypto';
 import { createRequire } from 'node:module';
+import translations from './translation-models.json' with { type: 'json' };
 
 const require = createRequire(import.meta.url);
 const folder = new URL('../public/speech/', import.meta.url);
@@ -45,9 +46,9 @@ async function prepare(base, directory, files) {
       }
       const response = await fetch(base + file, { signal: AbortSignal.timeout(240000) });
       if (!response.ok)
-        throw new Error('Cannot prepare Whisper ' + file + ': HTTP ' + response.status);
+        throw new Error('Cannot prepare speech asset ' + file + ': HTTP ' + response.status);
       const bytes = Buffer.from(await response.arrayBuffer());
-      if (digest(bytes) !== hash) throw new Error('Invalid Whisper asset: ' + file);
+      if (digest(bytes) !== hash) throw new Error('Invalid speech asset: ' + file);
       const temp = new URL(file + '.' + randomUUID() + '.tmp', directory);
       try {
         await writeFile(temp, bytes);
@@ -62,3 +63,15 @@ await Promise.all([
   prepare(runtimeSource, assets, runtimeFiles),
   prepare(modelSource, model, modelFiles),
 ]);
+
+// Prepare one language at a time to limit peak build memory. Each viewer only
+// downloads the language they select, and translations use same-origin assets.
+for (const [language, pack] of Object.entries(translations)) {
+  const directory = new URL('translation-v1/' + language + '/', folder);
+  await mkdir(new URL('onnx/', directory), { recursive: true });
+  await prepare(
+    'https://huggingface.co/' + pack.repo + '/resolve/' + pack.revision + '/',
+    directory,
+    pack.files,
+  );
+}

@@ -12,3 +12,4 @@ playwright-report/
 *.tsbuildinfo
 deploy/*.generated.yaml
 public/speech/whisper-base-en-v1/
+public/speech/translation-v1/
