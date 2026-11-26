@@ -9,6 +9,7 @@ import {
   reactionNames,
   reactionPacks,
   stickerImage,
+  studioGroups,
 } from '../../src/lib/reaction-library';
 it('shows three defaults and restores at most six unique library items', () => {
   expect(readFavorites(null)).toEqual(defaultFavorites);
@@ -35,9 +36,6 @@ it('shows three defaults and restores at most six unique library items', () => {
 it('keeps pinned logo IDs and ships transparent WebP artwork for the expanded packs', () => {
   expect(Object.keys(reactionPacks['Hardware & tech'])).toHaveLength(105);
   expect(Object.keys(reactionPacks['Developer logos'])).toHaveLength(111);
-  expect(
-    Object.keys(reactionPacks['Studio stickers']).filter((id) => id.startsWith('studio-')),
-  ).toHaveLength(19);
   for (const id of [
     'github',
     'gitlab',
@@ -64,10 +62,31 @@ it('keeps pinned logo IDs and ships transparent WebP artwork for the expanded pa
     const alpha =
       bytes.includes(Buffer.from('ALPH')) ||
       (bytes.toString('ascii', 12, 16) === 'VP8L' && !!(bytes[24] & 0x10));
-    expect(alpha, id).toBe(true);
+    if (!Object.hasOwn(photoPacks['City postcards'], id)) expect(alpha, id).toBe(true);
     if (path.includes('/tech-3d/')) hashes.add(createHash('sha256').update(bytes).digest('hex'));
   }
   expect(hashes.size).toBe(216);
+});
+
+it('ships 80 tech avatars and 20 world leader avatars with distinct artwork', () => {
+  expect(Object.keys(studioGroups['Tech figures'])).toHaveLength(80);
+  expect(Object.keys(studioGroups['World leaders'])).toHaveLength(20);
+  const ids = Object.keys(reactionPacks['Studio stickers']);
+  expect(ids).toHaveLength(100);
+  const hashes = new Set<string>();
+  for (const id of ids) {
+    expect(actionInput.safeParse({ type: 'chat', sticker: id }).success, id).toBe(true);
+    hashes.add(
+      createHash('sha256')
+        .update(readFileSync('public' + stickerImage(id)))
+        .digest('hex'),
+    );
+  }
+  expect(hashes.size).toBe(100);
+  for (const id of ['laughing', 'ship', 'hotfix', 'build']) {
+    expect(reactionPacks['Meeting memes']).toHaveProperty(id);
+    expect(readFavorites(JSON.stringify([id]))).toEqual([id]);
+  }
 });
 
 it('ships at least 250 selectable reactions with matching artwork and valid event IDs', () => {

@@ -13,7 +13,7 @@ The repository's MIT license applies to the project's original code and document
 - The developer meme pack uses [Egon Elbre’s Gophers](https://github.com/egonelbre/gophers/tree/63b1f5a9f334f9e23735c6e09ac003479ffe5df5), released under CC0. The original Go gopher was designed by Renée French.
 
 - The 100 captioned People & punchlines, City postcards and Meeting memes stickers use Wikimedia Commons imagery. The [photo sticker credits](public/reactions/photos/credits.html) identify the source, author and license for each image.
-- The [Studio action credits](public/reactions/studio/credits.html) identify the photographers, original files and licenses for the 19 portrait cutouts.
+- The 98 new Studio action avatars and eight illustrated meeting memes are original AI-generated illustrations. See the [Studio artwork notes](public/reactions/studio/credits.html).
 
 ## On-device camera background blur
 

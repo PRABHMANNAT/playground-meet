@@ -9,8 +9,27 @@ import {
   readFavorites,
   legacyReactions,
   stickerImage,
+  studioGroups,
 } from '@/lib/reaction-library';
 import type { Event } from '@/lib/types';
+const studioFilters = ['All', 'Tech figures', 'World leaders'] as const;
+type StudioFilter = (typeof studioFilters)[number];
+const searchAliases: Record<string, string> = {
+  'studio-albanese-question': 'Australia Australian PM prime minister',
+  'studio-putin-notes': 'Russia Russian president',
+  'studio-mkbhd-camera': 'MKBHD',
+  'studio-pichai-listening': 'Sunder Pichai Google CEO',
+  'studio-pichai-map': 'Sunder Pichai Google CEO',
+  'studio-arun-phone': 'Mrwhosetheboss',
+  'studio-ijustine-unbox': 'iJustine',
+  'studio-linus-sebastian-pc': 'Linus Tech Tips LTT',
+};
+function compact(value: string) {
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f\s._'’-]+/g, '');
+}
 export function ReactionIcon({ emoji, size = 36 }: { emoji: string; size?: number }) {
   if (legacyReactions.includes(emoji)) return <span aria-hidden="true">{emoji}</span>;
   const symbols = { ship: Rocket, hotfix: Flame, build: Terminal };
@@ -28,12 +47,16 @@ export function ReactionIcon({ emoji, size = 36 }: { emoji: string; size?: numbe
   }
   const src = stickerImage(emoji);
   if (!src) return null;
-  if (emoji.startsWith('photo-')) {
+  if (emoji.startsWith('photo-') || emoji.startsWith('meme-')) {
     const [subject, caption] = reactionNames[emoji].split(' · ');
+    const postcard = Object.hasOwn(reactionPacks['City postcards'], emoji);
     return (
-      <span className="photo-sticker" style={{ '--sticker-size': size + 'px' } as CSSProperties}>
-        <img src={src} alt={subject} loading="lazy" decoding="async" />
-        <b>{caption}</b>
+      <span
+        className={postcard ? 'photo-sticker city-postcard' : 'photo-sticker'}
+        style={{ '--sticker-size': size + 'px' } as CSSProperties}
+      >
+        <img src={src} alt={caption ? subject : ''} loading="lazy" decoding="async" />
+        <b>{caption ?? subject}</b>
       </span>
     );
   }
@@ -59,18 +82,20 @@ export function StickerLibrary({
 }) {
   const [pack, setPack] = useState('Studio stickers');
   const [search, setSearch] = useState('');
+  const [studioFilter, setStudioFilter] = useState<StudioFilter>('All');
   const results = useRef<HTMLDivElement>(null);
   const packs: Record<string, Record<string, string>> = reactionPacks;
   const query = search.trim().toLowerCase();
-  const compact = (value: string) => value.toLowerCase().replace(/[\s._-]+/g, '');
   const needle = compact(query);
-  const visible = Object.entries(query ? reactionNames : packs[pack]).filter(([id, name]) => {
-    const alias = name.startsWith('Jensen Huang') ? 'NVIDIA CEO' : '';
+  const packItems =
+    pack === 'Studio stickers' && studioFilter !== 'All' ? studioGroups[studioFilter] : packs[pack];
+  const visible = Object.entries(query ? reactionNames : packItems).filter(([id, name]) => {
+    const alias = name.startsWith('Jensen Huang') ? 'NVIDIA CEO' : (searchAliases[id] ?? '');
     return !query || compact(name + ' ' + id + ' ' + alias).includes(needle);
   });
   useEffect(() => {
     results.current?.scrollTo({ top: 0 });
-  }, [pack, query]);
+  }, [pack, query, studioFilter]);
   return (
     <>
       <label className="sticker-search">
@@ -97,21 +122,36 @@ export function StickerLibrary({
         </select>
         <span>{editing ? favorites.length + '/6 pinned' : visible.length + ' stickers'}</span>
       </div>
+      {pack === 'Studio stickers' && !query && (
+        <div className="studio-filters" role="group" aria-label="Studio sticker categories">
+          {studioFilters.map((filter) => (
+            <button
+              key={filter}
+              type="button"
+              aria-pressed={filter === studioFilter}
+              onClick={() => setStudioFilter(filter)}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
+      )}
       <div className="sticker-library" ref={results}>
         <div className={'sticker-grid' + (pack === 'Gopher memes' && !query ? ' meme-grid' : '')}>
           {visible.map(([id, name]) => {
             const pinned = favorites.includes(id);
+            const captioned = id.startsWith('photo-') || id.startsWith('meme-');
             return (
               <button
                 key={id}
-                className={id.startsWith('photo-') ? 'photo-tile' : undefined}
+                className={captioned ? 'photo-tile' : undefined}
                 title={name}
                 aria-label={(editing ? (pinned ? 'Unpin ' : 'Pin ') : 'Send ') + name}
                 aria-pressed={editing ? pinned : undefined}
                 disabled={editing && !pinned && favorites.length >= 6}
                 onClick={() => onSelect(id)}
               >
-                <ReactionIcon emoji={id} size={id.startsWith('photo-') ? 44 : 52} />
+                <ReactionIcon emoji={id} size={captioned ? 44 : 52} />
                 {!query && pack === 'Gopher memes' && <small>{name}</small>}
                 {pinned && <Check className="pin-check" size={12} />}
               </button>

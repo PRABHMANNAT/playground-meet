@@ -1159,7 +1159,10 @@
 }
 .meeting-shell .sticker-picker.expanded {
   width: min(386px, calc(100vw - 24px));
-  grid-template-rows: auto auto auto minmax(0, 1fr);
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+}
+.meeting-shell .sticker-picker.expanded:has(.studio-filters) {
+  grid-template-rows: auto auto auto auto minmax(0, 1fr) auto;
 }
 .sticker-heading,
 .sticker-quick,
@@ -1257,6 +1260,25 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
+}
+.studio-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.meeting-shell .studio-filters button {
+  min-width: 0;
+  min-height: 28px;
+  padding: 3px 9px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+}
+.meeting-shell .studio-filters button[aria-pressed='true'] {
+  background: var(--ink);
+  color: var(--paper);
 }
 .sticker-grid {
   display: grid;
@@ -2130,6 +2152,21 @@
 }
 .meeting-shell .sticker-grid:has(.photo-tile) {
   grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.city-postcard {
+  padding: 3px;
+  background: white;
+  border-radius: 7px;
+  box-shadow: 0 1px 4px #0003;
+}
+.city-postcard img {
+  border-radius: 4px;
+  object-fit: cover;
+  object-position: 50% 35%;
+}
+.city-postcard b {
+  color: #16131c;
+  -webkit-text-stroke: 0;
 }
 .meeting-shell .sticker-grid .photo-tile {
   aspect-ratio: auto;

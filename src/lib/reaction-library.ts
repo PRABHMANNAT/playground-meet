@@ -1,17 +1,31 @@
 import stickerPacks from './sticker-packs.json';
 import photoPacks from './photo-stickers.json';
 import technologyPacks from './technology-stickers.json';
-import studioStickers from './studio-stickers.json';
+import studioGroups from './studio-stickers.json';
+export { studioGroups };
+const illustratedMemes = {
+  'meme-on-mute': "You're on mute",
+  'meme-could-be-email': 'Could’ve been an email',
+  'meme-one-last-slide': 'One last slide…',
+  'meme-wifi-froze': 'I think you froze',
+  'meme-screen-share': 'See my screen?',
+  'meme-taking-notes': 'Taking notes!',
+  'meme-hard-stop': 'Hard stop!',
+  'meme-ship-it': 'Ship it!',
+};
 export const reactionPacks = {
-  ...photoPacks,
   'Studio stickers': {
-    jensen: 'Jensen Huang approves',
-    elon: 'Elon Musk eyebrow raise',
+    ...studioGroups['Tech figures'],
+    ...studioGroups['World leaders'],
+  },
+  ...photoPacks,
+  'Meeting memes': {
+    ...illustratedMemes,
+    ...photoPacks['Meeting memes'],
     laughing: 'Laughing terminal',
     ship: 'Ship it',
     hotfix: 'Hotfix',
     build: 'Build passed',
-    ...studioStickers,
   },
   ...stickerPacks,
   ...technologyPacks,
@@ -46,7 +60,8 @@ export function readFavorites(raw: string | null): string[] {
 export function stickerImage(id: string) {
   if (!Object.hasOwn(reactionNames, id) || ['ship', 'build', 'hotfix'].includes(id)) return null;
   if (id.startsWith('photo-')) return '/reactions/photos/' + id + '.webp';
-  if (Object.hasOwn(studioStickers, id)) return '/reactions/studio/' + id + '.webp';
+  if (Object.hasOwn(illustratedMemes, id)) return '/reactions/memes/' + id + '.webp';
+  if (id.startsWith('studio-')) return '/reactions/studio/' + id + '.webp';
   if (
     Object.hasOwn(technologyPacks['Hardware & tech'], id) ||
     Object.hasOwn(technologyPacks['Developer logos'], id)
