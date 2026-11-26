@@ -24,7 +24,11 @@ Participants, including anyone joining late, see who is recording. **Stop and sa
 
 ### Live transcription and meeting notes
 
-Open **Transcript** in the meeting and select **Include my microphone**. Each speaker opts in separately. The first use loads a bundled 39 MiB US English model. Vosk recognizes speech in a browser worker, pauses when the microphone is muted, and sends finalized text to the room with the speaker’s name. Closing the panel keeps recognition running. Select **Stop my transcript** to finish.
+Open **Transcript** in the meeting and select **Include my microphone**. Each speaker opts in separately. Whisper Base English processes short phrases on the participant’s device and sends captions to the room with the speaker’s name and timestamp. Muting pauses microphone capture. Select **Lite** before starting to use Vosk on slower devices.
+
+The first dev start or build downloads and verifies about 97 MiB of open-source Whisper assets. The app serves these files itself, and participants load them when they use Whisper. No speech API key or external inference service is required.
+
+After the meeting, open **Meeting recap → Meeting transcript** and choose **Download TXT** or **Download PDF** for the full speaker transcript. While other participants finish transcribing their last phrase, the recap shows a short finalization status.
 
 Leaving a meeting downloads a Markdown summary of the discussion so far. Ending it for everyone downloads the final notes for connected participants. Notes include spoken highlights, a timestamped transcript, shared notes, decisions and action items. The recap also has a manual download button.
 

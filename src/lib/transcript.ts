@@ -1,6 +1,7 @@
 import type { Event } from './types';
 
-export const finalCaptionWindow = 8000;
+// Remote speakers can still be decoding the last phrase when LiveKit disconnects.
+export const finalCaptionWindow = 45000;
 
 // Prefer explicit agreements, dates and follow-ups. Quote the speaker's words verbatim.
 export function transcriptHighlights(events: Event[], limit = 5) {

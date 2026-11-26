@@ -8,7 +8,9 @@ import type { Snapshot } from '@/lib/types';
 export function TranscriptPanel({ data, speech }: { data: Snapshot; speech: TranscriptControls }) {
   const [follow, setFollow] = useState(true);
   const scroll = useRef<HTMLDivElement>(null);
-  const entries = data.events.filter((e) => e.kind === 'transcript');
+  const entries = data.events
+    .filter((e) => e.kind === 'transcript')
+    .sort((a, b) => a.created - b.created || a.id - b.id);
   const last = entries.at(-1)?.id;
   useEffect(() => {
     if (follow && scroll.current) scroll.current.scrollTop = scroll.current.scrollHeight;
@@ -28,9 +30,27 @@ export function TranscriptPanel({ data, speech }: { data: Snapshot; speech: Tran
           <strong>{status}</strong>
         </div>
         <p>
-          English · On-device recognition. Your captions appear for everyone and are included in the
-          meeting notes.
+          Your device transcribes your microphone in English. Everyone in the meeting can read and
+          download the captions.
         </p>
+        <label className="transcript-engine">
+          <span>Recognition mode</span>
+          <select
+            value={speech.engine}
+            disabled={active}
+            onChange={(e) => speech.setEngine(e.target.value === 'vosk' ? 'vosk' : 'whisper')}
+          >
+            <option value="whisper">Whisper · caption by phrase</option>
+            <option value="vosk">Lite · live word preview</option>
+          </select>
+        </label>
+        {!active && (
+          <p>
+            {speech.engine === 'whisper'
+              ? 'About 96 MiB on first use. Captions appear after a pause.'
+              : 'Smaller English model for slower devices.'}
+          </p>
+        )}
         <button
           className="button primary"
           disabled={speech.status === 'saving'}

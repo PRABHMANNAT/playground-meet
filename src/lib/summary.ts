@@ -13,7 +13,9 @@ export function summary(data: Snapshot) {
       .join(', ')}`,
     '',
   ];
-  const transcript = events.filter((e) => e.kind === 'transcript');
+  const transcript = events
+    .filter((e) => e.kind === 'transcript')
+    .sort((a, b) => a.created - b.created || a.id - b.id);
   const line = (e: (typeof events)[number]) =>
     `- [${duration((e.created - meeting.created) / 1000)}] ${e.name}: ${e.payload.text}`;
   const highlights = transcriptHighlights(transcript);

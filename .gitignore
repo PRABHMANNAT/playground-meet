@@ -11,3 +11,4 @@ test-results/
 playwright-report/
 *.tsbuildinfo
 deploy/*.generated.yaml
+public/speech/whisper-base-en-v1/

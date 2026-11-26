@@ -9,6 +9,7 @@ import { useToast } from './providers';
 import type { Snapshot } from '@/lib/types';
 import { finalCaptionWindow, transcriptHighlights } from '@/lib/transcript';
 import { duration } from '@/lib/format';
+import { downloadTranscript } from '@/lib/transcript-download';
 export function Recap({ id }: { id: string }) {
   const [data, setData] = useState<Snapshot | null>(null),
     [error, setError] = useState(''),
@@ -17,6 +18,8 @@ export function Recap({ id }: { id: string }) {
     [saving, setSaving] = useState(false);
   const toast = useToast();
   const [downloadStatus, setDownloadStatus] = useState('');
+  const [exporting, setExporting] = useState<'txt' | 'pdf' | null>(null);
+  const [finalizing, setFinalizing] = useState(false);
   useEffect(() => {
     if (!data || new URLSearchParams(location.search).get('notes') !== 'download') return;
     const url = new URL(location.href);
@@ -24,10 +27,13 @@ export function Recap({ id }: { id: string }) {
       url.searchParams.delete('notes');
       history.replaceState(history.state, '', url);
     };
-    const wait = Math.max(
-      0,
-      (data.meeting.state.transcriptClosedAt ?? 0) + finalCaptionWindow - data.serverTime,
-    );
+    const wait =
+      data.members.filter((m) => m.status === 'admitted').length < 2
+        ? 0
+        : Math.max(
+            0,
+            (data.meeting.state.transcriptClosedAt ?? 0) + finalCaptionWindow - data.serverTime,
+          );
     setDownloadStatus(wait ? 'Finalizing meeting notes…' : 'Preparing meeting notes…');
     const timer = setTimeout(() => {
       finish();
@@ -40,9 +46,37 @@ export function Recap({ id }: { id: string }) {
     return () => clearTimeout(timer);
   }, [id, data]);
   useEffect(() => {
-    request<Snapshot>(`/api/meetings/${id}/state`)
-      .then(setData)
-      .catch((e) => setError(e.message));
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout>;
+    const state = () => request<Snapshot>(`/api/meetings/${id}/state`);
+    state()
+      .then((initial) => {
+        if (cancelled) return;
+        setData(initial);
+        const wait =
+          (initial.meeting.state.transcriptClosedAt ?? 0) + finalCaptionWindow - initial.serverTime;
+        if (initial.members.filter((m) => m.status === 'admitted').length < 2 || wait <= 0) return;
+        setFinalizing(true);
+        timer = setTimeout(() => {
+          state()
+            .then((latest) => {
+              if (!cancelled) setData(latest);
+            })
+            .catch((e) => {
+              if (!cancelled) setError(e.message);
+            })
+            .finally(() => {
+              if (!cancelled) setFinalizing(false);
+            });
+        }, wait + 100);
+      })
+      .catch((e) => {
+        if (!cancelled) setError(e.message);
+      });
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
   }, [id]);
   return (
     <div className="meeting-entry recap-page">
@@ -94,6 +128,41 @@ export function Recap({ id }: { id: string }) {
                 <ArrowLeft size={16} /> Back to meetings
               </a>
             </div>
+            <section className="recap-card">
+              <h2>Meeting transcript</h2>
+              {finalizing && (
+                <p role="status" className="panel-helper">
+                  Waiting for participants’ final captions…
+                </p>
+              )}
+              {data.events.some((event) => event.kind === 'transcript') || finalizing ? (
+                <div className="transcript-downloads">
+                  {(['txt', 'pdf'] as const).map((format) => (
+                    <button
+                      key={format}
+                      className="button secondary"
+                      disabled={!!exporting || finalizing}
+                      onClick={async () => {
+                        setExporting(format);
+                        try {
+                          await downloadTranscript(id, format);
+                        } catch (e) {
+                          toast(e instanceof Error ? e.message : 'Transcript download failed.');
+                        } finally {
+                          setExporting(null);
+                        }
+                      }}
+                    >
+                      <Download size={16} aria-hidden="true" />
+                      {exporting === format ? 'Preparing ' : 'Download '}
+                      {format.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="panel-helper">No spoken captions were saved for this meeting.</p>
+              )}
+            </section>
             <LocalRecordingList scope={id + '/' + data.me.id} />
             {!!transcriptHighlights(data.events).length && (
               <section className="recap-card">

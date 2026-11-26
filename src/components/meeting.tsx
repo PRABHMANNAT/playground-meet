@@ -175,6 +175,7 @@ function MeetingInterior({ id }: { id: string }) {
   const speech = useTranscript(
     id,
     local.isMicrophoneEnabled ? local.microphoneTrack?.track?.mediaStreamTrack : undefined,
+    data?.clockOffset,
   );
   const tracks = useTracks([
     { source: Track.Source.Camera, withPlaceholder: true },

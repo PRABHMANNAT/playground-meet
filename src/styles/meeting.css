@@ -746,6 +746,11 @@
   gap: 10px;
   margin-bottom: 22px;
 }
+.transcript-downloads {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
 .recap-card {
   padding: clamp(17px, 4vw, 24px);
   border: 1px solid var(--line);

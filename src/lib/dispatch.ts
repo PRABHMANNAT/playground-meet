@@ -59,7 +59,19 @@ export async function dispatch(id: string, person: Person, action: Action) {
       action.type.startsWith('browser') || ['notes', 'stroke'].includes(action.type) ? {} : action;
     await db.query(
       'INSERT INTO events(room,kind,actor,name,payload,created) VALUES($1,$2,$3,$4,$5,$6)',
-      [id, action.type, person.id, person.name, JSON.stringify(payload), Date.now()],
+      [
+        id,
+        action.type,
+        person.id,
+        person.name,
+        JSON.stringify(payload),
+        action.type === 'transcript' && action.spokenAt !== undefined
+          ? Math.max(
+              Number(room.created),
+              Math.min(action.spokenAt, room.state.transcriptClosedAt ?? Date.now()),
+            )
+          : Date.now(),
+      ],
     );
   });
   let warning: string | undefined;

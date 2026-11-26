@@ -17,6 +17,7 @@ async function main() {
   await guest.call(path + '/token', {}, 403);
   await guest.call(path + '/state', undefined, 403);
   await outsider.call(path + '/summary', undefined, 403);
+  await guest.call(path + '/transcript', undefined, 403);
   await act(guest, { type: 'admit', memberId: gp.id }, 403);
   await act(guest, { type: 'browser', url: 'https://example.com/' }, 403);
   await act(host, { type: 'admit', memberId: gp.id });
@@ -191,6 +192,7 @@ async function main() {
   await guest.call(path + '/token', {}, 403);
   await guest.call(path + '/join', {}, 403);
   await guest.call(path + '/summary', undefined, 403);
+  await guest.call(path + '/transcript', undefined, 403);
   console.log('PASS locking, removal and authorization revocation');
   await act(host, { type: 'browser', url: 'https://example.com/' });
   await act(host, { type: 'end' });
@@ -198,6 +200,16 @@ async function main() {
   await host.call(path + '/token', {}, 410);
   await act(host, { type: 'chat', text: 'after end' }, 410);
   await act(host, { type: 'rating', rating: 5, text: 'All done' });
+  await act(host, {
+    type: 'transcript',
+    segment: randomUUID(),
+    text: 'Final words after disconnect.',
+  });
+  const exported = await host.call(path + '/transcript');
+  assert.deepEqual(
+    exported.lines.map((line: { text: string }) => line.text),
+    [caption.text, 'Final words after disconnect.'],
+  );
   assert.ok((await host.call(path + '/summary')).markdown);
   console.log('PASS end-for-all and authorized post-call recap');
   const openRoom = (

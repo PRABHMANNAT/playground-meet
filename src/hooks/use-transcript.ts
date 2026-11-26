@@ -1,17 +1,20 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { microphoneTranscriber } from '@/lib/local-speech';
+import { whisperTranscriber } from '@/lib/whisper-speech';
 import { request } from '@/lib/client';
 
-export function useTranscript(id: string, track?: MediaStreamTrack) {
+type Caption = { segment: string; text: string; spokenAt?: number };
+export function useTranscript(id: string, track?: MediaStreamTrack, clockOffset = 0) {
+  const [engine, setEngine] = useState<'whisper' | 'vosk'>('whisper');
   const [status, setStatus] = useState<'off' | 'loading' | 'on' | 'saving'>('off');
   const [draft, setDraft] = useState(''),
     [error, setError] = useState('');
   const session = useRef<ReturnType<typeof microphoneTranscriber> | null>(null);
   const pending = useRef(Promise.resolve());
-  const failed = useRef<Array<{ segment: string; text: string }>>([]);
+  const failed = useRef<Caption[]>([]);
   const save = useCallback(
-    async (line: { segment: string; text: string }) => {
+    async (line: Caption) => {
       await request(`/api/meetings/${id}/actions`, { type: 'transcript', ...line });
     },
     [id],
@@ -47,15 +50,26 @@ export function useTranscript(id: string, track?: MediaStreamTrack) {
     setStatus('loading');
     setError('');
     try {
-      const active = microphoneTranscriber((text) => {
-        const line = { segment: crypto.randomUUID(), text };
+      const onText = (text: string, started?: number) => {
+        const line = {
+          segment: crypto.randomUUID(),
+          text,
+          spokenAt: started === undefined ? undefined : Math.round(started + clockOffset),
+        };
         pending.current = pending.current
           .then(() => save(line))
           .catch(() => {
             failed.current.push(line);
             setError('A caption could not be saved. Retry to include it in the notes.');
           });
-      }, setDraft);
+      };
+      const active =
+        engine === 'whisper'
+          ? whisperTranscriber(onText, (message) => {
+              setError(message);
+              void stop();
+            })
+          : microphoneTranscriber(onText, setDraft);
       session.current = active;
       active.attach(track);
       await active.start();
@@ -78,6 +92,8 @@ export function useTranscript(id: string, track?: MediaStreamTrack) {
     [stop],
   );
   return {
+    engine,
+    setEngine,
     status,
     draft,
     error,

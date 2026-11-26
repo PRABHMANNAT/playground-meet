@@ -26,6 +26,7 @@ export const actionInput = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('transcript'),
     segment: z.uuid(),
+    spokenAt: z.number().int().nonnegative().optional(),
     text: z.string().trim().min(1).max(4000),
   }),
   z.object({ type: z.literal('chat'), text: z.string().trim().min(1).max(2000) }),

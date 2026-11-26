@@ -14,4 +14,6 @@ The repository's MIT license applies to the project's original code and document
 
 ## On-device speech recognition
 
+Whisper mode uses [OpenAI Whisper Base English](https://github.com/openai/whisper) under the [MIT License](public/speech/LICENSE-Whisper.txt), with [Xenova’s quantized ONNX weights](https://huggingface.co/Xenova/whisper-base.en). The app serves the [Transformers.js](https://github.com/huggingface/transformers.js) browser runtime ([Apache 2.0](public/speech/LICENSE-Transformers.txt)) and [ONNX Runtime](https://onnxruntime.ai/) ([MIT](public/speech/LICENSE-ONNX-Runtime.txt), [third-party notices](public/speech/ONNX-ThirdPartyNotices.txt)). Setup verifies the pinned assets before serving them.
+
 The browser runtime uses [Vosk-Browser](https://github.com/ccoreilly/vosk-browser) by Ciaran O’Reilly, built on [Vosk](https://github.com/alphacep/vosk-api). The bundled [vosk-model-small-en-us-0.15](https://alphacephei.com/vosk/models) from Alpha Cephei is repackaged from ZIP to tar.gz for the browser. The runtime and model are distributed under the [Apache License 2.0](public/speech/LICENSE-Vosk.txt).

@@ -1892,6 +1892,19 @@
 .transcript-controls .button {
   width: 100%;
 }
+.transcript-engine {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+}
+.transcript-engine select {
+  width: 100%;
+  padding: 0.45rem;
+  color: inherit;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
 .transcript-heading {
   justify-content: space-between;
 }
