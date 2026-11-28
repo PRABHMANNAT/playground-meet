@@ -1,0 +1,23 @@
+.notebook { display: flex; flex-direction: column; gap: 14px; min-height: 100%; }
+.note-audience { display: flex; padding: 3px; background: var(--paper-2); border: 1px solid var(--line); border-radius: 10px; }
+.note-audience button { display: inline-flex; gap: 6px; align-items: center; justify-content: center; flex: auto; padding: 8px 4px; font-size: 12px; font-weight: 650; border-radius: 7px; }
+.note-audience button[aria-pressed=true] { background: var(--surface); box-shadow: 0 1px 3px var(--line); }
+.note-sheet { display: flex; flex-direction: column; flex: 1; min-height: 160px; }
+.note-sheet header,.stage-note header,.note-foot,.note-foot span { display: flex; align-items: center; gap: 8px; }
+.note-sheet header { padding: 8px 0 12px; border-bottom: 1px solid var(--line); }
+.note-sheet h3 { font-size: 16px; font-weight: 650; overflow-wrap: anywhere; }
+.live-note-body:not([hidden]) { display: flex; flex-direction: column; flex: 1; }
+.meeting-shell .panel-content .notebook-input { flex: 1; min-height: 130px; width: 100%; padding: 14px 2px; border: 0; border-radius: 0; background: transparent; line-height: 1.7; font-size: 14px; resize: none; }
+.notebook-input:focus { box-shadow: none; }
+.notebook-input:focus-visible { outline: 1px solid var(--line); outline-offset: 2px; }
+.note-foot { justify-content: space-between; border-top: 1px solid var(--line); padding: 10px 0 0; }
+.note-foot span,.note-sync,.previous-note,.note-resolution { color: var(--muted); font-size: 12px; }
+.previous-note summary { cursor: pointer; }
+.note-resolution button + button { margin-left: 10px; }
+.meeting-shell .note-access { display: flex; align-items: center; flex-direction: row; gap: 8px; font-size: 13px; }
+.note-access input { width: 16px; height: 16px; accent-color: var(--ink); }
+.stage-note { padding: 14px 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); min-height: 0; }
+.stage-note header span { margin-left: auto; color: var(--muted); font-size: 12px; }
+.stage-note header strong { text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+.stage-note p { margin: 8px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; overflow-y: auto; max-height: min(20dvh, 200px); font-size: 15px; line-height: 1.65; }
+

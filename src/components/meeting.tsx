@@ -31,6 +31,7 @@ import {
   Settings2,
   LayoutGrid,
   Timer,
+  NotebookPen,
   ShieldCheck,
   Globe,
 } from 'lucide-react';
@@ -384,6 +385,12 @@ function MeetingInterior({ id }: { id: string }) {
               </span>
             </div>
           </div>
+          {data?.meeting.state.liveNote && !showBoard && (
+            <section className="stage-note" aria-label="Shared live note">
+              <header><NotebookPen size={16}/><strong>{data.meeting.state.liveNote.name}’s note</strong><span>Live</span></header>
+              <p tabIndex={0}>{data.meeting.state.liveNote.text || 'Waiting for the first line…'}</p>
+            </section>
+          )}
           {showBoard && data && (
             <BoardPanel
               data={data}

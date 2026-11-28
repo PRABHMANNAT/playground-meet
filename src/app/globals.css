@@ -2,6 +2,7 @@
 @import '../styles/home.css';
 @import '../styles/meeting.css';
 @import '../styles/call.css';
+@import '../styles/collaboration.css';
 
 @font-face {
   font-family: Manrope;
