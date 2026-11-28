@@ -9,3 +9,23 @@ test('two concurrent note editors cannot silently overwrite each other', async (
   await notes(c, { type: 'notes', text: 'Merged draft', version: 1 });
   expect(c.room.state.notesVersion).toBe(2);
 });
+test('a shared note starts read-only, rejects stale writes and can be withdrawn', async () => {
+  const c = context();
+  const viewer = { ...c, person: { ...c.person, id: 'viewer' } };
+  await notes(c, { type: 'note-share', text: 'Agenda' });
+  const { id } = c.room.state.liveNote!;
+  await expect(notes(viewer, { type: 'note-share', text: 'Replacement' })).rejects.toThrow();
+  const edit = { type: 'note-edit', id, text: 'New agenda', version: 0 } as const;
+  await expect(notes(viewer, edit)).rejects.toThrow();
+  await expect(notes(viewer, { type: 'note-access', id, editable: true })).rejects.toThrow();
+  await notes(c, { type: 'note-access', id, editable: true });
+  await notes(viewer, edit);
+  await expect(notes(c, edit)).rejects.toThrow();
+  await notes(c, { type: 'note-access', id, editable: false });
+  await expect(notes(viewer, { ...edit, version: 1 })).rejects.toThrow();
+  await expect(notes(viewer, { type: 'note-stop', id })).rejects.toThrow();
+  await notes({ ...c, person: { ...c.person, id: c.room.host } }, { type: 'note-stop', id });
+  expect(c.room.state.liveNote).toBeNull();
+  await notes(viewer, { type: 'note-share', text: 'Second note' });
+  await expect(notes(c, { type: 'note-stop', id })).rejects.toThrow();
+});
