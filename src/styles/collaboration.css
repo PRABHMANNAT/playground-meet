@@ -51,3 +51,4 @@
 .ballot-percent { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 12px; }
 .ballot footer { margin-top: 9px; }
 @media (prefers-reduced-motion: reduce) { .ballot-fill { transition: none; } }
+.poll-sound { margin-left: auto; margin-right: 4px; }

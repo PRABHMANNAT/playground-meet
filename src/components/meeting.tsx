@@ -39,6 +39,7 @@ import { request, downloadSummary } from '@/lib/client';
 import { duration } from '@/lib/format';
 import { meetingPath, meetingInviteUrl } from '@/lib/meeting-links';
 import { useMeetingRecording } from '@/hooks/use-meeting-recording';
+import { usePollSounds } from '@/hooks/use-poll-sounds';
 import { useTranscript } from '@/hooks/use-transcript';
 import { useCaptionTranslation } from '@/hooks/use-caption-translation';
 import { useRoomState } from '@/hooks/use-room-state';
@@ -178,6 +179,7 @@ function MeetingInterior({ id }: { id: string }) {
     local.isMicrophoneEnabled ? local.microphoneTrack?.track?.mediaStreamTrack : undefined,
     data?.clockOffset,
   );
+  const pollSounds = usePollSounds(data?.meeting.state.polls, data?.me.id);
   const translation = useCaptionTranslation(data?.events);
   const tracks = useTracks([
     { source: Track.Source.Camera, withPlaceholder: true },
@@ -443,6 +445,7 @@ function MeetingInterior({ id }: { id: string }) {
               now={now}
               speech={speech}
               translation={translation}
+              pollSounds={pollSounds}
               browser={{
                 selected: browserTab,
                 select: setBrowserTab,
