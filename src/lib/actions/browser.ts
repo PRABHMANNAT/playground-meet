@@ -3,6 +3,27 @@ import type { Handler } from './context';
 import { invariant } from '../errors';
 
 export const browser: Handler = async ({ room, person }, action) => {
+  if (action.type === 'browser-search') {
+    room.state.browserSearch = {
+      id: randomUUID(),
+      sharedBy: person.id,
+      name: person.name,
+      query: action.query,
+      results: action.results,
+    };
+    return;
+  }
+  if (action.type === 'browser-stop-search') {
+    const search = room.state.browserSearch;
+    invariant(search?.id === action.shareId, 409, 'The shared search has changed.');
+    invariant(
+      search.sharedBy === person.id || room.host === person.id,
+      403,
+      'Only the presenter or host can stop sharing this search.',
+    );
+    room.state.browserSearch = null;
+    return;
+  }
   const current = room.state.browser;
   const canManage = current?.sharedBy === person.id || room.host === person.id;
 

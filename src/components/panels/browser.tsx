@@ -17,6 +17,7 @@ import {
 import { browserDestination } from '@/lib/browser-destination';
 import { maxBrowserUrl, parseBrowserUrl } from '@/lib/browser-url';
 import type { SharedState } from '@/lib/types';
+import { BrowserSearchPanel } from './browser-search';
 import { BrowserAnnotations } from './browser-annotations';
 import { WikipediaResults } from './wikipedia-results';
 import type { PanelProps } from './types';
@@ -97,7 +98,7 @@ export function BrowserPanel({
   async function share(url: string | null) {
     setPending(true);
     try {
-      await send({ type: 'browser', url });
+      return await send({ type: 'browser', url });
     } finally {
       setPending(false);
     }
@@ -109,30 +110,52 @@ export function BrowserPanel({
 
   return (
     <div className="stack browser-panel">
-      <section className="browser-launch" aria-label="Browser window">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            setPreferWindow(false);
-            if (destination)
-              window.open(destination, '_blank', 'noopener,noreferrer,popup,width=1100,height=760');
-          }}
-        >
-          <label htmlFor="browser-launch-address">Website or search</label>
-          <input
-            id="browser-launch-address"
-            value={address}
-            maxLength={2000}
-            placeholder="Enter an address or search the web"
-            autoComplete="off"
-            spellCheck={false}
-            onChange={(e) => setAddress(e.target.value)}
-          />
-          {address.trim() && !destination && (
-            <small role="alert">Enter an HTTP or HTTPS address, or search words.</small>
+      <section className="browser-launch" aria-label="Shared browser tools">
+        <BrowserSearchPanel
+          data={data}
+          host={host}
+          send={send}
+          address={address}
+          setAddress={setAddress}
+          visible={visible}
+          renderPage={(url) => (
+            <PagePreview
+              url={url}
+              action={
+                <button
+                  className="button secondary small"
+                  disabled={pending}
+                  onClick={async () => {
+                    if (await share(url)) {
+                      select('shared');
+                      setShowLinks(true);
+                    }
+                  }}
+                >
+                  <Share2 size={14} /> Share page
+                </button>
+              }
+            />
           )}
+        />
+        <details className="browser-window-options">
+          <summary>
+            <MonitorUp size={16} /> {presenting ? 'Presenting a window' : 'Present a tab or window'}
+          </summary>
           <div className="browser-launch-actions">
-            <button className="button secondary" disabled={!destination}>
+            <button
+              className="button secondary"
+              disabled={!destination}
+              onClick={() => {
+                if (!destination) return;
+                setPreferWindow(false);
+                window.open(
+                  destination,
+                  '_blank',
+                  'noopener,noreferrer,popup,width=1100,height=760',
+                );
+              }}
+            >
               <ExternalLink size={15} /> Open window
             </button>
             {windows && (
@@ -177,34 +200,34 @@ export function BrowserPanel({
               )}
             </p>
           </details>
-        </form>
-        <div className="browser-broadcast">
-          <div>
-            <MonitorUp size={20} />
-            <h3>{presenting ? 'Presenting to everyone' : 'Present to everyone'}</h3>
+          <div className="browser-broadcast">
+            <div>
+              <MonitorUp size={20} />
+              <h3>{presenting ? 'Presenting to everyone' : 'Present to everyone'}</h3>
+            </div>
+            <p>
+              {presenting
+                ? 'The meeting can see your selected tab or window.'
+                : preferWindow
+                  ? 'Select the Helium window in the sharing picker.'
+                  : 'Choose a tab or window. Everyone sees the page as you browse.'}
+            </p>
+            <button
+              className="button primary"
+              disabled={choosingTab}
+              onClick={async () => {
+                setChoosingTab(true);
+                try {
+                  await present(preferWindow ? 'window' : 'browser');
+                } finally {
+                  setChoosingTab(false);
+                }
+              }}
+            >
+              {presenting ? 'Stop presenting' : 'Choose tab or window'}
+            </button>
           </div>
-          <p>
-            {presenting
-              ? 'The meeting can see your selected tab or window.'
-              : preferWindow
-                ? 'Select the Helium window in the sharing picker.'
-                : 'Choose a tab or window. Everyone sees the page as you browse.'}
-          </p>
-          <button
-            className="button primary"
-            disabled={choosingTab}
-            onClick={async () => {
-              setChoosingTab(true);
-              try {
-                await present(preferWindow ? 'window' : 'browser');
-              } finally {
-                setChoosingTab(false);
-              }
-            }}
-          >
-            {presenting ? 'Stop presenting' : 'Choose tab or window'}
-          </button>
-        </div>
+        </details>
       </section>
       <button
         className="browser-link-tools"
@@ -331,7 +354,7 @@ function PersonalTab({
   navigate: (next: Destination) => void;
   move: (offset: number) => void;
   shared: SharedState['browser'];
-  share: (url: string) => Promise<void>;
+  share: (url: string) => Promise<boolean>;
   pending: boolean;
   follow: () => void;
 }) {

@@ -1,6 +1,7 @@
 import { validReaction } from './reaction-library';
 import { z } from 'zod';
 import { maxBrowserUrl, parseBrowserUrl } from './browser-url';
+import { maxSearchQuery, maxSearchResults } from './browser-search';
 export const displayName = z.string().trim().min(1).max(60);
 export const credentials = z.object({
   email: z
@@ -121,6 +122,24 @@ export const actionInput = z.discriminatedUnion('type', [
   z.object({ type: z.literal('bookmark'), id: z.uuid(), label: z.string().trim().min(1).max(160) }),
   z.object({ type: z.literal('remove-bookmark'), id: z.uuid() }),
   z.object({ type: z.literal('review'), url: safeUrl, task: z.string().max(2000) }),
+  z.object({
+    type: z.literal('browser-search'),
+    query: z.string().trim().min(1).max(maxSearchQuery),
+    results: z
+      .array(
+        z.object({
+          url: z
+            .string()
+            .max(maxBrowserUrl)
+            .refine((value) => !!parseBrowserUrl(value)),
+          title: z.string().trim().min(1).max(240),
+          snippet: z.string().max(320),
+        }),
+      )
+      .min(1)
+      .max(maxSearchResults),
+  }),
+  z.object({ type: z.literal('browser-stop-search'), shareId: z.uuid() }),
   z.object({
     type: z.literal('browser'),
     url: z

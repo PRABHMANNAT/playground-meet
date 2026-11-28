@@ -1,3 +1,5 @@
+import type { BrowserSearch } from './browser-search';
+
 export type Person = { id: string; name: string; account: boolean };
 export type Member = {
   id: string;
@@ -81,6 +83,13 @@ export type SharedState = {
   >;
   timer: { endsAt: number; duration: number; pausedSeconds?: number };
   review: { url: string; task: string };
+  browserSearch?:
+    | (BrowserSearch & {
+        id: string;
+        sharedBy: string;
+        name: string;
+      })
+    | null;
   browser?: {
     url: string;
     sharedBy: string;

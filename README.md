@@ -12,7 +12,7 @@ Start a video call from your browser, invite people with a link, and keep the di
 | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Start or join a call** | Create a meeting as a guest, share its invite link, and check your camera and microphone before joining. Sign in to keep meeting history across devices.          |
 | **Run the meeting**      | Admit guests from the waiting room, lock the room, moderate participants, or end the call for everyone. Share your screen and pin a participant in your own view. |
-| **Browse together**      | Open a separate browser window and present it live, including sites that block embeds. Use Helium for built-in ad blocking or share an annotated link.            |
+| **Browse together**      | Search privately, then show the results to everyone inside Meet. Present a browser window live or share an annotated link.                                        |
 | **Work together**        | Use chat, reactions, raised hands, shared notes, a whiteboard, polls, action items with owners and due dates, a decision log, and a product review brief.         |
 | **Follow up**            | Review notes and timestamped feedback, rate the meeting, and download a Markdown summary.                                                                         |
 
@@ -26,9 +26,11 @@ Open **More tools → Notes** to write privately in the current tab. **Share wit
 
 In **Polls**, the host can open a question with two to six answers. Participants can change their votes until the host closes the poll. The speaker button controls that participant’s sounds for opening, vote confirmation and closing.
 
-### Share a browser window
+### Search and browse together
 
-In **More tools → Shared browser**, enter a website or search and choose **Open window**. Return to Meet, select **Choose tab or window**, and pick the surface to present. Participants see the live page as you scroll, type and navigate. **Stop presenting** ends the stream. Protected media and operating-system capture restrictions can limit what the browser shares.
+In **More tools → Shared browser**, enter a query and choose **Search**. Your browser sends it to Mwmbl and shows a private preview. Choose **Share to all** to show the same results inside everyone’s meeting, including people who join later. The presenter or host can choose **Stop sharing**. Opening a result previews it for you.
+
+To present a live website, expand **Present a tab or window**. Use **Open window**, return to Meet, select **Choose tab or window**, and pick the surface to present. Participants see the live page as you scroll, type and navigate. **Stop presenting** ends the stream. Protected media and operating-system capture restrictions can limit what the browser shares.
 
 **Links & annotations** opens the link workspace. Participants can follow the meeting’s shared URL and draw together on pages that permit embedding.
 

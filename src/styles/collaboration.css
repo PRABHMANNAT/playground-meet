@@ -346,6 +346,82 @@
   flex-wrap: wrap;
   gap: 6px;
 }
+.browser-search-panel,
+.search-sheet,
+.search-sheet header {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+.browser-query-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px;
+}
+.browser-query-field input {
+  min-width: 0;
+}
+.search-sheet {
+  margin-top: 8px;
+}
+.search-sheet h3,
+.search-hit {
+  overflow-wrap: anywhere;
+}
+.search-sheet small,
+.search-hit span {
+  color: var(--muted);
+  font-size: 12px;
+}
+.search-sheet ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.search-hit {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  padding: 12px 4px;
+  border-top: 1px solid var(--line);
+  text-align: start;
+}
+.search-hit:hover strong,
+.search-hit:focus-visible strong {
+  text-decoration: underline;
+}
+.search-hit small,
+.browser-window-options summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.search-hit span {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.browser-window-options {
+  margin-top: 8px;
+  border-block: 1px solid var(--line);
+  padding-block: 10px;
+}
+.browser-window-options summary {
+  cursor: pointer;
+  font-weight: 650;
+  font-size: 13px;
+}
+.browser-window-options summary::after {
+  content: '+';
+  margin-left: auto;
+}
+.browser-window-options[open] > summary::after {
+  content: '−';
+}
+.browser-window-options > .browser-launch-actions {
+  margin-block: 12px 6px;
+}
 .helium-help {
   color: var(--muted);
   font-size: 12px;

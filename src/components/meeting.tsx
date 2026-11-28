@@ -169,6 +169,10 @@ function MeetingInterior({ id }: { id: string }) {
     [pinnedTrack, setPinnedTrack] = useState<string | null>(null),
     [now, setNow] = useState(Date.now());
   const participants = useParticipants();
+  const sharedSearchId = data?.meeting.state.browserSearch?.id;
+  useEffect(() => {
+    if (sharedSearchId) setPanel('browser');
+  }, [sharedSearchId]);
   const recording = useMeetingRecording(room, id, toast);
   const recorders = participants.filter((p) => p.attributes.localRecording === 'on');
 
@@ -366,7 +370,7 @@ function MeetingInterior({ id }: { id: string }) {
                 <Captions size={16} />
                 {speech.status === 'on' ? 'Transcription on' : 'Transcript'}
               </button>
-              {data?.meeting.state.browser && panel !== 'browser' && (
+              {(data?.meeting.state.browser || sharedSearchId) && panel !== 'browser' && (
                 <button
                   className="gallery-button"
                   onClick={() => {
@@ -374,7 +378,7 @@ function MeetingInterior({ id }: { id: string }) {
                     setPanel('browser');
                   }}
                 >
-                  <Globe size={14} /> Shared page
+                  <Globe size={14} /> {sharedSearchId ? 'Shared search' : 'Shared page'}
                 </button>
               )}
               {focused && (

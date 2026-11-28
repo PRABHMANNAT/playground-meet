@@ -47,6 +47,8 @@ export const handlers: Record<Action['type'], Handler> = {
   decision: outcomes,
   review,
   browser,
+  'browser-search': browser,
+  'browser-stop-search': browser,
   'browser-annotate': browser,
   'browser-clear-annotations': browser,
   admit,
