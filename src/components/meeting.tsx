@@ -426,9 +426,9 @@ function MeetingInterior({ id }: { id: string }) {
           )}
         </div>
         {data &&
-          (panel && panel !== 'browser' && panel !== 'chat'
-            ? (['browser', 'chat', panel] as const)
-            : (['browser', 'chat'] as const)
+          (panel && panel !== 'browser' && panel !== 'chat' && panel !== 'notes'
+            ? (['browser', 'chat', 'notes', panel] as const)
+            : (['browser', 'chat', 'notes'] as const)
           ).map((tool) => (
             <SidePanel
               key={tool}
