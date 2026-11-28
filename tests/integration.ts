@@ -97,6 +97,20 @@ async function main() {
   await act(guest, { type: 'notes', text: 'Merged notes', version: 1 });
   assert.equal((await host.call(path + '/state')).meeting.state.notes, 'Merged notes');
   console.log('PASS notes conflict detection and persistence');
+
+  await act(guest, { type: 'note-share', text: 'Guest live draft' });
+  const live = (await host.call(path + '/state')).meeting.state.liveNote;
+  const edit = { type: 'note-edit', id: live.id, text: 'Meeting edit', version: 0 };
+  await act(host, edit, 403);
+  await act(outsider, edit, 403);
+  await act(guest, { type: 'note-access', id: live.id, editable: true });
+  await act(host, edit);
+  await act(guest, edit, 409);
+  assert.ok((await guest.call(path + '/summary')).markdown.includes(edit.text));
+  await act(host, { type: 'note-stop', id: live.id });
+  assert.ok(!JSON.stringify(await guest.call(path + '/state')).includes(edit.text));
+  assert.ok(!(await guest.call(path + '/summary')).markdown.includes('Guest live draft'));
+  console.log('PASS shared notes access, version checks and withdrawal from state and recap');
   const simultaneous = await Promise.all(
     [host, guest].map((client, index) =>
       fetch(base + path + '/actions', {

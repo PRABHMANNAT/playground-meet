@@ -5,7 +5,14 @@ export const notes: Handler = async ({ room, person }, a) => {
   const current = room.state.liveNote;
   if (a.type === 'note-share') {
     invariant(!current, 409, 'A note is already on stage.');
-    room.state.liveNote = { id: randomUUID(), owner: person.id, name: person.name, text: a.text, version: 0, editable: false };
+    room.state.liveNote = {
+      id: randomUUID(),
+      owner: person.id,
+      name: person.name,
+      text: a.text,
+      version: 0,
+      editable: false,
+    };
     return;
   }
   if (a.type === 'note-edit' || a.type === 'note-access' || a.type === 'note-stop') {
@@ -20,7 +27,11 @@ export const notes: Handler = async ({ room, person }, a) => {
       invariant(owner, 403, 'Only the presenter can change editing access.');
       current.editable = a.editable;
     } else {
-      invariant(owner || room.host === person.id, 403, 'Only the presenter or host can stop sharing.');
+      invariant(
+        owner || room.host === person.id,
+        403,
+        'Only the presenter or host can stop sharing.',
+      );
       room.state.liveNote = null;
     }
     return;

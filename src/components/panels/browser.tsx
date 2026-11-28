@@ -57,11 +57,15 @@ export function BrowserPanel({
   const [pending, setPending] = useState(false);
   const [choosingTab, setChoosingTab] = useState(false);
   const [address, setAddress] = useState('');
-  const [showLinks, setShowLinks] = useState(visible && controls.selected === 'shared' && !!data.meeting.state.browser);
+  const [showLinks, setShowLinks] = useState(
+    visible && controls.selected === 'shared' && !!data.meeting.state.browser,
+  );
   const destination = browserDestination(address);
   const [windows, setWindows] = useState(false);
   const [preferWindow, setPreferWindow] = useState(false);
-  useEffect(() => { setWindows(/Windows/i.test(navigator.userAgent)); }, []);
+  useEffect(() => {
+    setWindows(/Windows/i.test(navigator.userAgent));
+  }, []);
   const nextId = useRef(2);
   const lastPersonal = useRef(1);
   const shared = data.meeting.state.browser;
@@ -106,135 +110,210 @@ export function BrowserPanel({
   return (
     <div className="stack browser-panel">
       <section className="browser-launch" aria-label="Browser window">
-        <form onSubmit={e => {
-          e.preventDefault();
-          setPreferWindow(false);
-          if (destination) window.open(destination, '_blank', 'noopener,noreferrer,popup,width=1100,height=760');
-        }}>
-          <label htmlFor="browser-launch-address">Website or search</label>
-          <input id="browser-launch-address" value={address} maxLength={2000} placeholder="Enter an address or search the web" autoComplete="off" spellCheck={false} onChange={e => setAddress(e.target.value)}/>
-          {address.trim() && !destination && <small role="alert">Enter an HTTP or HTTPS address, or search words.</small>}
-          <div className="browser-launch-actions">
-            <button className="button secondary" disabled={!destination}><ExternalLink size={15}/> Open window</button>
-            {windows && <button type="button" className="button secondary" disabled={!destination} onClick={() => {
-              if (!destination) return;
-              setPreferWindow(true);
-              window.location.href = 'meet-helium://open/?url=' + encodeURIComponent(destination);
-            }}>Open in Helium</button>}
-          </div>
-          <details className="helium-help"><summary>Browse with ad blocking</summary>
-            <p>{windows ? <>Set up the <a href="https://github.com/PRABHMANNAT/playground-meet#helium-browser" target="_blank" rel="noreferrer">Windows launcher</a> to open links directly in Helium.</> : <>Open the meeting in <a href="https://helium.computer/" target="_blank" rel="noreferrer">Helium</a> to use its built-in ad blocker.</>}</p>
-          </details>
-        </form>
-        <div className="browser-broadcast">
-          <div><MonitorUp size={20}/><h3>{presenting ? 'Presenting to everyone' : 'Present to everyone'}</h3></div>
-          <p>{presenting ? 'The meeting can see your selected tab or window.' : preferWindow ? 'Select the Helium window in the sharing picker.' : 'Choose a tab or window. Everyone sees the page as you browse.'}</p>
-          <button className="button primary" disabled={choosingTab} onClick={async () => {
-            setChoosingTab(true);
-            try { await present(preferWindow ? 'window' : 'browser'); } finally { setChoosingTab(false); }
-          }}>{presenting ? 'Stop presenting' : 'Choose tab or window'}</button>
-        </div>
-      </section>
-      <button className="browser-link-tools" aria-expanded={showLinks} onClick={() => setShowLinks(!showLinks)}><Link2 size={16}/> Links & annotations <span>{showLinks ? '−' : '+'}</span></button>
-      {showLinks && <div className="stack">
-      <div className="browser-tabs" role="group" aria-label="Browser tabs">
-        {shared && (
-          <div className="browser-tab" data-selected={following}>
-            <button type="button" aria-pressed={following} onClick={() => select('shared')}>
-              <Share2 size={14} /> <span>Shared page</span>
-            </button>
-          </div>
-        )}
-        {tabs.map((tab) => {
-          const title = tabTitle(tab);
-          return (
-            <div className="browser-tab" key={tab.id} data-selected={selectedId === tab.id}>
-              <button
-                type="button"
-                aria-pressed={selectedId === tab.id}
-                title={title}
-                onClick={() => select(tab.id)}
-              >
-                <Globe size={14} /> <span>{title}</span>
-              </button>
-              {tabs.length > 1 && (
-                <button
-                  type="button"
-                  className="browser-tab-close"
-                  aria-label={'Close ' + title + ' tab'}
-                  onClick={() => closeTab(tab.id)}
-                >
-                  <X size={14} />
-                </button>
-              )}
-            </div>
-          );
-        })}
-        <button
-          type="button"
-          className="icon-button"
-          aria-label="Add browser tab"
-          title={tabs.length >= maxTabs ? 'Maximum 5 personal tabs' : 'Add browser tab'}
-          disabled={tabs.length >= maxTabs}
-          onClick={() => {
-            const id = nextId.current++;
-            setTabs((items) => [...items, newTab(id)]);
-            select(id);
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            setPreferWindow(false);
+            if (destination)
+              window.open(destination, '_blank', 'noopener,noreferrer,popup,width=1100,height=760');
           }}
         >
-          <Plus size={17} />
-        </button>
-      </div>
-      {following && shared && visible && (
-        <section className="stack" aria-label="Shared page">
-          <div className="browser-shared">
-            <div className="browser-shared-info">
-              <strong>Shared by {shared.name}</strong>
-              <span title={shared.url}>{shared.url}</span>
-            </div>
-            {canStop && (
+          <label htmlFor="browser-launch-address">Website or search</label>
+          <input
+            id="browser-launch-address"
+            value={address}
+            maxLength={2000}
+            placeholder="Enter an address or search the web"
+            autoComplete="off"
+            spellCheck={false}
+            onChange={(e) => setAddress(e.target.value)}
+          />
+          {address.trim() && !destination && (
+            <small role="alert">Enter an HTTP or HTTPS address, or search words.</small>
+          )}
+          <div className="browser-launch-actions">
+            <button className="button secondary" disabled={!destination}>
+              <ExternalLink size={15} /> Open window
+            </button>
+            {windows && (
               <button
-                className="button secondary small"
-                disabled={pending}
-                onClick={() => void share(null)}
+                type="button"
+                className="button secondary"
+                disabled={!destination}
+                onClick={() => {
+                  if (!destination) return;
+                  setPreferWindow(true);
+                  window.location.href =
+                    'meet-helium://open/?url=' + encodeURIComponent(destination);
+                }}
               >
-                Stop sharing page
+                Open in Helium
               </button>
             )}
           </div>
-          <PagePreview
-            key={shared.id ?? shared.url}
-            url={shared.url}
-            shared={shared}
-            canClear={canStop}
-            send={send}
-          />
-        </section>
-      )}
-      {tabs.map((tab) => (
-        <div key={tab.id} hidden={selectedId !== tab.id}>
-          <PersonalTab
-            tab={tab}
-            navigate={(next) =>
-              updateTab(tab.id, (item) => {
-                const history = [...item.history.slice(0, item.index + 1), next].slice(-50);
-                return { ...item, history, index: history.length - 1 };
-              })
-            }
-            move={(offset) =>
-              updateTab(tab.id, (item) => ({
-                ...item,
-                index: Math.max(0, Math.min(item.index + offset, item.history.length - 1)),
-              }))
-            }
-            shared={shared}
-            share={share}
-            pending={pending}
-            follow={() => select('shared')}
-          />
+          <details className="helium-help">
+            <summary>Browse with ad blocking</summary>
+            <p>
+              {windows ? (
+                <>
+                  Set up the{' '}
+                  <a
+                    href="https://github.com/PRABHMANNAT/playground-meet#helium-browser"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Windows launcher
+                  </a>{' '}
+                  to open links directly in Helium.
+                </>
+              ) : (
+                <>
+                  Open the meeting in{' '}
+                  <a href="https://helium.computer/" target="_blank" rel="noreferrer">
+                    Helium
+                  </a>{' '}
+                  to use its built-in ad blocker.
+                </>
+              )}
+            </p>
+          </details>
+        </form>
+        <div className="browser-broadcast">
+          <div>
+            <MonitorUp size={20} />
+            <h3>{presenting ? 'Presenting to everyone' : 'Present to everyone'}</h3>
+          </div>
+          <p>
+            {presenting
+              ? 'The meeting can see your selected tab or window.'
+              : preferWindow
+                ? 'Select the Helium window in the sharing picker.'
+                : 'Choose a tab or window. Everyone sees the page as you browse.'}
+          </p>
+          <button
+            className="button primary"
+            disabled={choosingTab}
+            onClick={async () => {
+              setChoosingTab(true);
+              try {
+                await present(preferWindow ? 'window' : 'browser');
+              } finally {
+                setChoosingTab(false);
+              }
+            }}
+          >
+            {presenting ? 'Stop presenting' : 'Choose tab or window'}
+          </button>
         </div>
-      ))}
-      </div>}
+      </section>
+      <button
+        className="browser-link-tools"
+        aria-expanded={showLinks}
+        onClick={() => setShowLinks(!showLinks)}
+      >
+        <Link2 size={16} /> Links & annotations <span>{showLinks ? '−' : '+'}</span>
+      </button>
+      {showLinks && (
+        <div className="stack">
+          <div className="browser-tabs" role="group" aria-label="Browser tabs">
+            {shared && (
+              <div className="browser-tab" data-selected={following}>
+                <button type="button" aria-pressed={following} onClick={() => select('shared')}>
+                  <Share2 size={14} /> <span>Shared page</span>
+                </button>
+              </div>
+            )}
+            {tabs.map((tab) => {
+              const title = tabTitle(tab);
+              return (
+                <div className="browser-tab" key={tab.id} data-selected={selectedId === tab.id}>
+                  <button
+                    type="button"
+                    aria-pressed={selectedId === tab.id}
+                    title={title}
+                    onClick={() => select(tab.id)}
+                  >
+                    <Globe size={14} /> <span>{title}</span>
+                  </button>
+                  {tabs.length > 1 && (
+                    <button
+                      type="button"
+                      className="browser-tab-close"
+                      aria-label={'Close ' + title + ' tab'}
+                      onClick={() => closeTab(tab.id)}
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+            <button
+              type="button"
+              className="icon-button"
+              aria-label="Add browser tab"
+              title={tabs.length >= maxTabs ? 'Maximum 5 personal tabs' : 'Add browser tab'}
+              disabled={tabs.length >= maxTabs}
+              onClick={() => {
+                const id = nextId.current++;
+                setTabs((items) => [...items, newTab(id)]);
+                select(id);
+              }}
+            >
+              <Plus size={17} />
+            </button>
+          </div>
+          {following && shared && visible && (
+            <section className="stack" aria-label="Shared page">
+              <div className="browser-shared">
+                <div className="browser-shared-info">
+                  <strong>Shared by {shared.name}</strong>
+                  <span title={shared.url}>{shared.url}</span>
+                </div>
+                {canStop && (
+                  <button
+                    className="button secondary small"
+                    disabled={pending}
+                    onClick={() => void share(null)}
+                  >
+                    Stop sharing page
+                  </button>
+                )}
+              </div>
+              <PagePreview
+                key={shared.id ?? shared.url}
+                url={shared.url}
+                shared={shared}
+                canClear={canStop}
+                send={send}
+              />
+            </section>
+          )}
+          {tabs.map((tab) => (
+            <div key={tab.id} hidden={selectedId !== tab.id}>
+              <PersonalTab
+                tab={tab}
+                navigate={(next) =>
+                  updateTab(tab.id, (item) => {
+                    const history = [...item.history.slice(0, item.index + 1), next].slice(-50);
+                    return { ...item, history, index: history.length - 1 };
+                  })
+                }
+                move={(offset) =>
+                  updateTab(tab.id, (item) => ({
+                    ...item,
+                    index: Math.max(0, Math.min(item.index + offset, item.history.length - 1)),
+                  }))
+                }
+                shared={shared}
+                share={share}
+                pending={pending}
+                follow={() => select('shared')}
+              />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

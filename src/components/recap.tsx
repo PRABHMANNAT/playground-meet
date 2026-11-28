@@ -269,7 +269,9 @@ export function Recap({ id }: { id: string }) {
                 <StickyNote size={18} aria-hidden="true" /> Shared notes
               </h2>
               <p className="recap-notes">
-                {[data.meeting.state.notes, data.meeting.state.liveNote?.text].filter(Boolean).join('\n\n') || 'No notes were saved in this meeting.'}
+                {[data.meeting.state.notes, data.meeting.state.liveNote?.text]
+                  .filter(Boolean)
+                  .join('\n\n') || 'No notes were saved in this meeting.'}
               </p>
             </section>
             <section className="recap-card">

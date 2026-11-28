@@ -55,7 +55,12 @@ export const actionInput = z.discriminatedUnion('type', [
     emoji: z.string().max(96).refine(validReaction, 'Unknown reaction.'),
   }),
   z.object({ type: z.literal('note-share'), text: z.string().max(20000) }),
-  z.object({ type: z.literal('note-edit'), id: z.uuid(), version: z.number().int().nonnegative(), text: z.string().max(20000) }),
+  z.object({
+    type: z.literal('note-edit'),
+    id: z.uuid(),
+    version: z.number().int().nonnegative(),
+    text: z.string().max(20000),
+  }),
   z.object({ type: z.literal('note-access'), id: z.uuid(), editable: z.boolean() }),
   z.object({ type: z.literal('note-stop'), id: z.uuid() }),
   z.object({ type: z.literal('hand'), raised: z.boolean() }),

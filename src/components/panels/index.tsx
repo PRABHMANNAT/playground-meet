@@ -62,7 +62,17 @@ export function SidePanel({
     <aside className="room-panel" aria-label={titles[panel]} data-panel={panel} hidden={hidden}>
       <div className="panel-heading">
         <h2>{titles[panel]}</h2>
-        {panel === 'polls' && <button className="icon-button poll-sound" aria-label="Poll sounds" aria-pressed={pollSounds.enabled} title={pollSounds.enabled ? 'Mute poll sounds' : 'Enable poll sounds'} onClick={pollSounds.toggle}>{pollSounds.enabled ? <Volume2 size={16}/> : <VolumeX size={16}/>}</button>}
+        {panel === 'polls' && (
+          <button
+            className="icon-button poll-sound"
+            aria-label="Poll sounds"
+            aria-pressed={pollSounds.enabled}
+            title={pollSounds.enabled ? 'Mute poll sounds' : 'Enable poll sounds'}
+            onClick={pollSounds.toggle}
+          >
+            {pollSounds.enabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
+          </button>
+        )}
         <button className="icon-button" onClick={onClose} aria-label="Close panel">
           <X size={18} />
         </button>

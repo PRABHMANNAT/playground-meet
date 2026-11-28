@@ -1,70 +1,386 @@
-.notebook { display: flex; flex-direction: column; gap: 14px; min-height: 100%; }
-.note-audience { display: flex; padding: 3px; background: var(--paper-2); border: 1px solid var(--line); border-radius: 10px; }
-.note-audience button { display: inline-flex; gap: 6px; align-items: center; justify-content: center; flex: auto; padding: 8px 4px; font-size: 12px; font-weight: 650; border-radius: 7px; }
-.note-audience button[aria-pressed=true] { background: var(--surface); box-shadow: 0 1px 3px var(--line); }
-.note-sheet { display: flex; flex-direction: column; flex: 1; min-height: 160px; }
-.note-sheet header,.stage-note header,.note-foot,.note-foot span { display: flex; align-items: center; gap: 8px; }
-.note-sheet header { padding: 8px 0 12px; border-bottom: 1px solid var(--line); }
-.note-sheet h3 { font-size: 16px; font-weight: 650; overflow-wrap: anywhere; }
-.live-note-body:not([hidden]) { display: flex; flex-direction: column; flex: 1; }
-.meeting-shell .panel-content .notebook-input { flex: 1; min-height: 130px; width: 100%; padding: 14px 2px; border: 0; border-radius: 0; background: transparent; line-height: 1.7; font-size: 14px; resize: none; }
-.notebook-input:focus { box-shadow: none; }
-.notebook-input:focus-visible { outline: 1px solid var(--line); outline-offset: 2px; }
-.note-foot { justify-content: space-between; border-top: 1px solid var(--line); padding: 10px 0 0; }
-.note-foot span,.note-sync,.previous-note,.note-resolution { color: var(--muted); font-size: 12px; }
-.previous-note summary { cursor: pointer; }
-.note-resolution button + button { margin-left: 10px; }
-.meeting-shell .note-access { display: flex; align-items: center; flex-direction: row; gap: 8px; font-size: 13px; }
-.note-access input { width: 16px; height: 16px; accent-color: var(--ink); }
-.stage-note { padding: 14px 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); min-height: 0; }
-.stage-note header span { margin-left: auto; color: var(--muted); font-size: 12px; }
-.stage-note header strong { text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
-.stage-note p { margin: 8px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; overflow-y: auto; max-height: min(20dvh, 200px); font-size: 15px; line-height: 1.65; }
-.poll-desk,.poll-compose,.poll-compose fieldset { display: grid; gap: 14px; }
-.poll-desk { align-content: start; }
-.poll-empty { padding: 10px 0 4px; }
-.poll-empty > svg { margin-bottom: 18px; color: var(--muted); }
-.poll-empty h3,.ballot h3 { font-size: 19px; line-height: 1.35; letter-spacing: -.025em; font-weight: 650; }
-.poll-empty p,.ballot footer,.ballot header { font-size: 12px; color: var(--muted); }
-.poll-empty p { margin-top: 6px; }
-.poll-desk > .button { justify-self: start; }
-.poll-compose fieldset { border: 0; min-width: 0; gap: 6px; }
-.poll-compose legend,.poll-compose label { font-weight: 650; }
-.poll-compose legend { font-size: 12px; margin-bottom: 6px; }
-.poll-choice { display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--line); }
-.poll-choice > span,.ballot-mark { font-size: 11px; font-weight: 650; color: var(--muted); }
-.poll-choice input { border: 0; min-width: 0; padding: 9px 4px; background: transparent; }
-.poll-compose .text-button { display: inline-flex; align-items: center; gap: 4px; justify-self: start; }
-.poll-compose-actions,.ballot header,.ballot footer { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
-.ballot { border-top: 1px solid var(--line); padding-top: 14px; }
-.ballot h3 { margin: 9px 0 14px; overflow-wrap: anywhere; }
-.poll-state { display: inline-flex; align-items: center; gap: 6px; }
-.poll-state::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--muted); }
-.poll-state[data-live=true]::before { background: #38805a; }
-.ballot-options { display: grid; gap: 6px; }
-.ballot-options button { display: flex; align-items: center; gap: 8px; position: relative; isolation: isolate; overflow: hidden; min-height: 40px; padding: 8px 10px; text-align: left; border: 1px solid var(--line); border-radius: 7px; font-size: 13px; }
-.ballot-options button[aria-pressed=true] { border-color: var(--ink); }
-.ballot-options button:disabled { opacity: 1; cursor: default; }
-.ballot-fill { position: absolute; inset: 0 auto 0 0; background: var(--paper-2); z-index: -1; transition: width .2s; }
-.ballot-mark { width: 18px; flex-shrink: 0; display: grid; place-items: center; }
-.ballot-answer { flex: 1; overflow-wrap: anywhere; }
-.ballot-percent { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 12px; }
-.ballot footer { margin-top: 9px; }
-@media (prefers-reduced-motion: reduce) { .ballot-fill { transition: none; } }
-.poll-sound { margin-left: auto; margin-right: 4px; }
-.browser-launch,.browser-launch form { display: grid; gap: 8px; }
-.browser-launch form > .button,.browser-broadcast > .button { justify-self: start; }
-.browser-launch form > label { font-weight: 650; font-size: 13px; }
-.browser-broadcast { display: grid; justify-items: start; gap: 9px; margin-top: 12px; padding: 18px 0; border-block: 1px solid var(--line); }
-.browser-broadcast > div,.browser-link-tools { display: flex; align-items: center; gap: 8px; }
-.browser-broadcast h3 { font-size: 16px; font-weight: 650; }
-.browser-broadcast p { color: var(--muted); font-size: 13px; max-width: 46ch; }
-.browser-link-tools { width: 100%; padding: 7px 0; font-weight: 650; font-size: 13px; }
-.browser-link-tools span { margin-left: auto; }
-@media (min-width: 721px) {
-  .meeting-shell .room-panel[data-panel=browser]:not(:has(.browser-tabs)) { width: min(38%, 390px); }
+.notebook {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 100%;
 }
-.browser-launch-actions { display: flex; flex-wrap: wrap; gap: 6px; }
-.helium-help { color: var(--muted); font-size: 12px; }
-.helium-help summary { cursor: pointer; padding: 4px 0; }
-.helium-help a { text-decoration: underline; text-underline-offset: 2px; }
+.note-audience {
+  display: flex;
+  padding: 3px;
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.note-audience button {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  flex: auto;
+  padding: 8px 4px;
+  font-size: 12px;
+  font-weight: 650;
+  border-radius: 7px;
+}
+.note-audience button[aria-pressed='true'] {
+  background: var(--surface);
+  box-shadow: 0 1px 3px var(--line);
+}
+.note-sheet {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 160px;
+}
+.note-sheet header,
+.stage-note header,
+.note-foot,
+.note-foot span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.note-sheet header {
+  padding: 8px 0 12px;
+  border-bottom: 1px solid var(--line);
+}
+.note-sheet h3 {
+  font-size: 16px;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+.live-note-body:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.meeting-shell .panel-content .notebook-input {
+  flex: 1;
+  min-height: 130px;
+  width: 100%;
+  padding: 14px 2px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  line-height: 1.7;
+  font-size: 14px;
+  resize: none;
+}
+.notebook-input:focus {
+  box-shadow: none;
+}
+.notebook-input:focus-visible {
+  outline: 1px solid var(--line);
+  outline-offset: 2px;
+}
+.note-foot {
+  justify-content: space-between;
+  border-top: 1px solid var(--line);
+  padding: 10px 0 0;
+}
+.note-foot span,
+.note-sync,
+.previous-note,
+.note-resolution {
+  color: var(--muted);
+  font-size: 12px;
+}
+.previous-note summary {
+  cursor: pointer;
+}
+.note-resolution button + button {
+  margin-left: 10px;
+}
+.meeting-shell .note-access {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 8px;
+  font-size: 13px;
+}
+.note-access input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--ink);
+}
+.stage-note {
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  min-height: 0;
+}
+.stage-note header span {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 12px;
+}
+.stage-note header strong {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.stage-note p {
+  margin: 8px 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  overflow-y: auto;
+  max-height: min(20dvh, 200px);
+  font-size: 15px;
+  line-height: 1.65;
+}
+.poll-desk,
+.poll-compose,
+.poll-compose fieldset {
+  display: grid;
+  gap: 14px;
+}
+.poll-desk {
+  align-content: start;
+}
+.poll-empty {
+  padding: 10px 0 4px;
+}
+.poll-empty > svg {
+  margin-bottom: 18px;
+  color: var(--muted);
+}
+.poll-empty h3,
+.ballot h3 {
+  font-size: 19px;
+  line-height: 1.35;
+  letter-spacing: -0.025em;
+  font-weight: 650;
+}
+.poll-empty p,
+.ballot footer,
+.ballot header {
+  font-size: 12px;
+  color: var(--muted);
+}
+.poll-empty p {
+  margin-top: 6px;
+}
+.poll-desk > .button {
+  justify-self: start;
+}
+.poll-compose fieldset {
+  border: 0;
+  min-width: 0;
+  gap: 6px;
+}
+.poll-compose legend,
+.poll-compose label {
+  font-weight: 650;
+}
+.poll-compose legend {
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+.poll-choice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--line);
+}
+.poll-choice > span,
+.ballot-mark {
+  font-size: 11px;
+  font-weight: 650;
+  color: var(--muted);
+}
+.poll-choice input {
+  border: 0;
+  min-width: 0;
+  padding: 9px 4px;
+  background: transparent;
+}
+.poll-compose .text-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  justify-self: start;
+}
+.poll-compose-actions,
+.ballot header,
+.ballot footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.ballot {
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+.ballot h3 {
+  margin: 9px 0 14px;
+  overflow-wrap: anywhere;
+}
+.poll-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.poll-state::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+.poll-state[data-live='true']::before {
+  background: #38805a;
+}
+.ballot-options {
+  display: grid;
+  gap: 6px;
+}
+.ballot-options button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 40px;
+  padding: 8px 10px;
+  text-align: left;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  font-size: 13px;
+}
+.ballot-options button[aria-pressed='true'] {
+  border-color: var(--ink);
+}
+.ballot-options button:disabled {
+  opacity: 1;
+  cursor: default;
+}
+.ballot-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--paper-2);
+  z-index: -1;
+  transition: width 0.2s;
+}
+.ballot-mark {
+  width: 18px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+}
+.ballot-answer {
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+.ballot-percent {
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  font-size: 12px;
+}
+.ballot footer {
+  margin-top: 9px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ballot-fill {
+    transition: none;
+  }
+}
+.poll-sound {
+  margin-left: auto;
+  margin-right: 4px;
+}
+.browser-launch,
+.browser-launch form {
+  display: grid;
+  gap: 8px;
+}
+.browser-launch form > .button,
+.browser-broadcast > .button {
+  justify-self: start;
+}
+.browser-launch form > label {
+  font-weight: 650;
+  font-size: 13px;
+}
+.browser-broadcast {
+  display: grid;
+  justify-items: start;
+  gap: 9px;
+  margin-top: 12px;
+  padding: 18px 0;
+  border-block: 1px solid var(--line);
+}
+.browser-broadcast > div,
+.browser-link-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.browser-broadcast h3 {
+  font-size: 16px;
+  font-weight: 650;
+}
+.browser-broadcast p {
+  color: var(--muted);
+  font-size: 13px;
+  max-width: 46ch;
+}
+.browser-link-tools {
+  width: 100%;
+  padding: 7px 0;
+  font-weight: 650;
+  font-size: 13px;
+}
+.browser-link-tools span {
+  margin-left: auto;
+}
+@media (min-width: 721px) {
+  .meeting-shell .room-panel[data-panel='browser']:not(:has(.browser-tabs)) {
+    width: min(38%, 390px);
+  }
+}
+.browser-launch-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.helium-help {
+  color: var(--muted);
+  font-size: 12px;
+}
+.helium-help summary {
+  cursor: pointer;
+  padding: 4px 0;
+}
+.helium-help a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.call-area[data-board-open='true']:has(> .stage-note) {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+.call-area[data-board-open='true'] > .stage-note {
+  grid-column: 1 / -1;
+  grid-row: 1;
+}
+.meeting-shell
+  .call-area[data-board-open='true']:has(> .stage-note)
+  > :is(.board-studio, .video-grid) {
+  grid-row: 2;
+}
+.room-panel[data-panel='browser'] .panel-heading,
+.room-panel[data-panel='notes'] .panel-heading,
+.room-panel[data-panel='polls'] .panel-heading {
+  padding-block: 12px;
+}
+.browser-broadcast {
+  margin-top: 6px;
+  padding-block: 14px;
+}
+@media (max-width: 720px) {
+  .meeting-shell .panel-content .notebook-input {
+    font-size: 16px;
+  }
+}

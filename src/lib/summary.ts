@@ -20,7 +20,11 @@ export function summary(data: Snapshot) {
     `- [${duration((e.created - meeting.created) / 1000)}] ${e.name}: ${e.payload.text}`;
   const highlights = transcriptHighlights(transcript);
   if (highlights.length) lines.push('## Discussion highlights', ...highlights.map(line), '');
-  lines.push('## Shared notes', [meeting.state.notes, meeting.state.liveNote?.text].filter(Boolean).join('\n\n') || 'No notes saved.');
+  lines.push(
+    '## Shared notes',
+    [meeting.state.notes, meeting.state.liveNote?.text].filter(Boolean).join('\n\n') ||
+      'No notes saved.',
+  );
   if (meeting.state.bookmarks?.length) {
     lines.push('', '## Bookmarks');
     for (const mark of meeting.state.bookmarks) {
