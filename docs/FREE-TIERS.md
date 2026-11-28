@@ -2,14 +2,14 @@
 
 Checked against official sources on 2026-11-09. Provider allowances change; verify the linked plan before deploying. No paid API, subscription or billing setting is required by the code.
 
-| Component      | Default approach                | Limits / tradeoffs                                                             |
-| -------------- | ------------------------------- | ------------------------------------------------------------------------------ |
-| Next.js app    | Run on your existing Linux host | Your compute and network capacity; no hosting purchased                        |
-| PostgreSQL     | Open-source container           | Your disk, memory, backups and maintenance                                     |
-| Local database | PGlite                          | Single process, persistent filesystem; not serverless/multi-replica            |
-| LiveKit media  | Open-source self-hosted SFU     | Bandwidth/CPU/firewall/TURN are your responsibility                            |
-| HTTPS          | Caddy with ACME certificates    | Requires public DNS and reachable challenge ports                              |
-| AI summaries   | Deterministic Markdown export   | Includes speaker-attributed excerpts from opt-in, on-device Vosk transcription |
+| Component      | Default approach                | Limits / tradeoffs                                                        |
+| -------------- | ------------------------------- | ------------------------------------------------------------------------- |
+| Next.js app    | Run on your existing Linux host | Your compute and network capacity; no hosting purchased                   |
+| PostgreSQL     | Open-source container           | Your disk, memory, backups and maintenance                                |
+| Local database | PGlite                          | Single process, persistent filesystem; not serverless/multi-replica       |
+| LiveKit media  | Open-source self-hosted SFU     | Bandwidth/CPU/firewall/TURN are your responsibility                       |
+| HTTPS          | Caddy with ACME certificates    | Requires public DNS and reachable challenge ports                         |
+| AI summaries   | Deterministic Markdown export   | Includes speaker-attributed excerpts from opt-in, on-device transcription |
 
 [LiveKit Build](https://livekit.com/pricing) advertises $0/month with no credit card. Its published Build allowances are 5,000 WebRTC participant-minutes, 50 GB downstream transfer and 100 concurrent connections. These are provider-wide limits; the application independently caps a room at 25 identities. Confirm your project’s current included allowances and usage dashboard before choosing it; this repo does not provision or assume a quota, add payment details, or purchase overages. Participant-minutes count each connected participant separately: 10 people for 30 minutes is 300 participant-minutes. Screen sharing adds bandwidth even when connection counts stay fixed.
 

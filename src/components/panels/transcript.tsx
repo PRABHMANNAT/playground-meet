@@ -29,7 +29,7 @@ export function TranscriptPanel({
   const active = speech.status !== 'off';
   const status = {
     off: 'Your microphone is excluded',
-    loading: 'Loading English speech model…',
+    loading: speech.fallback ? 'Loading Whisper fallback…' : 'Loading English speech model…',
     saving: 'Saving final words…',
     on: speech.muted ? 'Paused · microphone muted' : 'Listening to your microphone',
   }[speech.status];
@@ -49,17 +49,33 @@ export function TranscriptPanel({
           <select
             value={speech.engine}
             disabled={active}
-            onChange={(e) => speech.setEngine(e.target.value === 'vosk' ? 'vosk' : 'whisper')}
+            onChange={(e) => {
+              const mode = e.target.value;
+              if (mode === 'parakeet' || mode === 'whisper' || mode === 'vosk')
+                speech.setEngine(mode);
+            }}
           >
-            <option value="whisper">Whisper · caption by phrase</option>
+            <option value="parakeet">Automatic · NVIDIA Parakeet</option>
+            <option value="whisper">Whisper · compatibility mode</option>
             <option value="vosk">Lite · live word preview</option>
           </select>
         </label>
         {!active && (
           <p>
-            {speech.engine === 'whisper'
-              ? 'About 96 MiB on first use. Captions appear after a pause.'
-              : 'Smaller English model for slower devices.'}
+            {
+              {
+                parakeet: 'About 142 MiB on first use. Switches to Whisper if Parakeet fails.',
+                whisper: 'About 96 MiB on first use. Captions appear after a pause.',
+                vosk: 'Smaller English model for slower devices.',
+              }[speech.engine]
+            }
+          </p>
+        )}
+        {speech.fallback && speech.status === 'on' && (
+          <p role="status">
+            {speech.fallback === 'loading'
+              ? 'Loading Whisper fallback…'
+              : 'Using Whisper as a fallback.'}
           </p>
         )}
         <button

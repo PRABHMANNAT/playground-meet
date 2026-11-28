@@ -35,12 +35,12 @@ const modelFiles = {
     'a25afc5858a20aabb7652cb2d555996ebe10691a69bbdb423d5073d52f060325',
 };
 const digest = (bytes) => createHash('sha256').update(bytes).digest('hex');
-async function prepare(base, directory, files) {
+async function prepare(base, directory, files, { transform, outputHash } = {}) {
   await Promise.all(
     Object.entries(files).map(async ([file, hash]) => {
       const dest = new URL(file, directory);
       try {
-        if (digest(await readFile(dest)) === hash) return;
+        if (digest(await readFile(dest)) === (outputHash ?? hash)) return;
       } catch (error) {
         if (error.code !== 'ENOENT') throw error;
       }
@@ -49,9 +49,12 @@ async function prepare(base, directory, files) {
         throw new Error('Cannot prepare speech asset ' + file + ': HTTP ' + response.status);
       const bytes = Buffer.from(await response.arrayBuffer());
       if (digest(bytes) !== hash) throw new Error('Invalid speech asset: ' + file);
+      const output = transform ? transform(bytes) : bytes;
+      if (outputHash && digest(output) !== outputHash)
+        throw new Error('Invalid generated speech asset: ' + file);
       const temp = new URL(file + '.' + randomUUID() + '.tmp', directory);
       try {
-        await writeFile(temp, bytes);
+        await writeFile(temp, output);
         await rename(temp, dest);
       } finally {
         await rm(temp, { force: true });
@@ -62,6 +65,49 @@ async function prepare(base, directory, files) {
 await Promise.all([
   prepare(runtimeSource, assets, runtimeFiles),
   prepare(modelSource, model, modelFiles),
+]);
+
+const parakeet = new URL('parakeet-en-v1/', folder);
+await mkdir(parakeet, { recursive: true });
+const sherpaSource =
+  'https://huggingface.co/spaces/k2-fsa/web-assembly-vad-asr-sherpa-onnx-zh-zipformer-ctc/resolve/9d5fc71d88ab1222ed1af2274fb194592af48455/';
+const parakeetSource =
+  'https://huggingface.co/krut42/voice-parakeet-tdt-110m-en-int8/resolve/d5b332d3956a2cae93c092425e7c7d3418be5361/';
+await Promise.all([
+  prepare(sherpaSource, parakeet, {
+    'sherpa-onnx-asr.js': '6297ed7520e0b4569486cd89be89045146728605418254fec4172194abc36c8d',
+    'sherpa-onnx-vad.js': 'ca2b0844d1cfd375cbb7faba206e456c5140561578b67f5fc6e7510d09e75510',
+    'sherpa-onnx-wasm-main-vad-asr.wasm':
+      'e4dead1d159c531282e635069fa9e028175dee71f3f90908186994655425b3ce',
+  }),
+  prepare(
+    sherpaSource,
+    parakeet,
+    {
+      'sherpa-onnx-wasm-main-vad-asr.js':
+        '8a7f50a3e4e5930749e8aff9ad98f03753b87490e7796c576947611439dae9d0',
+    },
+    {
+      outputHash: 'f357316b00f6cf8cb59c26a3a3f46f8f48f7f72545184f895a2bf1b16df27afc',
+      transform(bytes) {
+        // Remove the demo's Emscripten data preloader. The worker supplies Parakeet's
+        // weights to the same runtime instead of downloading the bundled Zipformer model.
+        const source = bytes.toString('utf8');
+        const start = source.indexOf(';if(!Module.expectedDataFileDownloads)');
+        const end = source.indexOf('var moduleOverrides=');
+        return source.slice(0, start + 1) + source.slice(end);
+      },
+    },
+  ),
+  prepare(parakeetSource, parakeet, {
+    'encoder.int8.onnx': '0f35509ddeb9b39002fb077d979a9fe74f06eb0bc4dd5c34f512f82e5111d657',
+    'decoder.int8.onnx': 'f7c331c5504c2e593c76ed22b728e3f554af6c4a383dde862e719ced08b1da19',
+    'joiner.int8.onnx': 'bf7dff69e9f2cdbe9943d70da358f38b361c115ba0105bae7e908e0d6ec782f6',
+    'tokens.txt': '450e56bd2f036fe5b6aa821865838cc5aa9d8b0106134ce9a9ba0664abe6cd10',
+  }),
+  prepare('https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/', parakeet, {
+    'silero_vad.onnx': '9e2449e1087496d8d4caba907f23e0bd3f78d91fa552479bb9c23ac09cbb1fd6',
+  }),
 ]);
 
 // Prepare one language at a time to limit peak build memory. Each viewer only

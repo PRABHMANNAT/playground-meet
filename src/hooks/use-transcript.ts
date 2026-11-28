@@ -1,12 +1,13 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { microphoneTranscriber } from '@/lib/local-speech';
-import { whisperTranscriber } from '@/lib/whisper-speech';
+import { neuralTranscriber } from '@/lib/neural-speech';
 import { request } from '@/lib/client';
 
 type Caption = { segment: string; text: string; spokenAt?: number };
 export function useTranscript(id: string, track?: MediaStreamTrack, clockOffset = 0) {
-  const [engine, setEngine] = useState<'whisper' | 'vosk'>('whisper');
+  const [engine, setEngine] = useState<'parakeet' | 'whisper' | 'vosk'>('parakeet');
+  const [fallback, setFallback] = useState<'loading' | 'ready'>();
   const [status, setStatus] = useState<'off' | 'loading' | 'on' | 'saving'>('off');
   const [draft, setDraft] = useState(''),
     [error, setError] = useState('');
@@ -43,6 +44,7 @@ export function useTranscript(id: string, track?: MediaStreamTrack, clockOffset 
       if (failed.current.length) await retry();
       setStatus('off');
       setDraft('');
+      setFallback(undefined);
     }
   }, [retry]);
   async function start() {
@@ -64,12 +66,17 @@ export function useTranscript(id: string, track?: MediaStreamTrack, clockOffset 
           });
       };
       const active =
-        engine === 'whisper'
-          ? whisperTranscriber(onText, (message) => {
-              setError(message);
-              void stop();
-            })
-          : microphoneTranscriber(onText, setDraft);
+        engine === 'vosk'
+          ? microphoneTranscriber(onText, setDraft)
+          : neuralTranscriber(
+              engine,
+              onText,
+              (message) => {
+                setError(message);
+                void stop();
+              },
+              setFallback,
+            );
       session.current = active;
       active.attach(track);
       await active.start();
@@ -94,6 +101,7 @@ export function useTranscript(id: string, track?: MediaStreamTrack, clockOffset 
   return {
     engine,
     setEngine,
+    fallback,
     status,
     draft,
     error,
