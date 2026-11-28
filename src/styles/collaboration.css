@@ -64,3 +64,7 @@
 @media (min-width: 721px) {
   .meeting-shell .room-panel[data-panel=browser]:not(:has(.browser-tabs)) { width: min(38%, 390px); }
 }
+.browser-launch-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.helium-help { color: var(--muted); font-size: 12px; }
+.helium-help summary { cursor: pointer; padding: 4px 0; }
+.helium-help a { text-decoration: underline; text-underline-offset: 2px; }

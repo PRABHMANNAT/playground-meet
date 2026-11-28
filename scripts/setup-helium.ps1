@@ -20,7 +20,11 @@ if (!(Test-Path -LiteralPath $exe)) {
     & curl.exe --fail --location --retry 2 --output $zip $asset.browser_download_url
     if ($LASTEXITCODE) { throw 'Helium download failed.' }
   }
-  if ((Get-FileHash -LiteralPath $zip -Algorithm SHA256).Hash -ne $asset.digest.Substring(7)) { throw 'Helium checksum mismatch.' }
+  $stream = [IO.File]::OpenRead($zip)
+  $sha = [Security.Cryptography.SHA256]::Create()
+  try { $hash = [BitConverter]::ToString($sha.ComputeHash($stream)).Replace('-', '') }
+  finally { $stream.Dispose(); $sha.Dispose() }
+  if ($hash -ne $asset.digest.Substring(7)) { throw 'Helium checksum mismatch.' }
   $stage = Join-Path $root ([guid]::NewGuid().ToString())
   New-Item -ItemType Directory -Path $stage | Out-Null
   & tar.exe -xf $zip -C $stage

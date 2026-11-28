@@ -27,7 +27,7 @@ export type BrowserControls = {
   selected: BrowserTabId;
   select: (id: BrowserTabId) => void;
   presenting: boolean;
-  present: () => Promise<void>;
+  present: (surface?: 'window' | 'browser') => Promise<void>;
 };
 type SharedPage = NonNullable<SharedState['browser']>;
 type Destination = { kind: 'page' | 'search'; value: string };
@@ -59,6 +59,9 @@ export function BrowserPanel({
   const [address, setAddress] = useState('');
   const [showLinks, setShowLinks] = useState(false);
   const destination = browserDestination(address);
+  const [windows, setWindows] = useState(false);
+  const [preferWindow, setPreferWindow] = useState(false);
+  useEffect(() => { setWindows(/Windows/i.test(navigator.userAgent)); }, []);
   const nextId = useRef(2);
   const lastPersonal = useRef(1);
   const shared = data.meeting.state.browser;
@@ -105,19 +108,30 @@ export function BrowserPanel({
       <section className="browser-launch" aria-label="Browser window">
         <form onSubmit={e => {
           e.preventDefault();
+          setPreferWindow(false);
           if (destination) window.open(destination, '_blank', 'noopener,noreferrer,popup,width=1100,height=760');
         }}>
           <label htmlFor="browser-launch-address">Website or search</label>
           <input id="browser-launch-address" value={address} maxLength={2000} placeholder="Enter an address or search the web" autoComplete="off" spellCheck={false} onChange={e => setAddress(e.target.value)}/>
           {address.trim() && !destination && <small role="alert">Enter an HTTP or HTTPS address, or search words.</small>}
-          <button className="button secondary" disabled={!destination}><ExternalLink size={15}/> Open browser window</button>
+          <div className="browser-launch-actions">
+            <button className="button secondary" disabled={!destination}><ExternalLink size={15}/> Open window</button>
+            {windows && <button type="button" className="button secondary" disabled={!destination} onClick={() => {
+              if (!destination) return;
+              setPreferWindow(true);
+              window.location.href = 'meet-helium://open/?url=' + encodeURIComponent(destination);
+            }}>Open in Helium</button>}
+          </div>
+          <details className="helium-help"><summary>Browse with ad blocking</summary>
+            <p>{windows ? <>Set up the <a href="https://github.com/PRABHMANNAT/playground-meet#helium-browser" target="_blank" rel="noreferrer">Windows launcher</a> to open links directly in Helium.</> : <>Open the meeting in <a href="https://helium.computer/" target="_blank" rel="noreferrer">Helium</a> to use its built-in ad blocker.</>}</p>
+          </details>
         </form>
         <div className="browser-broadcast">
           <div><MonitorUp size={20}/><h3>{presenting ? 'Presenting to everyone' : 'Present to everyone'}</h3></div>
-          <p>{presenting ? 'The meeting can see your selected tab or window.' : 'Choose a tab or window. Everyone sees the page as you browse.'}</p>
+          <p>{presenting ? 'The meeting can see your selected tab or window.' : preferWindow ? 'Select the Helium window in the sharing picker.' : 'Choose a tab or window. Everyone sees the page as you browse.'}</p>
           <button className="button primary" disabled={choosingTab} onClick={async () => {
             setChoosingTab(true);
-            try { await present(); } finally { setChoosingTab(false); }
+            try { await present(preferWindow ? 'window' : 'browser'); } finally { setChoosingTab(false); }
           }}>{presenting ? 'Stop presenting' : 'Choose tab or window'}</button>
         </div>
       </section>

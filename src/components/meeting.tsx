@@ -222,14 +222,14 @@ function MeetingInterior({ id }: { id: string }) {
       .catch((e) => toast(e.message));
   }, [local.localParticipant, local.isCameraEnabled, toast]);
   const toggleScreenShare = useCallback(
-    async (preferTab = false) => {
+    async (surface?: 'window' | 'browser') => {
       try {
         await local.localParticipant.setScreenShareEnabled(
           !local.isScreenShareEnabled,
-          preferTab
+          surface
             ? {
                 audio: true,
-                video: { displaySurface: 'browser' },
+                video: { displaySurface: surface },
                 selfBrowserSurface: 'exclude',
                 surfaceSwitching: 'include',
               }
@@ -450,7 +450,7 @@ function MeetingInterior({ id }: { id: string }) {
                 selected: browserTab,
                 select: setBrowserTab,
                 presenting: local.isScreenShareEnabled,
-                present: () => toggleScreenShare(true),
+                present: (surface) => toggleScreenShare(surface),
               }}
               hidden={tool !== panel}
               onClose={() => setPanel(null)}
