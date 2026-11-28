@@ -8,9 +8,9 @@ export default function Privacy() {
         <h1>Privacy, in plain language.</h1>
         <p>
           Playground Meet stores your display name, room memberships, messages, chat attachments,
-          notes, drawings, polls, feedback and meeting timestamps on the operator’s server. Account
-          email addresses and salted password hashes are stored if you create an account. A strictly
-          necessary HttpOnly session cookie signs you in for seven days.
+          shared notes, drawings, polls, feedback and meeting timestamps on the operator’s server.
+          Account email addresses and salted password hashes are stored if you create an account. A
+          strictly necessary HttpOnly session cookie signs you in for seven days.
         </p>
         <h2>Your camera stays yours.</h2>
         <p>
@@ -30,12 +30,14 @@ export default function Privacy() {
         <h2>Shared means shared.</h2>
         <p>
           Admitted participants can access shared collaboration content and download meeting
-          summaries. Chat messages, files, stickers and map pins addressed to one participant are
-          available to the sender and that recipient. The meeting server stores them. Sharing your
-          current location requires browser permission and a separate send action. Hosts control
-          admission and can remove participants. People who already downloaded a file or summary
-          retain their copy. Avoid adding confidential information unless everyone in the room is
-          authorized to see it.
+          summaries. A private note stays in the current tab. Sharing puts its text on the stage.
+          Withdrawing a live note removes it from the stage and future recaps. Participants may
+          already have copied or recorded it. Chat messages, files, stickers and map pins addressed
+          to one participant are available to the sender and that recipient. The meeting server
+          stores them. Sharing your current location requires browser permission and a separate send
+          action. Hosts control admission and can remove participants. People who already downloaded
+          a file or summary retain their copy. Avoid adding confidential information unless everyone
+          in the room is authorized to see it.
         </p>
         <h2>No paid AI. No ad trackers.</h2>
         <p>

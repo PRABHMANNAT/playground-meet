@@ -22,7 +22,7 @@ The generated production setup requires the webhook. Test the rejection/reconnec
 
 ## Data and operations
 
-Meeting members share notes/messages/feedback and can export them. There is no private-chat feature. Local drafts are sessionStorage in the current browser tab. PGlite must not be exposed as a filesystem or shared between workers. Postgres should remain on a private service network. Backups contain sensitive meeting data and need appropriate access controls.
+Private notes stay in sessionStorage in the current tab. Shared notes are visible to admitted meeting members and edits require current presenter permission. Stopping a share removes that note from room state and subsequent exports. Direct chat is scoped to the sender and recipient. PGlite must not be exposed as a filesystem or shared between workers. Postgres should remain on a private service network. Backups contain sensitive meeting data and need appropriate access controls.
 
 CSP allows inline scripts/styles for Next.js hydration and Motion. Production hardening can add per-request nonces and remove unsafe-eval (currently retained for development compatibility). This is not a claim of an independent security audit. No secrets belong in NEXT_PUBLIC_ variables, Git, screenshots, or client logs.
 

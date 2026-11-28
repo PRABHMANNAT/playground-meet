@@ -8,23 +8,35 @@ Start a video call from your browser, invite people with a link, and keep the di
 
 ## What you can do
 
-| Feature                  | What it does                                                                                                                                                                                       |
-| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Start or join a call** | Create a meeting as a guest, share its invite link, and check your camera and microphone before joining. Sign in to keep meeting history across devices.                                           |
-| **Run the meeting**      | Admit guests from the waiting room, lock the room, moderate participants, or end the call for everyone. Share your screen and pin a participant in your own view.                                  |
-| **Browse together**      | Open up to five tabs, search Wikipedia, and share one HTTPS page at a time. Participants can draw on the shared preview. Use screen sharing for sites that block embeds or to show live scrolling. |
-| **Work together**        | Use chat, reactions, raised hands, shared notes, a whiteboard, polls, action items with owners and due dates, a decision log, and a product review brief.                                          |
-| **Follow up**            | Review notes and timestamped feedback, rate the meeting, and download a Markdown summary.                                                                                                          |
+| Feature                  | What it does                                                                                                                                                      |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Start or join a call** | Create a meeting as a guest, share its invite link, and check your camera and microphone before joining. Sign in to keep meeting history across devices.          |
+| **Run the meeting**      | Admit guests from the waiting room, lock the room, moderate participants, or end the call for everyone. Share your screen and pin a participant in your own view. |
+| **Browse together**      | Open a separate browser window and present it live, including sites that block embeds. Use Helium for built-in ad blocking or share an annotated link.            |
+| **Work together**        | Use chat, reactions, raised hands, shared notes, a whiteboard, polls, action items with owners and due dates, a decision log, and a product review brief.         |
+| **Follow up**            | Review notes and timestamped feedback, rate the meeting, and download a Markdown summary.                                                                         |
 
 ### Meeting tools
 
 Hover over **More tools** or tap it to open the menu. **Countdown** lets the host start, pause and resume a room-wide timer. **Bookmarks** saves labeled timestamps in the recap and downloadable summary. Action items, Decision log and Product review are under **More options**.
 
-### Share a web page during a call
+### Notes and polls
 
-Open **More tools → Shared browser**, enter a public HTTPS address, and select **Share page**. Participants can click **Shared page** above the video gallery to open the room’s current link and follow new links as they are shared. Everyone can annotate an embeddable shared page. Each personal tab has its own Back, Forward, and Reload controls, including for Wikipedia searches.
+Open **More tools → Notes** to write privately in the current tab. **Share with everyone** puts a live copy on the meeting stage. One person presents a note at a time. The presenter can switch on **Allow others to edit**. **Only me** withdraws the presenter’s note and keeps a private copy. A host can also stop a presentation. Notes still shared when the meeting ends appear in the recap. Older saved meeting notes remain available separately.
 
-To present clicks, scrolling, or a site that blocks previews, choose **Open in tab**, return to the meeting, and select **Present a browser tab**. Choose the site in the browser’s sharing picker. **Stop live presentation** ends the video share.
+In **Polls**, the host can open a question with two to six answers. Participants can change their votes until the host closes the poll. The speaker button controls that participant’s sounds for opening, vote confirmation and closing.
+
+### Share a browser window
+
+In **More tools → Shared browser**, enter a website or search and choose **Open window**. Return to Meet, select **Choose tab or window**, and pick the surface to present. Participants see the live page as you scroll, type and navigate. **Stop presenting** ends the stream. Protected media and operating-system capture restrictions can limit what the browser shares.
+
+**Links & annotations** opens the link workspace. Participants can follow the meeting’s shared URL and draw together on pages that permit embedding.
+
+### Helium browser
+
+**Open in Helium** launches a separate Windows browser window with Helium’s built-in ad blocking. On the presenter’s Windows PC, run `npm run setup:helium` once from this checkout with Node installed. Setup downloads the official x64 or ARM64 portable release, verifies its SHA-256 digest, and registers the `meet-helium` URL handler for that Windows user. Run it again to install the latest release. When presenting from a different browser, select the Helium **window** in the capture picker.
+
+On macOS or Linux, open the meeting in Helium and use **Open window**. Other participants can watch in their own browsers. [Helium project and official downloads](https://github.com/imputnet/helium)
 
 ### Blur your camera background
 
