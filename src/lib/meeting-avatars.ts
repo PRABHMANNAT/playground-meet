@@ -11,13 +11,23 @@ const collections = [
 export type MeetingAvatar = `${(typeof collections)[number]['id']}_${number}`;
 export const meetingAvatarAttribute = 'meetingAvatar';
 
+const vibrantPortraits = [
+  { id: 'vibrent_28', label: 'Sikh avatar' },
+  { id: 'vibrent_29', label: 'Australian avatar' },
+  { id: 'vibrent_30', label: 'British avatar' },
+  { id: 'vibrent_31', label: 'Indian avatar' },
+] as const satisfies readonly { id: MeetingAvatar; label: string }[];
+
 export const avatarCollections = collections.map(({ id, label, count }) => ({
   id,
   label,
-  options: Array.from({ length: count }, (_, index) => ({
-    id: `${id}_${index + 1}` as MeetingAvatar,
-    label: `${label} ${index + 1}`,
-  })),
+  options: [
+    ...(id === 'vibrent' ? vibrantPortraits : []),
+    ...Array.from({ length: count }, (_, index) => ({
+      id: `${id}_${index + 1}` as MeetingAvatar,
+      label: `${label} ${index + 1}`,
+    })),
+  ],
 }));
 
 const avatarIds = new Set<string>(
