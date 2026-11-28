@@ -1,10 +1,10 @@
 'use client';
 import { useState } from 'react';
 import { BarChart3, Plus } from 'lucide-react';
+import { PollComposer } from './poll-composer';
 import type { PanelProps } from './types';
 export function PollsPanel({ data, send, host }: PanelProps) {
-  const [creating, setCreating] = useState(false),
-    [busy, setBusy] = useState(false);
+  const [creating, setCreating] = useState(false);
   return (
     <>
       {data.meeting.state.polls.length === 0 && !creating && (
@@ -58,53 +58,7 @@ export function PollsPanel({ data, send, host }: PanelProps) {
       })}
       {host &&
         (creating ? (
-          <form
-            className="stack"
-            onSubmit={async (e) => {
-              e.preventDefault();
-              setBusy(true);
-              const f = new FormData(e.currentTarget);
-              if (
-                await send({
-                  type: 'poll',
-                  question: String(f.get('question')),
-                  options: String(f.get('options'))
-                    .split('\n')
-                    .map((s) => s.trim())
-                    .filter(Boolean),
-                })
-              )
-                setCreating(false);
-              setBusy(false);
-            }}
-          >
-            <label>
-              Question
-              <input
-                name="question"
-                required
-                maxLength={200}
-                placeholder="Which direction feels right?"
-              />
-            </label>
-            <label>
-              Options, one per line
-              <textarea
-                name="options"
-                required
-                rows={4}
-                placeholder={'Option one\nOption two'}
-                maxLength={600}
-              />
-            </label>
-            <p className="panel-helper">Add 2–6 options. Everyone gets one vote.</p>
-            <button className="button primary" disabled={busy}>
-              Launch poll
-            </button>
-            <button className="text-button" type="button" onClick={() => setCreating(false)}>
-              Cancel
-            </button>
-          </form>
+          <PollComposer send={send} done={() => setCreating(false)} />
         ) : (
           <button className="button secondary full" onClick={() => setCreating(true)}>
             <Plus size={15} /> Create a poll
