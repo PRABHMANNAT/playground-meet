@@ -57,7 +57,7 @@ export function BrowserPanel({
   const [pending, setPending] = useState(false);
   const [choosingTab, setChoosingTab] = useState(false);
   const [address, setAddress] = useState('');
-  const [showLinks, setShowLinks] = useState(false);
+  const [showLinks, setShowLinks] = useState(visible && controls.selected === 'shared' && !!data.meeting.state.browser);
   const destination = browserDestination(address);
   const [windows, setWindows] = useState(false);
   const [preferWindow, setPreferWindow] = useState(false);
@@ -442,7 +442,7 @@ function PagePreview({
       </div>
       {externalOnly ? (
         <p className="panel-helper browser-empty">
-          Open this site in a tab. To show it to everyone, use Present a browser tab.
+          Open this site in a tab, then use Choose tab or window to present it.
         </p>
       ) : (
         <>

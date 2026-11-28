@@ -17,7 +17,14 @@ export function NotesPanel(props: PanelProps) {
   const [view, setView] = useState<'private' | 'meeting'>(live ? 'meeting' : 'private');
   const [busy, setBusy] = useState(false);
   const [storedHere, setStoredHere] = useState(true);
-  const [pending, setPending] = useState(false);
+  const [recovery, setRecovery] = useState(() => stored(key + ':recovery'));
+  function keepCopy(text: string | null) {
+    setRecovery(text);
+    try {
+      if (text === null) sessionStorage.removeItem(key + ':recovery');
+      else sessionStorage.setItem(key + ':recovery', text);
+    } catch {}
+  }
   const owner = live?.owner === data.me.id;
   const shared = !!live && (owner || view === 'meeting');
   function remember(text: string) {
@@ -41,12 +48,13 @@ export function NotesPanel(props: PanelProps) {
   }
   return <div className="notebook">
     <div className="note-audience" aria-label="Note audience" role="group">
-      <button aria-pressed={!shared} disabled={busy || (owner && pending)} onClick={() => owner ? void stop() : setView('private')}><LockKeyhole size={14}/> Only me</button>
+      <button aria-pressed={!shared} disabled={busy} onClick={() => owner ? void stop() : setView('private')}><LockKeyhole size={14}/> Only me</button>
       <button aria-pressed={shared} disabled={busy} onClick={() => live ? setView('meeting') : void share()}><Users size={15}/> {live ? 'Meeting' : 'Share with everyone'}</button>
     </div>
+    {!shared && recovery !== null && <div className="note-resolution">An unsynced edit is available. <button className="text-button" onClick={() => { remember(recovery); keepCopy(null); }}>Use recovered text</button> <button className="text-button" onClick={() => keepCopy(null)}>Dismiss</button></div>}
     <section className="note-sheet">
       <header><NotebookPen size={17}/><h3>{shared ? live.name + '’s note' : 'My note'}</h3></header>
-      {live && <div className="live-note-body" hidden={!shared}><LiveNoteEditor key={live.id} note={live} editable={owner || live.editable} send={send} storageKey={key + ':' + live.id} onPending={setPending} onRecover={text => { remember(text); setView('private'); }}/> </div>}
+      {live && <div className="live-note-body" hidden={!shared}><LiveNoteEditor key={live.id} note={live} editable={owner || live.editable} send={send} storageKey={key + ':' + live.id} onRecover={text => { keepCopy(text); if (!owner) setView('private'); }}/> </div>}
       {!shared &&
         <textarea className="notebook-input" aria-label="My private note" placeholder="Start writing…" value={draft} maxLength={20000} onChange={e => remember(e.target.value)} />}
     </section>
@@ -57,7 +65,7 @@ export function NotesPanel(props: PanelProps) {
     }}/> Allow others to edit</label>}
     <div className="note-foot">
       <span>{shared ? <Radio size={14}/> : <LockKeyhole size={13}/>} {shared ? 'Visible to everyone' : storedHere ? 'Private to this tab' : 'Available until this panel closes'}</span>
-      {shared && (owner || host) && <button className="text-button" disabled={busy || (owner && pending)} onClick={stop}>Stop sharing</button>}
+      {shared && (owner || host) && <button className="text-button" disabled={busy} onClick={stop}>Stop sharing</button>}
     </div>
     {(notesVersion > 0 || !!stored('meet-notes:' + data.meeting.id + ':' + data.me.id)) &&
       <details className="previous-note"><summary>Saved meeting notes</summary><SavedMeetingNotes {...props}/></details>}

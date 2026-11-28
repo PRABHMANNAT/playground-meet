@@ -37,6 +37,6 @@ test('Google search opens externally while an explicit Maps embed can still prev
   const html = renderPanel('https://www.google.com/search?q=maps', 'shared');
   expect(html).not.toContain('<iframe');
   expect(html).toContain('href="https://www.google.com/search?q=maps"');
-  expect(html).toContain('Present a browser tab');
+  expect(html).toContain('Choose tab or window');
   expect(renderPanel('https://www.google.com/maps/embed?pb=test', 'shared')).toContain('<iframe');
 });

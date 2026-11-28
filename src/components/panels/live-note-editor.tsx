@@ -5,11 +5,10 @@ import { mergeNote } from '@/lib/note-merge';
 import type { PanelProps } from './types';
 
 type Draft = { base: string; version: number; text: string };
-export function LiveNoteEditor({ note, editable, send, onPending, onRecover, storageKey }: {
+export function LiveNoteEditor({ note, editable, send, onRecover, storageKey }: {
   note: NonNullable<SharedState['liveNote']>;
   editable: boolean;
   send: PanelProps['send'];
-  onPending: (pending: boolean) => void;
   onRecover: (text: string) => void;
   storageKey: string;
 }) {
@@ -27,13 +26,17 @@ export function LiveNoteEditor({ note, editable, send, onPending, onRecover, sto
   const merged = draft && changed ? mergeNote(draft.base, draft.text, note.text) : null;
   const conflict = changed && merged === null;
   useEffect(() => {
-    onPending(!!draft || saving);
+
     try {
       if (draft) sessionStorage.setItem(storageKey, JSON.stringify(draft));
       else sessionStorage.removeItem(storageKey);
     } catch {}
-    return () => onPending(false);
-  }, [draft, saving, storageKey, onPending]);
+  }, [draft, storageKey]);
+  const recover = useRef(onRecover);
+  recover.current = onRecover;
+  useEffect(() => () => {
+    if (latest.current) recover.current(latest.current.text);
+  }, []);
   useEffect(() => {
     if (!saving && changed && merged !== null) {
       setDraft(merged === note.text ? null : { base: note.text, version: note.version, text: merged });
