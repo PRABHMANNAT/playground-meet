@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { Avatar } from './avatar';
 import { useToast } from './providers';
-import { isMeetingAvatar, meetingAvatarAttribute, meetingAvatarSrc } from '@/lib/meeting-avatars';
+import { meetingAvatarAttribute } from '@/lib/meeting-avatars';
 export function VideoTile({
   track,
   raised,
@@ -51,11 +51,11 @@ export function VideoTile({
     >
       {!available && (
         <div className="tile-avatar">
-          {!screen && isMeetingAvatar(avatar) ? (
-            <img className="avatar avatar-large" src={meetingAvatarSrc(avatar)} alt="" />
-          ) : (
-            <Avatar name={track.participant.name || 'Guest'} size="large" />
-          )}
+          <Avatar
+            name={track.participant.name || 'Guest'}
+            avatar={screen ? undefined : avatar}
+            size="large"
+          />
           <div className="tile-identity">
             <strong>{track.participant.name || 'Guest'}</strong>
             <small>

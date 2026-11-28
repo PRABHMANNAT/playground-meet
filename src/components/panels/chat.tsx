@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useId, useRef, useState } from 'react';
+import { useParticipants } from '@livekit/components-react';
 import {
   MessagesSquare,
   ArrowUp,
@@ -15,6 +16,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { attachmentProblem, fileSize, attachmentChunkBytes } from '@/lib/attachments';
+import { meetingAvatarAttribute } from '@/lib/meeting-avatars';
 import type { PanelProps } from './types';
 import { Avatar } from '../avatar';
 import { Dialog } from '../dialog';
@@ -98,6 +100,10 @@ function ChatAttachment({
 }
 export function ChatPanel({ data, send }: PanelProps) {
   const audienceId = useId();
+  const participants = useParticipants();
+  const avatarsByAuthor = new Map(
+    participants.map(({ identity, attributes }) => [identity, attributes[meetingAvatarAttribute]]),
+  );
   const [recipient, setRecipient] = useState('');
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
@@ -309,7 +315,7 @@ export function ChatPanel({ data, send }: PanelProps) {
             >
               {!isImage && (
                 <header>
-                  <Avatar name={e.name} />
+                  <Avatar name={e.name} avatar={avatarsByAuthor.get(e.actor)} />
                   <strong>{e.name}</strong>
                   <time>
                     {new Date(e.created).toLocaleTimeString([], {

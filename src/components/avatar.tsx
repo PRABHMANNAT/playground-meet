@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import { isMeetingAvatar, meetingAvatarSrc } from '@/lib/meeting-avatars';
 
 const palettes = [
   ['#dce5d7', '#3d5137'],
@@ -10,13 +11,15 @@ const palettes = [
   ['#e9dce0', '#6d4857'],
 ] as const;
 
-/** Stable, local monograms: no profile images or external avatar service needed. */
+/** Show a meeting portrait when selected, or the person's monogram. */
 export function Avatar({
   name,
+  avatar,
   size = 'small',
   status,
 }: {
   name: string;
+  avatar?: string;
   size?: 'small' | 'large';
   status?: 'online' | 'away';
 }) {
@@ -38,7 +41,11 @@ export function Avatar({
       style={{ '--avatar-bg': background, '--avatar-fg': foreground } as CSSProperties}
       aria-hidden="true"
     >
-      <span>{letters}</span>
+      {isMeetingAvatar(avatar) ? (
+        <img src={meetingAvatarSrc(avatar)} alt="" />
+      ) : (
+        <span>{letters}</span>
+      )}
       {status && <i className={`avatar-status ${status}`} />}
     </span>
   );
