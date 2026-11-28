@@ -6,6 +6,7 @@ import {
   ArrowRight,
   ExternalLink,
   Globe,
+  Link2,
   MonitorUp,
   Plus,
   RefreshCw,
@@ -13,6 +14,7 @@ import {
   Share2,
   X,
 } from 'lucide-react';
+import { browserDestination } from '@/lib/browser-destination';
 import { maxBrowserUrl, parseBrowserUrl } from '@/lib/browser-url';
 import type { SharedState } from '@/lib/types';
 import { BrowserAnnotations } from './browser-annotations';
@@ -54,6 +56,9 @@ export function BrowserPanel({
   const [tabs, setTabs] = useState<Tab[]>(() => [newTab(1)]);
   const [pending, setPending] = useState(false);
   const [choosingTab, setChoosingTab] = useState(false);
+  const [address, setAddress] = useState('');
+  const [showLinks, setShowLinks] = useState(false);
+  const destination = browserDestination(address);
   const nextId = useRef(2);
   const lastPersonal = useRef(1);
   const shared = data.meeting.state.browser;
@@ -70,6 +75,10 @@ export function BrowserPanel({
     if (selected !== 'shared') lastPersonal.current = selected;
     else if (!hasSharedPage) select(returnTab);
   }, [selected, hasSharedPage, returnTab, select]);
+
+  useEffect(() => {
+    if (visible && selected === 'shared' && hasSharedPage) setShowLinks(true);
+  }, [visible, selected, hasSharedPage]);
 
   function closeTab(id: number) {
     const index = tabs.findIndex((tab) => tab.id === id);
@@ -93,6 +102,27 @@ export function BrowserPanel({
 
   return (
     <div className="stack browser-panel">
+      <section className="browser-launch" aria-label="Browser window">
+        <form onSubmit={e => {
+          e.preventDefault();
+          if (destination) window.open(destination, '_blank', 'noopener,noreferrer,popup,width=1100,height=760');
+        }}>
+          <label htmlFor="browser-launch-address">Website or search</label>
+          <input id="browser-launch-address" value={address} maxLength={2000} placeholder="Enter an address or search the web" autoComplete="off" spellCheck={false} onChange={e => setAddress(e.target.value)}/>
+          {address.trim() && !destination && <small role="alert">Enter an HTTP or HTTPS address, or search words.</small>}
+          <button className="button secondary" disabled={!destination}><ExternalLink size={15}/> Open browser window</button>
+        </form>
+        <div className="browser-broadcast">
+          <div><MonitorUp size={20}/><h3>{presenting ? 'Presenting to everyone' : 'Present to everyone'}</h3></div>
+          <p>{presenting ? 'The meeting can see your selected tab or window.' : 'Choose a tab or window. Everyone sees the page as you browse.'}</p>
+          <button className="button primary" disabled={choosingTab} onClick={async () => {
+            setChoosingTab(true);
+            try { await present(); } finally { setChoosingTab(false); }
+          }}>{presenting ? 'Stop presenting' : 'Choose tab or window'}</button>
+        </div>
+      </section>
+      <button className="browser-link-tools" aria-expanded={showLinks} onClick={() => setShowLinks(!showLinks)}><Link2 size={16}/> Links & annotations <span>{showLinks ? '−' : '+'}</span></button>
+      {showLinks && <div className="stack">
       <div className="browser-tabs" role="group" aria-label="Browser tabs">
         {shared && (
           <div className="browser-tab" data-selected={following}>
@@ -190,27 +220,7 @@ export function BrowserPanel({
           />
         </div>
       ))}
-      <div className="browser-present">
-        <button
-          type="button"
-          className="button secondary small"
-          disabled={choosingTab}
-          onClick={async () => {
-            setChoosingTab(true);
-            try {
-              await present();
-            } finally {
-              setChoosingTab(false);
-            }
-          }}
-        >
-          <MonitorUp size={16} /> {presenting ? 'Stop live presentation' : 'Present a browser tab'}
-        </button>
-        <p className="panel-helper">
-          To show clicks and scrolling, open the site in its own tab and choose it in the sharing
-          picker.
-        </p>
-      </div>
+      </div>}
     </div>
   );
 }

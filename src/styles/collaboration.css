@@ -52,3 +52,15 @@
 .ballot footer { margin-top: 9px; }
 @media (prefers-reduced-motion: reduce) { .ballot-fill { transition: none; } }
 .poll-sound { margin-left: auto; margin-right: 4px; }
+.browser-launch,.browser-launch form { display: grid; gap: 8px; }
+.browser-launch form > .button,.browser-broadcast > .button { justify-self: start; }
+.browser-launch form > label { font-weight: 650; font-size: 13px; }
+.browser-broadcast { display: grid; justify-items: start; gap: 9px; margin-top: 12px; padding: 18px 0; border-block: 1px solid var(--line); }
+.browser-broadcast > div,.browser-link-tools { display: flex; align-items: center; gap: 8px; }
+.browser-broadcast h3 { font-size: 16px; font-weight: 650; }
+.browser-broadcast p { color: var(--muted); font-size: 13px; max-width: 46ch; }
+.browser-link-tools { width: 100%; padding: 7px 0; font-weight: 650; font-size: 13px; }
+.browser-link-tools span { margin-left: auto; }
+@media (min-width: 721px) {
+  .meeting-shell .room-panel[data-panel=browser]:not(:has(.browser-tabs)) { width: min(38%, 390px); }
+}
