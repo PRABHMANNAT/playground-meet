@@ -1,11 +1,11 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import {
   MessagesSquare,
   ArrowUp,
   Paperclip,
   Download,
-  Maximize2,
+  ChevronDown,
   FileText,
   Presentation,
   MapPin,
@@ -28,17 +28,44 @@ type SharedImage = { url: string; filename: string };
 function ChatAttachment({
   payload,
   baseUrl,
+  kind,
   openImage,
 }: {
   payload: Event['payload'];
   baseUrl: string;
+  kind: ReturnType<typeof previewFromName>;
   openImage: (image: SharedImage) => void;
 }) {
   const [failed, setFailed] = useState(false);
   const filename = String(payload.filename);
   const url = baseUrl + '/' + encodeURIComponent(String(payload.file));
   const previewUrl = url + '?preview=1';
-  const kind = payload.preview === undefined ? previewFromName(filename) : payload.preview;
+  if (kind === 'image')
+    return (
+      <div className="chat-image-bubble">
+        {failed ? (
+          <span className="chat-media-error">Image unavailable</span>
+        ) : (
+          <button
+            className="chat-photo"
+            type="button"
+            aria-label={'Enlarge ' + filename}
+            onClick={() => openImage({ url: previewUrl, filename })}
+          >
+            <img
+              src={previewUrl}
+              alt={filename}
+              loading="lazy"
+              decoding="async"
+              onError={() => setFailed(true)}
+            />
+          </button>
+        )}
+        <a className="chat-image-download" download href={url} aria-label={'Download ' + filename}>
+          <Download size={17} aria-hidden="true" />
+        </a>
+      </div>
+    );
   const FileIcon = /\.(pptx?|odp|key)$/i.test(filename) ? Presentation : FileText;
   const download = (
     <a className="chat-download" download href={url} aria-label={'Download ' + filename}>
@@ -50,29 +77,11 @@ function ChatAttachment({
       <Download size={15} aria-hidden="true" />
     </a>
   );
-  if (kind !== 'image' && kind !== 'video') return download;
+  if (kind !== 'video') return download;
   return (
     <div className="chat-media">
       {failed ? (
         <span className="chat-media-error">Preview unavailable</span>
-      ) : kind === 'image' ? (
-        <button
-          className="chat-photo"
-          type="button"
-          aria-label={'Enlarge ' + filename}
-          onClick={() => openImage({ url: previewUrl, filename })}
-        >
-          <img
-            src={previewUrl}
-            alt={filename}
-            loading="lazy"
-            decoding="async"
-            onError={() => setFailed(true)}
-          />
-          <span aria-hidden="true">
-            <Maximize2 size={14} />
-          </span>
-        </button>
       ) : (
         <video
           controls
@@ -88,6 +97,7 @@ function ChatAttachment({
   );
 }
 export function ChatPanel({ data, send }: PanelProps) {
+  const audienceId = useId();
   const [recipient, setRecipient] = useState('');
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
@@ -222,12 +232,16 @@ export function ChatPanel({ data, send }: PanelProps) {
         void uploadFiles(Array.from(e.dataTransfer.files));
       }}
     >
-      <div className="chat-audience">
-        {recipient ? <LockKeyhole size={17} /> : <Users size={17} />}
-        <label>
-          Send to
+      <div className="chat-audience" data-private={!!recipient}>
+        <label htmlFor={audienceId}>Send to</label>
+        <div className="chat-audience-control">
+          {recipient ? (
+            <LockKeyhole className="chat-audience-icon" size={15} aria-hidden="true" />
+          ) : (
+            <Users className="chat-audience-icon" size={16} aria-hidden="true" />
+          )}
           <select
-            aria-label="Send to"
+            id={audienceId}
             value={recipient}
             onChange={(e) => switchTo(e.target.value)}
             disabled={busy}
@@ -242,7 +256,8 @@ export function ChatPanel({ data, send }: PanelProps) {
               <option value={recipient}>Former participant</option>
             )}
           </select>
-        </label>
+          <ChevronDown className="chat-audience-arrow" size={15} aria-hidden="true" />
+        </div>
       </div>
       {!recipient && conversations.size > 0 && (
         <div className="chat-conversations" aria-label="Direct conversations">
@@ -275,44 +290,70 @@ export function ChatPanel({ data, send }: PanelProps) {
             </small>
           </div>
         )}
-        {thread.map((e) => (
-          <article className={'chat-message ' + (e.actor === data.me.id ? 'mine' : '')} key={e.id}>
-            <header>
-              <Avatar name={e.name} />
-              <strong>{e.name}</strong>
-              <time>
-                {new Date(e.created).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </time>
-            </header>
-            {e.kind === 'attachment' ? (
-              <ChatAttachment payload={e.payload} baseUrl={attachmentUrl} openImage={setImage} />
-            ) : typeof e.payload.sticker === 'string' ? (
-              <div
-                className="chat-sticker-message"
-                role="img"
-                aria-label={stickerLabel(e.payload.sticker)}
-              >
-                <ReactionIcon emoji={e.payload.sticker} size={96} />
-              </div>
-            ) : e.payload.location ? (
-              <a
-                className="chat-map"
-                href={mapLink(e.payload.location as ChatLocation)}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <MapPin size={19} />
-                <span>
-                  {(e.payload.location as ChatLocation).label}
-                  <small>Open in OpenStreetMap</small>
-                </span>
-                <ExternalLink size={14} />
-              </a>
-            ) : (
-              <p>{String(e.payload.text)}</p>
-            )}
-          </article>
-        ))}
+        {thread.map((e) => {
+          const preview =
+            e.kind === 'attachment' && e.payload.preview === undefined
+              ? previewFromName(String(e.payload.filename))
+              : e.payload.preview;
+          const kind = preview === 'image' || preview === 'video' ? preview : null;
+          const isImage = e.kind === 'attachment' && kind === 'image';
+          return (
+            <article
+              className={
+                'chat-message' +
+                (e.actor === data.me.id ? ' mine' : '') +
+                (isImage ? ' chat-image-message' : '')
+              }
+              aria-label={isImage ? 'Image from ' + e.name : undefined}
+              key={e.id}
+            >
+              {!isImage && (
+                <header>
+                  <Avatar name={e.name} />
+                  <strong>{e.name}</strong>
+                  <time>
+                    {new Date(e.created).toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </time>
+                </header>
+              )}
+              {e.kind === 'attachment' ? (
+                <ChatAttachment
+                  payload={e.payload}
+                  baseUrl={attachmentUrl}
+                  kind={kind}
+                  openImage={setImage}
+                />
+              ) : typeof e.payload.sticker === 'string' ? (
+                <div
+                  className="chat-sticker-message"
+                  role="img"
+                  aria-label={stickerLabel(e.payload.sticker)}
+                >
+                  <ReactionIcon emoji={e.payload.sticker} size={96} />
+                </div>
+              ) : e.payload.location ? (
+                <a
+                  className="chat-map"
+                  href={mapLink(e.payload.location as ChatLocation)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <MapPin size={19} />
+                  <span>
+                    {(e.payload.location as ChatLocation).label}
+                    <small>Open in OpenStreetMap</small>
+                  </span>
+                  <ExternalLink size={14} />
+                </a>
+              ) : (
+                <p>{String(e.payload.text)}</p>
+              )}
+            </article>
+          );
+        })}
       </div>
       {image && (
         <Dialog open title={image.filename} onClose={() => setImage(null)}>
