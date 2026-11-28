@@ -61,6 +61,14 @@
   display: grid;
   place-items: center;
 }
+.preview-portrait {
+  width: clamp(64px, 13vw, 108px);
+  aspect-ratio: 1;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--surface);
+}
 .preview-placeholder h3 {
   font-size: 14px;
   font-weight: 600;
@@ -171,6 +179,100 @@
 }
 .join-card .error-message {
   margin-bottom: 16px;
+}
+.prejoin-avatar-picker {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper-2);
+}
+.prejoin-avatar-picker summary {
+  display: flex;
+  min-height: 46px;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 11px;
+  border-radius: inherit;
+  cursor: pointer;
+  list-style: none;
+  font-size: 12px;
+  font-weight: 650;
+}
+.prejoin-avatar-picker summary::-webkit-details-marker {
+  display: none;
+}
+.prejoin-avatar-picker summary:focus-visible,
+.prejoin-avatar-options input:focus-visible + span {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+.prejoin-avatar-picker summary img {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.avatar-picker-chevron {
+  margin-inline-start: auto;
+}
+.prejoin-avatar-picker[open] .avatar-picker-chevron {
+  transform: rotate(180deg);
+}
+.prejoin-avatar-picker fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0 9px 9px;
+  border: 0;
+}
+.prejoin-avatar-picker select {
+  padding: 7px 9px;
+  font-size: 12px;
+}
+.prejoin-avatar-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
+  gap: 6px;
+  max-height: 208px;
+  margin-top: 7px;
+  padding: 4px;
+  overflow: auto;
+}
+.prejoin-avatar-options label {
+  position: relative;
+  cursor: pointer;
+}
+.prejoin-avatar-options input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  clip-path: inset(50%);
+}
+.prejoin-avatar-options label > span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  aspect-ratio: 1;
+  padding: 3px;
+  border: 2px solid transparent;
+  border-radius: 9px;
+  background: var(--surface);
+  font-size: 9px;
+}
+.prejoin-avatar-options input:checked + span {
+  border-color: var(--ink);
+}
+.prejoin-avatar-options img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  border-radius: 7px;
+  object-fit: cover;
+}
+.prejoin-avatar-options input:disabled + span {
+  cursor: wait;
+  opacity: 0.65;
 }
 .invite-box {
   margin-top: 16px;

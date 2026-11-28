@@ -11,6 +11,7 @@ The repository's MIT license applies to the project's original code and document
 
 - The 3D reaction artwork is from [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji), bundled from Iconify's fluent-emoji 1.2.7 collection. See the [MIT license](public/reactions/packs/Fluent-LICENSE.txt).
 - Previously sent Gopher stickers use [Egon Elbre’s Gophers](https://github.com/egonelbre/gophers/tree/63b1f5a9f334f9e23735c6e09ac003479ffe5df5), released under CC0. The original Go gopher was designed by Renée French.
+- Meeting avatars are from [Alohe Avatars](https://github.com/alohe/avatars/tree/a2ab6d008876133ac16a5484bf29aef22d42e4a0), with the upstream [MIT license](public/meeting-avatars/LICENSE.txt).
 
 - The 168 captioned People & punchlines, City postcards and Meeting memes stickers use Wikimedia Commons imagery. The [photo sticker credits](public/reactions/photos/credits.html) identify the source, author and license for each image.
 - The 98 new Studio action avatars and eight illustrated meeting memes are original AI-generated illustrations. See the [Studio artwork notes](public/reactions/studio/credits.html).

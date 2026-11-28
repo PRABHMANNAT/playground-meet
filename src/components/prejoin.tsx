@@ -5,6 +5,8 @@ import { request } from '@/lib/client';
 import { meetingPath, meetingInviteUrl } from '@/lib/meeting-links';
 import { Header } from './header';
 import { DevicePreview, type Devices } from './device-preview';
+import { PrejoinAvatarPicker } from './prejoin-avatar-picker';
+import type { MeetingAvatar } from '@/lib/meeting-avatars';
 import { useToast } from './providers';
 import type { Person } from '@/lib/types';
 type Info = {
@@ -16,7 +18,17 @@ type Info = {
   host: boolean;
   status: string;
 };
-export function Prejoin({ id, onJoin }: { id: string; onJoin: (devices: Devices) => void }) {
+export function Prejoin({
+  id,
+  avatar,
+  onAvatarChange,
+  onJoin,
+}: {
+  id: string;
+  avatar?: MeetingAvatar;
+  onAvatarChange: (avatar?: MeetingAvatar) => void;
+  onJoin: (devices: Devices) => void;
+}) {
   const [info, setInfo] = useState<Info | null>(null),
     [person, setPerson] = useState<Person | null>(null),
     [name, setName] = useState(''),
@@ -79,7 +91,7 @@ export function Prejoin({ id, onJoin }: { id: string; onJoin: (devices: Devices)
           {!info?.ended && <p>Device check</p>}
         </div>
         <div className="prejoin-grid" data-ended={info?.ended}>
-          {!info?.ended && <DevicePreview onChange={onDevices} />}
+          {!info?.ended && <DevicePreview avatar={avatar} onChange={onDevices} />}
           <section className="join-card">
             <h2>
               {info?.ended ? 'Meeting ended' : waiting ? 'Waiting for the host' : 'Your details'}
@@ -134,6 +146,7 @@ export function Prejoin({ id, onJoin }: { id: string; onJoin: (devices: Devices)
                     placeholder="Enter your name"
                   />
                 </label>
+                <PrejoinAvatarPicker avatar={avatar} onChange={onAvatarChange} disabled={busy} />
                 <button className="button primary full" disabled={busy || !info}>
                   {busy
                     ? 'Joining…'

@@ -1,5 +1,6 @@
 import { AccessToken, RoomServiceClient } from 'livekit-server-sdk';
 import { HttpError } from './errors';
+import { meetingAvatarAttribute, type MeetingAvatar } from './meeting-avatars';
 export function mediaConfig() {
   const url = process.env.LIVEKIT_URL,
     key = process.env.LIVEKIT_API_KEY,
@@ -24,9 +25,19 @@ export function roomService() {
     secret,
   );
 }
-export async function mediaToken(room: string, identity: string, name: string) {
+export async function mediaToken(
+  room: string,
+  identity: string,
+  name: string,
+  avatar?: MeetingAvatar,
+) {
   const { url, key, secret } = mediaConfig();
-  const token = new AccessToken(key, secret, { identity, name, ttl: '2m' });
+  const token = new AccessToken(key, secret, {
+    identity,
+    name,
+    ttl: '2m',
+    attributes: avatar ? { [meetingAvatarAttribute]: avatar } : undefined,
+  });
   token.addGrant({
     room,
     roomJoin: true,

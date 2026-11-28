@@ -59,13 +59,16 @@ import { MediaDeviceSelect } from '@livekit/components-react';
 import { CameraBlur } from './camera-blur';
 import type { Devices } from './device-preview';
 import type { Action } from '@/lib/schemas';
+import type { MeetingAvatar } from '@/lib/meeting-avatars';
 export default function Meeting({
   id,
   devices,
+  avatar,
   onBack,
 }: {
   id: string;
   devices: Devices;
+  avatar?: MeetingAvatar;
   onBack: () => void;
 }) {
   const [connection, setConnection] = useState<{ url: string; token: string } | null>(null),
@@ -74,7 +77,7 @@ export default function Meeting({
   const router = useRouter();
   useEffect(() => {
     let active = true;
-    request<{ url: string; token: string }>(`/api/meetings/${id}/token`, {})
+    request<{ url: string; token: string }>(`/api/meetings/${id}/token`, { avatar })
       .then((r) => {
         if (active) setConnection(r);
       })
@@ -84,7 +87,7 @@ export default function Meeting({
     return () => {
       active = false;
     };
-  }, [id, attempt]);
+  }, [id, avatar, attempt]);
   const retry = () => {
     setConnection(null);
     setError('');

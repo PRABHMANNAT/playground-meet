@@ -464,6 +464,9 @@
   align-items: center;
   gap: 5px;
 }
+.meeting-shell .tile-avatar > img.avatar {
+  object-fit: cover;
+}
 .tile-identity strong {
   color: var(--ink);
   font-size: 15px;

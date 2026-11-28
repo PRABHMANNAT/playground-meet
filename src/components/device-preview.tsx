@@ -1,9 +1,16 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { Video, Mic, MicOff, VideoOff, SlidersHorizontal } from 'lucide-react';
+import { meetingAvatarSrc, type MeetingAvatar } from '@/lib/meeting-avatars';
 import { useToast } from './providers';
 export type Devices = { audio: boolean; video: boolean; audioId: string; videoId: string };
-export function DevicePreview({ onChange }: { onChange: (value: Devices) => void }) {
+export function DevicePreview({
+  avatar,
+  onChange,
+}: {
+  avatar?: MeetingAvatar;
+  onChange: (value: Devices) => void;
+}) {
   const ref = useRef<HTMLVideoElement>(null),
     stream = useRef<MediaStream | null>(null);
   const [settings, setSettings] = useState<Devices>({
@@ -91,9 +98,17 @@ export function DevicePreview({ onChange }: { onChange: (value: Devices) => void
         <video ref={ref} autoPlay playsInline muted className={settings.video ? '' : 'hidden'} />
         {!settings.video && (
           <div className="preview-placeholder">
-            <div className="preview-orbit">
-              <VideoOff size={29} strokeWidth={1.5} aria-hidden="true" />
-            </div>
+            {avatar ? (
+              <img
+                className="preview-portrait"
+                src={meetingAvatarSrc(avatar)}
+                alt="Your meeting avatar"
+              />
+            ) : (
+              <div className="preview-orbit">
+                <VideoOff size={29} strokeWidth={1.5} aria-hidden="true" />
+              </div>
+            )}
             <h3>Camera is off</h3>
           </div>
         )}

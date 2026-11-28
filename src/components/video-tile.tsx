@@ -3,6 +3,7 @@ import { useRef } from 'react';
 import {
   VideoTrack,
   useIsSpeaking,
+  useParticipantAttribute,
   isTrackReference,
   type TrackReferenceOrPlaceholder,
 } from '@livekit/components-react';
@@ -19,6 +20,7 @@ import {
 } from 'lucide-react';
 import { Avatar } from './avatar';
 import { useToast } from './providers';
+import { isMeetingAvatar, meetingAvatarAttribute, meetingAvatarSrc } from '@/lib/meeting-avatars';
 export function VideoTile({
   track,
   raised,
@@ -34,6 +36,9 @@ export function VideoTile({
     ref = useRef<HTMLDivElement>(null),
     toast = useToast();
   const screen = track.source === Track.Source.ScreenShare;
+  const avatar = useParticipantAttribute(meetingAvatarAttribute, {
+    participant: track.participant,
+  });
   const available =
     isTrackReference(track) && !!track.publication.track && !track.publication.isMuted;
   return (
@@ -46,7 +51,11 @@ export function VideoTile({
     >
       {!available && (
         <div className="tile-avatar">
-          <Avatar name={track.participant.name || 'Guest'} size="large" />
+          {!screen && isMeetingAvatar(avatar) ? (
+            <img className="avatar avatar-large" src={meetingAvatarSrc(avatar)} alt="" />
+          ) : (
+            <Avatar name={track.participant.name || 'Guest'} size="large" />
+          )}
           <div className="tile-identity">
             <strong>{track.participant.name || 'Guest'}</strong>
             <small>
