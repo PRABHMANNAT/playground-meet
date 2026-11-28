@@ -1,86 +1,62 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Save, RefreshCw } from 'lucide-react';
+import { LockKeyhole, Users, Radio, NotebookPen } from 'lucide-react';
 import type { PanelProps } from './types';
-export function NotesPanel({ data, send }: PanelProps) {
-  const state = data.meeting.state;
-  const key = `meet-notes:${data.meeting.id}:${data.me.id}`;
-  const [draft] = useState(() => {
-    try {
-      return JSON.parse(sessionStorage.getItem(key) || 'null') as {
-        text: string;
-        version: number;
-      } | null;
-    } catch {
-      return null;
-    }
-  });
-  const [text, setText] = useState(draft?.text ?? state.notes),
-    [version, setVersion] = useState(draft?.version ?? state.notesVersion),
-    [dirty, setDirty] = useState(Boolean(draft)),
-    [busy, setBusy] = useState(false);
+import { SavedMeetingNotes } from './saved-meeting-notes';
+
+function stored(key: string) {
+  try { return sessionStorage.getItem(key); } catch { return null; }
+}
+
+export function NotesPanel(props: PanelProps) {
+  const { data, send, host } = props;
+  const { liveNote: live, notesVersion } = data.meeting.state;
+  const key = 'meet-private-note:' + data.meeting.id + ':' + data.me.id;
+  const [draft, setDraft] = useState(() => stored(key) ?? '');
+  const [view, setView] = useState<'private' | 'meeting'>(live ? 'meeting' : 'private');
+  const [busy, setBusy] = useState(false);
+  const [storedHere, setStoredHere] = useState(true);
+  const owner = live?.owner === data.me.id;
+  const shared = !!live && (owner || view === 'meeting');
+  function remember(text: string) {
+    setDraft(text);
+    try { sessionStorage.setItem(key, text); setStoredHere(true); }
+    catch { setStoredHere(false); }
+  }
   useEffect(() => {
-    if (!dirty) {
-      setText(state.notes);
-      setVersion(state.notesVersion);
-    }
-  }, [state.notes, state.notesVersion, dirty]);
-  useEffect(() => {
-    if (dirty) sessionStorage.setItem(key, JSON.stringify({ text, version }));
-    else sessionStorage.removeItem(key);
-  }, [dirty, text, version, key]);
-  const conflict = dirty && version !== state.notesVersion;
-  return (
-    <div className="stack">
-      <p className="panel-helper">
-        Notes are shared with everyone in the meeting. Save your changes when ready.
-      </p>
-      <textarea
-        className="notes-editor"
-        aria-label="Shared meeting notes"
-        placeholder="Add meeting notes…"
-        value={text}
-        maxLength={20000}
-        disabled={busy}
-        onChange={(e) => {
-          setText(e.target.value);
-          setDirty(true);
-        }}
-      />
-      {conflict && (
-        <p role="alert" className="notes-warning">
-          Someone saved a newer version. Copy your draft before loading their changes.
-        </p>
-      )}
-      <div className="field-row">
-        <button
-          className="button primary"
-          disabled={!dirty || busy || conflict}
-          onClick={async () => {
-            setBusy(true);
-            if (await send({ type: 'notes', text, version })) setDirty(false);
-            setBusy(false);
-          }}
-        >
-          <Save size={15} />
-          {busy ? 'Saving…' : 'Save notes'}
-        </button>
-        <button
-          className="button secondary"
-          disabled={busy}
-          onClick={() => {
-            setText(state.notes);
-            setVersion(state.notesVersion);
-            setDirty(false);
-          }}
-        >
-          <RefreshCw size={15} /> Load latest
-        </button>
-      </div>
-      <span className="panel-helper">
-        {text.length.toLocaleString()} / 20,000 characters ·{' '}
-        {dirty ? 'Unsaved draft' : 'All changes saved'}
-      </span>
+    if (owner && live) remember(live.text);
+  }, [owner, live?.id, live?.text]);
+  async function share() {
+    setBusy(true);
+    try { if (await send({type: 'note-share', text: draft})) setView('meeting'); }
+    finally { setBusy(false); }
+  }
+  async function stop() {
+    if (!live) return;
+    setBusy(true);
+    try { if (await send({type: 'note-stop', id: live.id})) setView('private'); }
+    finally { setBusy(false); }
+  }
+  return <div className="notebook">
+    <div className="note-audience" aria-label="Note audience" role="group">
+      <button aria-pressed={!shared} disabled={busy} onClick={() => owner ? void stop() : setView('private')}><LockKeyhole size={14}/> Only me</button>
+      <button aria-pressed={shared} disabled={busy} onClick={() => live ? setView('meeting') : void share()}><Users size={15}/> {live ? 'Meeting' : 'Share with everyone'}</button>
     </div>
-  );
+    <section className="note-sheet">
+      <header><NotebookPen size={17}/><h3>{shared ? live.name + '’s note' : 'My note'}</h3></header>
+      {shared ? <p className="note-reading">{live.text || 'The presenter is writing…'}</p> :
+        <textarea className="notebook-input" aria-label="My private note" placeholder="Start writing…" value={draft} maxLength={20000} onChange={e => remember(e.target.value)} />}
+    </section>
+    {shared && owner && <label className="note-access"><input type="checkbox" checked={live.editable} disabled={busy} onChange={async e => {
+      setBusy(true);
+      try { await send({type:'note-access', id: live.id, editable: e.target.checked}); }
+      finally { setBusy(false); }
+    }}/> Allow others to edit</label>}
+    <div className="note-foot">
+      <span>{shared ? <Radio size={14}/> : <LockKeyhole size={13}/>} {shared ? 'Visible to everyone' : storedHere ? 'Private to this tab' : 'Available until this panel closes'}</span>
+      {shared && (owner || host) && <button className="text-button" disabled={busy} onClick={stop}>Stop sharing</button>}
+    </div>
+    {(notesVersion > 0 || !!stored('meet-notes:' + data.meeting.id + ':' + data.me.id)) &&
+      <details className="previous-note"><summary>Saved meeting notes</summary><SavedMeetingNotes {...props}/></details>}
+  </div>;
 }

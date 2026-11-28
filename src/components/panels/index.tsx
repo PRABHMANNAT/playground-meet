@@ -29,7 +29,7 @@ const titles = {
   transcript: 'Live transcript',
   chat: 'Chat',
   people: 'People',
-  notes: 'Shared notes',
+  notes: 'Notes',
   polls: 'Polls',
   actions: 'Action items',
   decisions: 'Decision log',

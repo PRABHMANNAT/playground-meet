@@ -23,7 +23,7 @@ const primary = [
   { key: 'browser', label: 'Shared browser', icon: Globe },
   { key: 'board', label: 'Whiteboard', icon: PenLine },
   { key: 'polls', label: 'Polls', icon: ChartNoAxesColumn },
-  { key: 'notes', label: 'Shared notes', icon: NotepadText },
+  { key: 'notes', label: 'Notes', icon: NotepadText },
   { key: 'timer', label: 'Countdown', icon: Timer },
   { key: 'bookmarks', label: 'Bookmarks', icon: Bookmark },
 ] as const;
