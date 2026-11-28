@@ -62,6 +62,14 @@ export type SharedState = {
   decisions?: Decision[];
   notes: string;
   notesVersion: number;
+  liveNote?: {
+    id: string;
+    owner: string;
+    name: string;
+    text: string;
+    version: number;
+    editable: boolean;
+  } | null;
   transcriptClosedAt?: number;
   polls: Poll[];
   strokes: Stroke[];
