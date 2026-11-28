@@ -9,6 +9,7 @@
     "dev": "next dev --hostname 127.0.0.1",
     "build": "next build",
     "start": "next start",
+    "setup:helium": "powershell -NoProfile -ExecutionPolicy RemoteSigned -File scripts/setup-helium.ps1",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:integration": "tsx tests/integration.ts",
